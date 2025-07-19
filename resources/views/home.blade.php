@@ -799,8 +799,8 @@
 
             // Text input events
             $('#textInput').on('input', handleTextInput);
-            $('#saveBtn').click(handleSaveText);
-            $('#clearBtn').click(handleClearText);
+            $('#saveBtn').off('click.save').on('click.save', handleSaveText);
+            $('#clearBtn').off('click').on('click', handleClearText);
 
             // File upload events
             setupFileUpload();
@@ -928,11 +928,11 @@
             if (mode === 'copy') {
                 btn.removeClass('modern-btn').addClass('modern-btn success');
                 text.html('<i class="fas fa-copy"></i> Copy');
-                btn.off('click').on('click', handleCopyText);
+                btn.off('click.save').on('click.save', handleCopyText);
             } else {
                 btn.removeClass('success').addClass('modern-btn');
                 text.html('<i class="fas fa-save"></i> Save');
-                btn.off('click').on('click', handleSaveText);
+                btn.off('click.save').on('click.save', handleSaveText);
             }
         }
 
@@ -1013,30 +1013,40 @@
             const uploadZone = $('#uploadZone');
             const fileInput = $('#fileInput');
             
-            // Prevent default drag behaviors
+            // Prevent default drag behaviors globally
             $(document).on('dragenter dragover drop', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
             });
 
-            uploadZone.click(() => fileInput.click());
+            // Fix click handler to prevent infinite loop
+            uploadZone.off('click').on('click', function(e) {
+                // Only trigger file input if not clicking on other elements
+                if (e.target === this || $(e.target).hasClass('upload-icon') || $(e.target).hasClass('upload-text') || $(e.target).hasClass('upload-subtext')) {
+                    fileInput.trigger('click');
+                }
+            });
             
-            uploadZone.on('dragover', function(e) {
+            uploadZone.off('dragover').on('dragover', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
                 $(this).addClass('dragover');
             });
             
-            uploadZone.on('dragleave', function(e) {
+            uploadZone.off('dragleave').on('dragleave', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
-                // Only remove dragover if we're leaving the upload zone entirely
-                if (!uploadZone[0].contains(e.relatedTarget)) {
+                // Check if we're really leaving the upload zone
+                const rect = this.getBoundingClientRect();
+                const x = e.originalEvent.clientX;
+                const y = e.originalEvent.clientY;
+                
+                if (x < rect.left || x > rect.right || y < rect.top || y > rect.bottom) {
                     $(this).removeClass('dragover');
                 }
             });
             
-            uploadZone.on('drop', function(e) {
+            uploadZone.off('drop').on('drop', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
                 $(this).removeClass('dragover');
@@ -1044,13 +1054,13 @@
                 handleFileUpload(files);
             });
             
-            fileInput.change(function() {
+            fileInput.off('change').on('change', function() {
                 handleFileUpload(this.files);
             });
         }
 
         function setupFileSelection() {
-            $('#selectAllBtn').click(function() {
+            $('#selectAllBtn').off('click').on('click', function() {
                 const allSelected = selectedFiles.size === $('.file-item').length;
                 if (allSelected) {
                     selectedFiles.clear();
@@ -1069,19 +1079,19 @@
                 updateSelectionUI();
             });
 
-            $('#downloadSelectedBtn').click(downloadSelectedFiles);
-            $('#emailSelectedBtn').click(showEmailModal);
+            $('#downloadSelectedBtn').off('click').on('click', downloadSelectedFiles);
+            $('#emailSelectedBtn').off('click').on('click', showEmailModal);
         }
 
         function setupEmailModal() {
-            $('#emailModalClose').click(hideEmailModal);
-            $('#emailModal').click(function(e) {
+            $('#emailModalClose').off('click').on('click', hideEmailModal);
+            $('#emailModal').off('click').on('click', function(e) {
                 if (e.target === this) {
                     hideEmailModal();
                 }
             });
 
-            $('#emailForm').submit(function(e) {
+            $('#emailForm').off('submit').on('submit', function(e) {
                 e.preventDefault();
                 sendEmailWithFiles();
             });
@@ -1228,16 +1238,20 @@
 
             // Click to preview images
             if (isImage) {
-                item.find('.file-preview').click(() => showFullscreen(file.original_url));
+                item.find('.file-preview').off('click').on('click', function() {
+                    showFullscreen(file.original_url);
+                });
             }
             
             // Download button
-            item.find('.download').click(() => {
+            item.find('.download').off('click').on('click', function() {
                 downloadSingleFile(file);
             });
             
             // Delete button
-            item.find('.delete').click(() => deleteFile(file.uuid));
+            item.find('.delete').off('click').on('click', function() {
+                deleteFile(file.uuid);
+            });
             
             return item;
         }
