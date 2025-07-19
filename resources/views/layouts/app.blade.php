@@ -41,6 +41,8 @@
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta property="og:image:alt" content="AirToShare - Instant File Sharing">
+    <meta property="fb:app_id" content="YOUR_FACEBOOK_APP_ID">
+    <meta property="fb:pages" content="airtoshare">
     
     <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image">
@@ -63,8 +65,10 @@
       "logo": "{{ url('/favicon.ico') }}",
       "description": "Instant file sharing across devices on the same network",
       "sameAs": [
+        "https://web.facebook.com/airtoshare/",
         "https://github.com/airtoshare",
-        "https://twitter.com/airtoshare"
+        "https://twitter.com/airtoshare",
+        "https://www.linkedin.com/company/airtoshare"
       ],
       "contactPoint": {
         "@type": "ContactPoint",
@@ -728,6 +732,20 @@
                         <a href="{{ url('/coming-soon') }}">Coming Soon</a>
                         <a href="{{ url('/sitemap.xml') }}">Sitemap</a>
                     </div>
+                    <div class="social-links">
+                        <a href="https://web.facebook.com/airtoshare/" target="_blank" rel="noopener noreferrer" title="Follow us on Facebook">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="https://twitter.com/airtoshare" target="_blank" rel="noopener noreferrer" title="Follow us on Twitter">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="https://github.com/airtoshare" target="_blank" rel="noopener noreferrer" title="View on GitHub">
+                            <i class="fab fa-github"></i>
+                        </a>
+                        <a href="https://www.linkedin.com/company/airtoshare" target="_blank" rel="noopener noreferrer" title="Connect on LinkedIn">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -751,10 +769,41 @@
             color: var(--primary-color);
         }
         
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+            justify-content: center;
+        }
+        
+        .social-links a {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--bg-gradient);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: var(--transition);
+            font-size: 1.1rem;
+        }
+        
+        .social-links a:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+        }
+        
         @media (max-width: 768px) {
             .footer-links {
                 justify-content: center;
                 margin-top: 1rem;
+            }
+            
+            .social-links {
+                justify-content: center;
+                margin-top: 1.5rem;
             }
         }
     </style>

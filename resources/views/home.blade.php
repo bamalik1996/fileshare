@@ -1,10 +1,8 @@
 @extends('layouts.app')
 
 @section('title', 'AirForShare - Instant File Sharing Across Devices | Local Network File Transfer')
-@section('description', 'AirToShare - Share files and text instantly across devices on the same Wi-Fi network. No
-    accounts, no external servers - just secure peer-to-peer file sharing up to 10MB per file.')
-@section('keywords', 'file sharing, instant sharing, local network, Wi-Fi sharing, cross-device, secure sharing,
-    peer-to-peer, no account required')
+@section('description', 'AirToShare - Share files and text instantly across devices on the same Wi-Fi network. No accounts, no external servers - just secure peer-to-peer file sharing up to 10MB per file. Follow us on Facebook!')
+@section('keywords', 'file sharing, instant sharing, local network, Wi-Fi sharing, cross-device, secure sharing, peer-to-peer, no account required')
 
 @section('schema')
     <script type="application/ld+json">
