@@ -365,11 +365,15 @@
                 <i class="fas fa-envelope"></i>
                 support@airforshare.com
             </a>
-            <a href="#" class="contact-method">
+            <a href="https://web.facebook.com/airtoshare/" target="_blank" class="contact-method">
+                <i class="fab fa-facebook-f"></i>
+                Facebook Page
+            </a>
+            <a href="https://github.com/airtoshare" target="_blank" class="contact-method">
                 <i class="fab fa-github"></i>
                 GitHub Issues
             </a>
-            <a href="#" class="contact-method">
+            <a href="https://twitter.com/airtoshare" target="_blank" class="contact-method">
                 <i class="fab fa-twitter"></i>
                 @AirForShare
             </a>
