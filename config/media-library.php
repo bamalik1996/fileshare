@@ -18,7 +18,7 @@ return [
      * This queue connection will be used to generate derived and responsive images.
      * Leave empty to use the default queue connection.
      */
-    'queue_connection_name' => env('QUEUE_CONNECTION', 'sync'),
+    'queue_connection_name' => env('QUEUE_CONNECTION', 'database'),
 
     /*
      * This queue will be used to generate derived and responsive images.
@@ -29,7 +29,7 @@ return [
     /*
      * By default all conversions will be performed on a queue.
      */
-    'queue_conversions_by_default' => env('QUEUE_CONVERSIONS_BY_DEFAULT', true),
+    'queue_conversions_by_default' => env('QUEUE_CONVERSIONS_BY_DEFAULT', false),
 
     /*
      * Should database transactions be run after database commits?

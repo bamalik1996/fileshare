@@ -15,6 +15,7 @@ Route::prefix('api/v1')->middleware('throttle:save-text')->group(function () {
     Route::controller(ShareController::class)->group(function () {
         Route::post('/text', 'saveText')->name('share.store.text');
         Route::get('/text', 'getText')->name('share.get.text');
+        Route::get('/ip-info', 'getIpInfo')->name('share.ip.info');
     });
 
     Route::controller(ShareController::class)->group(function () {

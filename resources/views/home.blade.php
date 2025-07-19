@@ -25,25 +25,6 @@
             height: 100%;
         }
 
-        /* .cta-button {
-                                                                                                                                                                                                                                                        background-color: #00AEEF;
-                                                                                                                                                                                                                                                        color: white;
-                                                                                                                                                                                                                                                        padding: 12px 25px;
-                                                                                                                                                                                                                                                        font-size: 16px;
-                                                                                                                                                                                                                                                        border-radius: 6px;
-                                                                                                                                                                                                                                                        text-align: center;
-                                                                                                                                                                                                                                                        display: inline-block;
-                                                                                                                                                                                                                                                        position: relative;
-                                                                                                                                                                                                                                                    }
-
-                                                                                                                                                                                                                                                    .cta-button:hover {
-                                                                                                                                                                                                                                                        background-color: #007BB5;
-                                                                                                                                                                                                                                                    } */
-
-
-        /* CSS */
-
-        /* CSS */
         .cta-button {
             background-color: rgba(51, 51, 51, 0.05);
             border-radius: 8px;
@@ -67,11 +48,18 @@
             justify-content: center;
             align-items: center;
             display: flex;
+            position: relative;
         }
 
         .cta-button:hover {
             background-color: #1b3fab;
             color: #fff;
+        }
+        
+        .cta-button:disabled {
+            background-color: #ccc;
+            color: #666;
+            cursor: not-allowed;
         }
 
         .clear-button {
@@ -99,7 +87,7 @@
             text-align: center;
         }
 
-        dev:not(.file-preview) .loader {
+        .loader {
             border: 4px solid #f3f3f3;
             /* Light gray */
             border-top: 4px solid #3498db;
@@ -152,11 +140,33 @@
             background: #f9f9f9;
             border-radius: 10px;
             transition: 0.3s;
+            position: relative;
+            min-height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
         }
 
         .file-upload:hover {
             background: #eef5ff;
             border-color: #0056b3;
+        }
+        
+        .file-upload.dragover {
+            background: #e3f2fd;
+            border-color: #1976d2;
+            transform: scale(1.02);
+        }
+        
+        .file-upload-text {
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        
+        .file-upload-subtext {
+            font-size: 12px;
+            color: #666;
         }
 
         /* File Preview Container */
@@ -168,6 +178,10 @@
             overflow-y: auto;
             max-height: 400px;
             min-height: 200px;
+            padding: 10px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            background: #fafafa;
         }
 
         /* Individual File Preview */
@@ -183,12 +197,15 @@
             background: #f8f8f8;
             border-radius: 5px;
             font-size: 40px;
-            cursor: pointer
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex-direction: column;
         }
 
         .file-preview:hover {
             transform: scale(1.05);
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            border-color: #007bff;
         }
 
         /* Image Preview */
@@ -197,6 +214,24 @@
             max-height: 100%;
             object-fit: cover;
             border-radius: 10px;
+        }
+        
+        .file-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 5px;
+            font-size: 10px;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .file-preview:hover .file-info {
+            opacity: 1;
         }
 
         /* Loader Animation */
@@ -248,15 +283,6 @@
             cursor: pointer;
         }
 
-        @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-
-            100% {
-                transform: rotate(360deg);
-            }
-        }
 
         .download-btn {
             position: absolute;
@@ -275,15 +301,15 @@
             background: #0056b3;
         }
 
-        .upgrade-text {
+        .info-text {
             margin-top: 15px;
             padding: 10px;
-            background: #ffe5e5;
-            color: #b30000;
+            background: #e8f4fd;
+            color: #1976d2;
             text-align: center;
             font-weight: bold;
-            display: none;
             border-radius: 5px;
+            font-size: 14px;
         }
 
         .delete-btn {
@@ -301,6 +327,12 @@
             font-size: 12px;
             border-radius: 5px;
             margin-right: 5px;
+            transition: all 0.3s;
+        }
+        
+        .delete-btn:hover {
+            background: #d32f2f;
+            transform: scale(1.1);
         }
 
         .wrapper-loader {
@@ -312,15 +344,64 @@
             position: absolute;
             background: rgb(10 10 10 / 26%);
             z-index: 999;
+            border-radius: 5px;
         }
 
         div#text-tab div#loader {
             display: none;
             position: absolute;
         }
+        
+        .character-count {
+            position: absolute;
+            bottom: 10px;
+            right: 15px;
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: #eee;
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: #007bff;
+            transition: width 0.3s ease;
+        }
+        
+        .error-message {
+            background: #ffebee;
+            color: #c62828;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            display: none;
+        }
+        
+        .success-message {
+            background: #e8f5e8;
+            color: #2e7d32;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            display: none;
+        }
     </style>
 
     <h1 class="title is-2 has-text-centered has-text-primary">Welcome to AirForShare</h1>
+    
+    <!-- IP Info Display -->
+    <div class="notification is-info is-light" id="ipInfo" style="margin-bottom: 20px;">
+        <strong>Your IP:</strong> <span id="userIp">Loading...</span> | 
+        <strong>Files:</strong> <span id="fileCount">0</span>/<span id="maxFiles">20</span> | 
+        <strong>Max File Size:</strong> <span id="maxFileSize">10 MB</span>
+    </div>
 
     <!-- Tabs for Navigation -->
     <div class="tabs is-centered is-boxed">
@@ -342,10 +423,18 @@
                 <div class="control">
                     <textarea class="textarea" id="textInput" placeholder="Type something..." rows="8"
                         style="border: 0; font-size: 25px; overflow: hidden; overflow-wrap: break-word; resize: none;"
-                        oninput="checkText()"></textarea>
+                        oninput="checkText()" maxlength="50000"></textarea>
+                    <div class="character-count">
+                        <span id="charCount">0</span>/50000
+                    </div>
                     <div id="linksContainer" style="margin-top: 10px;"></div>
                 </div>
             </div>
+            
+            <!-- Messages -->
+            <div id="textErrorMessage" class="error-message"></div>
+            <div id="textSuccessMessage" class="success-message"></div>
+            
             <!-- Save and Clear Buttons -->
             <div class="has-text-right is-flex is-flex-direction-row-reverse"
                 style="padding-bottom:10px;padding-right:10px">
@@ -367,17 +456,25 @@
 
             <!-- Drag and Drop File Upload Section -->
             <div class="file-upload" id="dropZone">
-                <span>🚀 Drag and drop files here, or click to browse</span>
+                <div class="file-upload-text">🚀 Drag and drop files here, or click to browse</div>
+                <div class="file-upload-subtext">Supported: Images, PDF, DOC, TXT, ZIP (Max: 10MB each)</div>
                 <input type="file" id="fileInput" class="file-input" multiple accept="image/*,.pdf,.docx,.txt" hidden>
+                <div class="progress-bar" id="uploadProgress" style="display: none;">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
             </div>
+            
+            <!-- Messages -->
+            <div id="fileErrorMessage" class="error-message"></div>
+            <div id="fileSuccessMessage" class="success-message"></div>
 
             <!-- File Previews -->
             <div class="file-preview-container" id="filePreviewContainer"></div>
 
-            <!-- File Size & Upgrade Text -->
-            <div class="upgrade-text has-text-centered">
-                <p>Files up to <strong>2 files, 5MB each</strong></p>
-                <p><a href="/upgrade" class="cta-button">Upgrade to get more space</a></p>
+            <!-- File Info Text -->
+            <div class="info-text has-text-centered">
+                <p>📁 Upload up to <strong>20 files, 10MB each</strong></p>
+                <p>🔒 Files are automatically deleted after 6 hours or 1 hour of inactivity</p>
             </div>
         </div>
     </div>
@@ -392,6 +489,7 @@
 
     <script>
         $(document).ready(function() {
+            loadIpInfo();
             fetchText();
             fetchMedia(); // auto-load media
 
@@ -410,6 +508,30 @@
 
         });
 
+        function loadIpInfo() {
+            $.ajax({
+                url: '/api/v1/ip-info',
+                method: 'GET',
+                success: function(data) {
+                    $('#userIp').text(data.ip);
+                    $('#fileCount').text(data.files_count);
+                    $('#maxFiles').text(data.max_files);
+                    $('#maxFileSize').text(data.max_file_size);
+                },
+                error: function() {
+                    console.error('Failed to load IP info');
+                }
+            });
+        }
+
+        function showMessage(elementId, message, isError = false) {
+            const element = $(elementId);
+            element.text(message).show();
+            
+            setTimeout(() => {
+                element.hide();
+            }, 5000);
+        }
 
         function fetchText() {
             $.ajax({
@@ -420,23 +542,29 @@
                     $('#textInput').text(data.text);
                     checkText();
                     detectLinks();
+                    updateCharCount();
                     if (data && data.text && data.text.trim().length > 0) {
                         showCopyButton(); // Agar pehle se text hai to copy button show karein
-
                     }
                 },
                 error: function() {
-                    alert('Error fetching the text.');
+                    showMessage('#textErrorMessage', 'Error fetching the text.', true);
                 }
             });
         }
 
         function saveText() {
             var text = $('#textInput').val();
+            
+            if (text.length > 50000) {
+                showMessage('#textErrorMessage', 'Text is too long. Maximum 50,000 characters allowed.', true);
+                return;
+            }
 
             $('#loader').show();
             $('#loadingText').show();
             $('#saveTextBtn').hide();
+            $('#saveBtn').prop('disabled', true);
 
             $.ajax({
                 url: '{{ route('share.store.text') }}',
@@ -452,6 +580,10 @@
                     $('#loader').hide();
                     $('#loadingText').hide();
                     $('#saveTextBtn').show();
+                    $('#saveBtn').prop('disabled', false);
+                    
+                    showMessage('#textSuccessMessage', 'Text saved successfully!');
+                    
                     if (text) {
                         showCopyButton();
                     } else {
@@ -463,7 +595,13 @@
                     $('#loader').hide();
                     $('#loadingText').hide();
                     $('#saveTextBtn').show();
-                    alert('Error occurred while saving the text.');
+                    $('#saveBtn').prop('disabled', false);
+                    
+                    let errorMsg = 'Error occurred while saving the text.';
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorMsg = xhr.responseJSON.message;
+                    }
+                    showMessage('#textErrorMessage', errorMsg, true);
                 }
             });
         }
@@ -480,10 +618,12 @@
                     container.empty();
 
                     if (files.length === 0) {
-                        container.append('<p>No media files uploaded.</p>');
+                        container.append('<p style="text-align: center; color: #666; padding: 20px;">No files uploaded yet. Drag and drop files above to get started!</p>');
                         return;
                     }
 
+                    // Update file count
+                    $('#fileCount').text(files.length);
 
                     files.forEach(file => {
                         let preview = $('<div>', {
@@ -503,9 +643,16 @@
                             );
                         } else {
                             preview.append(
-                                `<a href="${file.original_url}" target="_blank">📄</a>`
+                                `<div style="font-size: 40px;">📄</div>`
                             );
                         }
+                        
+                        // Add file info
+                        let fileInfo = $('<div>', {
+                            class: 'file-info',
+                            html: `${file.name}<br>${file.size}`
+                        });
+                        preview.append(fileInfo);
 
                         // Add delete button
                         let deleteBtn = $('<button>', {
@@ -523,6 +670,7 @@
                 },
                 error: function() {
                     console.error('Failed to fetch media.');
+                    showMessage('#fileErrorMessage', 'Failed to load files.', true);
                 }
             });
         }
@@ -541,14 +689,14 @@
                 },
                 success: function() {
                     fetchMedia(); // Reload media list
+                    loadIpInfo(); // Update IP info
+                    showMessage('#fileSuccessMessage', 'File deleted successfully!');
                 },
                 error: function() {
-                    alert('Failed to delete file.');
+                    showMessage('#fileErrorMessage', 'Failed to delete file.', true);
                 }
             });
         }
-
-
 
         function copyText() {
             var text = $('#textInput').val();
@@ -557,8 +705,8 @@
                 // Modern browsers
                 navigator.clipboard.writeText(text)
                     .then(function() {
-                        //alert('Copied to clipboard!');
                         jQuery('#saveBtn').addClass('copied')
+                        showMessage('#textSuccessMessage', 'Text copied to clipboard!');
                         setTimeout(() => {
                             jQuery('#saveBtn').removeClass('copied')
                         }, 1000)
@@ -580,6 +728,7 @@
             document.execCommand("copy"); // Fallback method
             document.body.removeChild(tempTextArea);
             jQuery('#saveBtn').addClass('copied')
+            showMessage('#textSuccessMessage', 'Text copied to clipboard!');
             setTimeout(() => {
                 jQuery('#saveBtn').removeClass('copied')
             }, 1000)
@@ -628,6 +777,19 @@
             $('#saveBtn').off('click').on('click', saveText); // Save button click event bind karein
         }
 
+        function updateCharCount() {
+            const text = $('#textInput').val();
+            const count = text.length;
+            $('#charCount').text(count);
+            
+            if (count > 45000) {
+                $('#charCount').css('color', '#c62828');
+            } else if (count > 40000) {
+                $('#charCount').css('color', '#f57c00');
+            } else {
+                $('#charCount').css('color', '#666');
+            }
+        }
 
         function checkText() {
             var text = $('#textInput').val();
@@ -637,17 +799,20 @@
                 $('.clear-button-container').hide();
             }
             showSaveButton(); // Jaise hi text change ho, Save button wapas aajaye
+            updateCharCount();
         }
 
         function clearText() {
             $('#textInput').val('');
             $('.clear-button-container').hide();
+            updateCharCount();
             saveText();
         }
 
         $('#textInput').on('input', function() {
             showSaveButton();
             detectLinks(); // Call function when user types
+            updateCharCount();
         });
 
         $('#saveBtn').on('click', saveText);
@@ -659,25 +824,28 @@
             const fullScreenPreview = document.getElementById("fullScreenPreview");
             const previewImage = document.getElementById("previewImage");
             const closePreview = document.getElementById("closePreview");
+            const uploadProgress = document.getElementById("uploadProgress");
+            const progressFill = document.getElementById("progressFill");
 
-            const maxFiles = 50;
-            const maxFileSize = 5 * 1024 * 1024; // 5MB
+            const maxFiles = 20;
+            const maxFileSize = 10 * 1024 * 1024; // 10MB
             let uploadedFiles = []; // Store uploaded files
+            let isUploading = false;
 
             dropZone.addEventListener("click", () => fileInput.click());
 
             dropZone.addEventListener("dragover", (e) => {
                 e.preventDefault();
-                dropZone.style.borderColor = "#0056b3";
+                dropZone.classList.add("dragover");
             });
 
             dropZone.addEventListener("dragleave", () => {
-                dropZone.style.borderColor = "#007bff";
+                dropZone.classList.remove("dragover");
             });
 
             dropZone.addEventListener("drop", (e) => {
                 e.preventDefault();
-                dropZone.style.borderColor = "#007bff";
+                dropZone.classList.remove("dragover");
                 handleFiles(e.dataTransfer.files);
             });
 
@@ -686,14 +854,19 @@
             });
 
             function handleFiles(files) {
+                if (isUploading) {
+                    showMessage('#fileErrorMessage', 'Please wait for current upload to complete.', true);
+                    return;
+                }
+                
                 if (uploadedFiles.length + files.length > maxFiles) {
-                    alert(`You can only upload up to ${maxFiles} files.`);
+                    showMessage('#fileErrorMessage', `You can only upload up to ${maxFiles} files.`, true);
                     return;
                 }
 
                 [...files].forEach((file) => {
                     if (file.size > maxFileSize) {
-                        alert(`${file.name} exceeds the 5MB limit.`);
+                        showMessage('#fileErrorMessage', `${file.name} exceeds the 10MB limit.`, true);
                         return;
                     }
                     uploadFile(file);
@@ -701,6 +874,9 @@
             }
 
             function uploadFile(file) {
+                isUploading = true;
+                uploadProgress.style.display = 'block';
+                
                 const reader = new FileReader();
                 const previewDiv = document.createElement("div");
                 previewDiv.classList.add("file-preview");
@@ -724,10 +900,17 @@
                     } else {
                         const fileIcon = document.createElement("span");
                         fileIcon.textContent = "📄"; // Non-image file icon
+                        fileIcon.style.fontSize = "40px";
                         previewDiv.appendChild(fileIcon);
                         previewDiv.title = `Download: ${file.name}`; // 🏷 Tooltip
                         previewDiv.addEventListener("click", () => downloadFile(file));
                     }
+                    
+                    // Add file info
+                    const fileInfo = document.createElement("div");
+                    fileInfo.classList.add("file-info");
+                    fileInfo.innerHTML = `${file.name}<br>${formatFileSize(file.size)}`;
+                    previewDiv.appendChild(fileInfo);
 
                     const deleteBtn = document.createElement("button");
                     deleteBtn.textContent = "X";
@@ -769,12 +952,15 @@
                         if (data.success) {
                             previewDiv.remove(); // Remove preview only if delete is successful
                             uploadedFiles = uploadedFiles.filter(f => f.uuid !== uuid);
+                            loadIpInfo(); // Update IP info
+                            showMessage('#fileSuccessMessage', 'File deleted successfully!');
                         } else {
-                            alert("Failed to delete file.");
+                            showMessage('#fileErrorMessage', 'Failed to delete file.', true);
                         }
                     })
                     .catch(error => {
                         console.error("Delete Failed:", error);
+                        showMessage('#fileErrorMessage', 'Failed to delete file.', true);
                     });
             }
 
@@ -795,16 +981,35 @@
                     headers: {
                         "X-CSRF-TOKEN": csrfToken // CSRF token header mein send kar rahe hain
                     },
+                    xhr: function() {
+                        const xhr = new window.XMLHttpRequest();
+                        xhr.upload.addEventListener("progress", function(evt) {
+                            if (evt.lengthComputable) {
+                                const percentComplete = (evt.loaded / evt.total) * 100;
+                                progressFill.style.width = percentComplete + '%';
+                            }
+                        }, false);
+                        return xhr;
+                    },
                     success: function(data) {
                         parentLoader.remove();
+                        isUploading = false;
+                        uploadProgress.style.display = 'none';
+                        progressFill.style.width = '0%';
+                        
                         if (data?.uuid) {
                             previewDiv.setAttribute("data-uuid", data.uuid);
                             uploadedFiles.push(data?.uuid); // Add file to uploaded list
                         }
-                        console.log("uploadedFiles", uploadedFiles);
+                        
+                        loadIpInfo(); // Update IP info
+                        showMessage('#fileSuccessMessage', 'File uploaded successfully!');
                     },
                     error: function(xhr, status, error) {
                         parentLoader.remove();
+                        isUploading = false;
+                        uploadProgress.style.display = 'none';
+                        progressFill.style.width = '0%';
 
                         let errorMessage = "Something went wrong!";
                         if (xhr.status === 404) {
@@ -813,17 +1018,29 @@
                             errorMessage = "Error 429: Too many requests! Please slow down.";
                         } else if (xhr.status === 500) {
                             errorMessage = "Error 500: Internal server error! Please try again later.";
+                        } else if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errorMessage = xhr.responseJSON.message;
                         } else {
                             errorMessage = `Error ${xhr.status}: ${xhr.responseText}`;
                         }
 
-                        // Show alert with error message
-                        alert(errorMessage);
+                        showMessage('#fileErrorMessage', errorMessage, true);
                         console.error("Upload Failed:", errorMessage);
                     }
                 });
             }
 
+            function formatFileSize(bytes) {
+                if (bytes >= 1073741824) {
+                    return (bytes / 1073741824).toFixed(2) + ' GB';
+                } else if (bytes >= 1048576) {
+                    return (bytes / 1048576).toFixed(2) + ' MB';
+                } else if (bytes >= 1024) {
+                    return (bytes / 1024).toFixed(2) + ' KB';
+                } else {
+                    return bytes + ' bytes';
+                }
+            }
 
             function openFullScreenPreview(imageSrc) {
                 const previewImage = document.getElementById("previewImage");

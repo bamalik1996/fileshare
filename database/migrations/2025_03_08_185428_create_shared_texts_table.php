@@ -15,9 +15,13 @@ return new class extends Migration
             $table->id(); // Primary key
             $table->string('ip_address')->unique(); // IP address (unique)
             $table->text('content')->nullable(); // Content to store text
-            $table->timestamp('last_accessed')->nullable(); // last_accessed timestamp
+            $table->timestamp('last_accessed')->default(now()); // last_accessed timestamp
             $table->timestamp('expires_at')->nullable(); // expiry timestamp
             $table->timestamps(); // created_at and updated_at columns
+            
+            // Add indexes for better performance
+            $table->index('expires_at');
+            $table->index('last_accessed');
         });
     }
 
