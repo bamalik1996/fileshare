@@ -10,6 +10,9 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use ZipArchive;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 
 class ShareController extends Controller
 {
@@ -292,5 +295,157 @@ class ShareController extends Controller
         }
         
         return response()->json($info);
+    }
+    
+    public function downloadZip(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'uuids' => 'required|array',
+            'uuids.*' => 'required|string'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Invalid request data.'
+            ], 422);
+        }
+
+        $ip = $request->ip();
+        $uuids = $request->input('uuids');
+        
+        // Get media files that belong to this IP
+        $sharedText = SharedText::where('ip_address', $ip)
+            ->where('expires_at', '>', Carbon::now())
+            ->first();
+            
+        if (!$sharedText) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'No files found.'
+            ], 404);
+        }
+        
+        $mediaFiles = $sharedText->getMedia()->whereIn('uuid', $uuids);
+        
+        if ($mediaFiles->isEmpty()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'No files found for download.'
+            ], 404);
+        }
+        
+        // Create temporary zip file
+        $zipFileName = 'shared-files-' . time() . '.zip';
+        $zipPath = storage_path('app/temp/' . $zipFileName);
+        
+        // Ensure temp directory exists
+        if (!file_exists(storage_path('app/temp'))) {
+            mkdir(storage_path('app/temp'), 0755, true);
+        }
+        
+        $zip = new ZipArchive();
+        if ($zip->open($zipPath, ZipArchive::CREATE) !== TRUE) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Could not create zip file.'
+            ], 500);
+        }
+        
+        foreach ($mediaFiles as $media) {
+            $filePath = $media->getPath();
+            if (file_exists($filePath)) {
+                $zip->addFile($filePath, $media->name);
+            }
+        }
+        
+        $zip->close();
+        
+        Log::info("Zip file created for IP: {$ip}, Files: " . count($mediaFiles));
+        
+        return response()->download($zipPath, $zipFileName)->deleteFileAfterSend(true);
+    }
+    
+    public function emailFiles(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'to_email' => 'required|email',
+            'subject' => 'required|string|max:255',
+            'message' => 'nullable|string|max:1000',
+            'uuids' => 'required|array',
+            'uuids.*' => 'required|string'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Invalid request data.',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $ip = $request->ip();
+        $toEmail = $request->input('to_email');
+        $subject = $request->input('subject');
+        $message = $request->input('message', '');
+        $uuids = $request->input('uuids');
+        
+        // Get media files that belong to this IP
+        $sharedText = SharedText::where('ip_address', $ip)
+            ->where('expires_at', '>', Carbon::now())
+            ->first();
+            
+        if (!$sharedText) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'No files found.'
+            ], 404);
+        }
+        
+        $mediaFiles = $sharedText->getMedia()->whereIn('uuid', $uuids);
+        
+        if ($mediaFiles->isEmpty()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'No files found to email.'
+            ], 404);
+        }
+        
+        try {
+            // Send email with attachments
+            Mail::send('emails.shared-files', [
+                'user_message' => $message,
+                'file_count' => $mediaFiles->count(),
+                'sender_ip' => $ip
+            ], function ($mail) use ($toEmail, $subject, $mediaFiles) {
+                $mail->to($toEmail)
+                     ->subject($subject);
+                
+                foreach ($mediaFiles as $media) {
+                    $filePath = $media->getPath();
+                    if (file_exists($filePath)) {
+                        $mail->attach($filePath, [
+                            'as' => $media->name,
+                            'mime' => $media->mime_type
+                        ]);
+                    }
+                }
+            });
+            
+            Log::info("Email sent from IP: {$ip} to {$toEmail}, Files: " . count($mediaFiles));
+            
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Email sent successfully!'
+            ]);
+            
+        } catch (\Exception $e) {
+            Log::error("Email sending failed: " . $e->getMessage());
+            
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to send email. Please try again.'
+            ], 500);
+        }
     }
 }

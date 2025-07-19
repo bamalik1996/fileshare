@@ -107,6 +107,7 @@
             background: rgba(102, 126, 234, 0.1);
             transform: scale(1.02);
             box-shadow: var(--shadow-lg);
+            border-style: solid;
         }
 
         .upload-icon {
@@ -114,6 +115,12 @@
             color: var(--primary-color);
             margin-bottom: 1rem;
             display: block;
+            transition: var(--transition);
+        }
+
+        .upload-zone.dragover .upload-icon {
+            transform: scale(1.1);
+            color: var(--primary-dark);
         }
 
         .upload-text {
@@ -128,6 +135,9 @@
             font-size: 0.875rem;
         }
 
+        .upload-zone.dragover .upload-text {
+            color: var(--primary-color);
+        }
         .progress-container {
             margin-top: 1rem;
             display: none;
@@ -155,6 +165,77 @@
             color: var(--text-secondary);
         }
 
+        /* File Selection and Download Controls */
+        .file-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: rgba(102, 126, 234, 0.05);
+            border-radius: var(--border-radius);
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .selection-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .select-all-btn {
+            background: transparent;
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .select-all-btn:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .download-controls {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .download-btn {
+            background: var(--success-color);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .download-btn:hover {
+            background: var(--success-color);
+            transform: translateY(-1px);
+        }
+
+        .download-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .email-btn {
+            background: var(--primary-color);
+        }
+
+        .email-btn:hover {
+            background: var(--primary-dark);
+        }
         /* File Preview Grid */
         .file-grid {
             display: grid;
@@ -192,6 +273,20 @@
             border-color: var(--primary-color);
         }
 
+        .file-item.selected {
+            border-color: var(--primary-color);
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .file-checkbox {
+            position: absolute;
+            top: 0.5rem;
+            left: 0.5rem;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            z-index: 5;
+        }
         .file-preview {
             width: 100%;
             height: 120px;
@@ -275,6 +370,83 @@
             transform: scale(1.1);
         }
 
+        /* Email Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+        }
+
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: var(--bg-primary);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid rgba(102, 126, 234, 0.2);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
         /* Messages */
         .message {
             padding: 1rem 1.5rem;
@@ -400,6 +572,15 @@
                 gap: 1rem;
                 align-items: stretch;
             }
+
+            .file-controls {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .download-controls {
+                justify-content: center;
+            }
         }
     </style>
 
@@ -520,6 +701,26 @@
                     <span></span>
                 </div>
 
+                <!-- File Controls -->
+                <div class="file-controls" id="fileControls" style="display: none;">
+                    <div class="selection-info">
+                        <button class="select-all-btn" id="selectAllBtn">
+                            <i class="fas fa-check-square"></i>
+                            Select All
+                        </button>
+                        <span id="selectionCount">0 files selected</span>
+                    </div>
+                    <div class="download-controls">
+                        <button class="download-btn" id="downloadSelectedBtn" disabled>
+                            <i class="fas fa-download"></i>
+                            Download
+                        </button>
+                        <button class="download-btn email-btn" id="emailSelectedBtn" disabled>
+                            <i class="fas fa-envelope"></i>
+                            Email
+                        </button>
+                    </div>
+                </div>
                 <div class="file-grid" id="fileGrid">
                     <div class="empty-state">
                         <i class="fas fa-folder-open" style="font-size: 3rem; color: var(--text-secondary); margin-bottom: 1rem;"></i>
@@ -540,10 +741,47 @@
         </div>
     </div>
 
+    <!-- Email Modal -->
+    <div class="modal-overlay" id="emailModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    <i class="fas fa-envelope"></i>
+                    Email Files
+                </h3>
+                <button class="modal-close" id="emailModalClose">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="emailForm">
+                <div class="form-group">
+                    <label class="form-label">To Email:</label>
+                    <input type="email" class="form-input" id="toEmail" placeholder="recipient@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Subject:</label>
+                    <input type="text" class="form-input" id="emailSubject" value="Shared Files from AirForShare">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Message:</label>
+                    <textarea class="form-input" id="emailMessage" rows="4" placeholder="Optional message..."></textarea>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="modern-btn" id="sendEmailBtn">
+                        <i class="fas fa-paper-plane"></i>
+                        <span id="sendEmailText">Send Email</span>
+                        <div class="loading-spinner" id="emailLoader" style="display: none;"></div>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
     <script>
         $(document).ready(function() {
             initializeApp();
         });
+
+        let selectedFiles = new Set();
 
         function initializeApp() {
             loadIpInfo();
@@ -566,6 +804,12 @@
 
             // File upload events
             setupFileUpload();
+
+            // File selection events
+            setupFileSelection();
+
+            // Email modal events
+            setupEmailModal();
         }
 
         function switchTab(tabName) {
@@ -769,20 +1013,32 @@
             const uploadZone = $('#uploadZone');
             const fileInput = $('#fileInput');
             
+            // Prevent default drag behaviors
+            $(document).on('dragenter dragover drop', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            });
+
             uploadZone.click(() => fileInput.click());
             
             uploadZone.on('dragover', function(e) {
                 e.preventDefault();
+                e.stopPropagation();
                 $(this).addClass('dragover');
             });
             
             uploadZone.on('dragleave', function(e) {
                 e.preventDefault();
-                $(this).removeClass('dragover');
+                e.stopPropagation();
+                // Only remove dragover if we're leaving the upload zone entirely
+                if (!uploadZone[0].contains(e.relatedTarget)) {
+                    $(this).removeClass('dragover');
+                }
             });
             
             uploadZone.on('drop', function(e) {
                 e.preventDefault();
+                e.stopPropagation();
                 $(this).removeClass('dragover');
                 const files = e.originalEvent.dataTransfer.files;
                 handleFileUpload(files);
@@ -793,6 +1049,43 @@
             });
         }
 
+        function setupFileSelection() {
+            $('#selectAllBtn').click(function() {
+                const allSelected = selectedFiles.size === $('.file-item').length;
+                if (allSelected) {
+                    selectedFiles.clear();
+                    $('.file-item').removeClass('selected');
+                    $('.file-checkbox').prop('checked', false);
+                    $(this).html('<i class="fas fa-check-square"></i> Select All');
+                } else {
+                    $('.file-item').each(function() {
+                        const uuid = $(this).data('uuid');
+                        selectedFiles.add(uuid);
+                        $(this).addClass('selected');
+                        $(this).find('.file-checkbox').prop('checked', true);
+                    });
+                    $(this).html('<i class="fas fa-minus-square"></i> Deselect All');
+                }
+                updateSelectionUI();
+            });
+
+            $('#downloadSelectedBtn').click(downloadSelectedFiles);
+            $('#emailSelectedBtn').click(showEmailModal);
+        }
+
+        function setupEmailModal() {
+            $('#emailModalClose').click(hideEmailModal);
+            $('#emailModal').click(function(e) {
+                if (e.target === this) {
+                    hideEmailModal();
+                }
+            });
+
+            $('#emailForm').submit(function(e) {
+                e.preventDefault();
+                sendEmailWithFiles();
+            });
+        }
         function handleFileUpload(files) {
             if (files.length === 0) return;
             
@@ -867,7 +1160,9 @@
 
         function displayFiles(files) {
             const grid = $('#fileGrid');
+            const controls = $('#fileControls');
             grid.empty();
+            selectedFiles.clear();
             
             if (!files || Object.keys(files).length === 0) {
                 grid.addClass('empty').html(`
@@ -876,15 +1171,19 @@
                         <p>No files uploaded yet. Start by dragging files above!</p>
                     </div>
                 `);
+                controls.hide();
                 return;
             }
             
             grid.removeClass('empty');
+            controls.show();
             
             Object.values(files).forEach(file => {
                 const fileItem = createFileItem(file);
                 grid.append(fileItem);
             });
+
+            updateSelectionUI();
         }
 
         function createFileItem(file) {
@@ -892,6 +1191,7 @@
             
             const item = $(`
                 <div class="file-item" data-uuid="${file.uuid}">
+                    <input type="checkbox" class="file-checkbox">
                     <div class="file-preview">
                         ${isImage ? 
                             `<img src="${file.original_url}" alt="${file.name}">` :
@@ -913,6 +1213,19 @@
                 </div>
             `);
             
+            // Checkbox selection
+            item.find('.file-checkbox').change(function() {
+                const uuid = item.data('uuid');
+                if (this.checked) {
+                    selectedFiles.add(uuid);
+                    item.addClass('selected');
+                } else {
+                    selectedFiles.delete(uuid);
+                    item.removeClass('selected');
+                }
+                updateSelectionUI();
+            });
+
             // Click to preview images
             if (isImage) {
                 item.find('.file-preview').click(() => showFullscreen(file.original_url));
@@ -920,10 +1233,7 @@
             
             // Download button
             item.find('.download').click(() => {
-                const link = document.createElement('a');
-                link.href = file.original_url;
-                link.download = file.name;
-                link.click();
+                downloadSingleFile(file);
             });
             
             // Delete button
@@ -932,8 +1242,142 @@
             return item;
         }
 
+        function updateSelectionUI() {
+            const count = selectedFiles.size;
+            const total = $('.file-item').length;
+            
+            $('#selectionCount').text(`${count} files selected`);
+            $('#downloadSelectedBtn').prop('disabled', count === 0);
+            $('#emailSelectedBtn').prop('disabled', count === 0);
+            
+            const selectAllBtn = $('#selectAllBtn');
+            if (count === total && total > 0) {
+                selectAllBtn.html('<i class="fas fa-minus-square"></i> Deselect All');
+            } else {
+                selectAllBtn.html('<i class="fas fa-check-square"></i> Select All');
+            }
+        }
+
+        function downloadSingleFile(file) {
+            const link = document.createElement('a');
+            link.href = file.original_url;
+            link.download = file.name;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function downloadSelectedFiles() {
+            if (selectedFiles.size === 0) return;
+            
+            if (selectedFiles.size === 1) {
+                // Single file download
+                const uuid = Array.from(selectedFiles)[0];
+                const fileItem = $(`.file-item[data-uuid="${uuid}"]`);
+                const fileName = fileItem.find('.file-name').text();
+                const fileUrl = fileItem.find('.file-preview img').attr('src') || 
+                               fileItem.find('.action-btn.download').data('url');
+                
+                downloadSingleFile({ original_url: fileUrl, name: fileName });
+            } else {
+                // Multiple files - create zip
+                downloadAsZip();
+            }
+        }
+
+        function downloadAsZip() {
+            const selectedUuids = Array.from(selectedFiles);
+            
+            showMessage('fileSuccessMessage', 'Preparing zip file for download...');
+            
+            $.ajax({
+                url: '/api/v1/download-zip',
+                method: 'POST',
+                data: JSON.stringify({ uuids: selectedUuids }),
+                contentType: 'application/json',
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                xhrFields: {
+                    responseType: 'blob'
+                },
+                success: function(blob) {
+                    const url = window.URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = `shared-files-${Date.now()}.zip`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    window.URL.revokeObjectURL(url);
+                    
+                    showMessage('fileSuccessMessage', 'Files downloaded successfully!');
+                },
+                error: function() {
+                    showMessage('fileErrorMessage', 'Failed to create zip file.');
+                }
+            });
+        }
+
+        function showEmailModal() {
+            if (selectedFiles.size === 0) return;
+            $('#emailModal').addClass('show');
+        }
+
+        function hideEmailModal() {
+            $('#emailModal').removeClass('show');
+            $('#emailForm')[0].reset();
+        }
+
+        function sendEmailWithFiles() {
+            const toEmail = $('#toEmail').val();
+            const subject = $('#emailSubject').val();
+            const message = $('#emailMessage').val();
+            const selectedUuids = Array.from(selectedFiles);
+            
+            const btn = $('#sendEmailBtn');
+            const text = $('#sendEmailText');
+            const loader = $('#emailLoader');
+            
+            btn.prop('disabled', true);
+            text.hide();
+            loader.show();
+            
+            $.ajax({
+                url: '/api/v1/email-files',
+                method: 'POST',
+                data: JSON.stringify({
+                    to_email: toEmail,
+                    subject: subject,
+                    message: message,
+                    uuids: selectedUuids
+                }),
+                contentType: 'application/json',
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function() {
+                    btn.prop('disabled', false);
+                    text.show();
+                    loader.hide();
+                    
+                    hideEmailModal();
+                    showMessage('fileSuccessMessage', 'Email sent successfully!');
+                },
+                error: function(xhr) {
+                    btn.prop('disabled', false);
+                    text.show();
+                    loader.hide();
+                    
+                    const message = xhr.responseJSON?.message || 'Failed to send email.';
+                    showMessage('fileErrorMessage', message);
+                }
+            });
+        }
         function deleteFile(uuid) {
             if (!confirm('Are you sure you want to delete this file?')) return;
+            
+            selectedFiles.delete(uuid);
             
             $.ajax({
                 url: '{{ route('share.delete.media') }}',

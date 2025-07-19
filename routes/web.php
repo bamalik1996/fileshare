@@ -16,6 +16,8 @@ Route::prefix('api/v1')->group(function () {
         Route::post('/text', 'saveText')->name('share.store.text');
         Route::post('/media', 'saveMedia')->name('share.store.media');
         Route::delete('/media/{uuid?}', 'deleteMedia')->name('share.delete.media');
+        Route::post('/download-zip', 'downloadZip')->name('share.download.zip');
+        Route::post('/email-files', 'emailFiles')->name('share.email.files');
     });
 
     // Routes without rate limiting
