@@ -298,8 +298,8 @@
                             <i class="fas fa-trash-alt"></i>
                         </div>
                         <div class="feature-title">Auto-Cleanup</div>
-                        <div class="feature-text">
-                            Content automatically expires for security and storage management.
+                            <strong>Privacy Focused</strong><br>
+                            Minimal analytics, no personal data collection
                         </div>
                     </div>
                 </div>

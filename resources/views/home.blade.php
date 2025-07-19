@@ -991,7 +991,7 @@
                 },
                 success: function(data) {
                     setButtonLoading(false);
-                    showMessage('textSuccessMessage', 'Text saved successfully!');
+                    showToast('success', 'Saved!', 'Text saved successfully and synced across devices');
 
                     if (text.trim().length > 0) {
                         updateSaveButton('copy');
@@ -1000,7 +1000,7 @@
                 error: function(xhr) {
                     setButtonLoading(false);
                     const message = xhr.responseJSON?.message || 'Error occurred while saving text.';
-                    showMessage('textErrorMessage', message);
+                    showToast('error', 'Save Failed!', message);
                 }
             });
         }
@@ -1009,14 +1009,14 @@
             const text = $('#textInput').val();
 
             navigator.clipboard.writeText(text).then(() => {
-                showMessage('textSuccessMessage', 'Text copied to clipboard!');
+                showToast('success', 'Success!', 'Text copied to clipboard successfully');
 
                 // Visual feedback
                 const btn = $('#saveBtn');
                 btn.addClass('success');
                 setTimeout(() => btn.removeClass('success'), 1000);
             }).catch(() => {
-                showMessage('textErrorMessage', 'Failed to copy text to clipboard.');
+                showToast('error', 'Error!', 'Failed to copy text to clipboard');
             });
         }
 
@@ -1179,14 +1179,14 @@
                 },
                 success: function(data) {
                     showProgress(false);
-                    showMessage('fileSuccessMessage', 'File uploaded successfully!');
+                    showToast('success', 'Upload Complete!', `${file.name} uploaded successfully`);
                     fetchMedia();
                     loadIpInfo();
                 },
                 error: function(xhr) {
                     showProgress(false);
                     const message = xhr.responseJSON?.message || 'Upload failed.';
-                    showMessage('fileErrorMessage', message);
+                    showToast('error', 'Upload Failed!', message);
                 }
             });
         }
@@ -1337,7 +1337,7 @@
         function downloadAsZip() {
             const selectedUuids = Array.from(selectedFiles);
 
-            showMessage('fileSuccessMessage', 'Preparing zip file for download...');
+            showToast('info', 'Preparing Download', 'Creating zip file for multiple files...');
 
             $.ajax({
                 url: '/api/v1/download-zip',
@@ -1360,10 +1360,10 @@
                     document.body.removeChild(link);
                     window.URL.revokeObjectURL(url);
 
-                    showMessage('fileSuccessMessage', 'Files downloaded successfully!');
+                    showToast('success', 'Download Complete!', 'Files downloaded as zip archive');
                 },
                 error: function() {
-                    showMessage('fileErrorMessage', 'Failed to create zip file.');
+                    showToast('error', 'Download Failed!', 'Failed to create zip file');
                 }
             });
         }
@@ -1411,7 +1411,7 @@
                     loader.hide();
 
                     hideEmailModal();
-                    showMessage('fileSuccessMessage', 'Email sent successfully!');
+                    showToast('success', 'Email Sent!', 'Files sent successfully via email');
                 },
                 error: function(xhr) {
                     btn.prop('disabled', false);
@@ -1419,7 +1419,7 @@
                     loader.hide();
 
                     const message = xhr.responseJSON?.message || 'Failed to send email.';
-                    showMessage('fileErrorMessage', message);
+                    showToast('error', 'Email Failed!', message);
                 }
             });
         }
@@ -1436,12 +1436,12 @@
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
                 success: function() {
-                    showMessage('fileSuccessMessage', 'File deleted successfully!');
+                    showToast('success', 'Deleted!', 'File deleted successfully');
                     fetchMedia();
                     loadIpInfo();
                 },
                 error: function() {
-                    showMessage('fileErrorMessage', 'Failed to delete file.');
+                    showToast('error', 'Delete Failed!', 'Failed to delete file');
                 }
             });
         }

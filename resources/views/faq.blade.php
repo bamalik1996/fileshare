@@ -607,17 +607,23 @@
         function setupFAQ() {
             // FAQ accordion functionality
             $('.faq-question').click(function() {
-                const answer = $(this).next('.faq-answer');
-                const icon = $(this).find('.faq-icon');
+                const $this = $(this);
+                const answer = $this.next('.faq-answer');
+                const icon = $this.find('.faq-icon');
                 
                 // Close other open FAQs
-                $('.faq-question').not(this).removeClass('active');
+                $('.faq-question').not($this).removeClass('active');
                 $('.faq-answer').not(answer).removeClass('show').slideUp(300);
                 $('.faq-icon').not(icon).css('transform', 'rotate(0deg)');
                 
                 // Toggle current FAQ
-                $(this).toggleClass('active');
-                answer.toggleClass('show').slideToggle(300);
+                if ($this.hasClass('active')) {
+                    $this.removeClass('active');
+                    answer.removeClass('show').slideUp(300);
+                } else {
+                    $this.addClass('active');
+                    answer.addClass('show').slideDown(300);
+                }
             });
 
             // Category filtering

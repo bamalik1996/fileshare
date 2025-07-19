@@ -339,6 +339,108 @@
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
+
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10000;
+            pointer-events: none;
+        }
+
+        .toast {
+            background: var(--bg-primary);
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            border-radius: var(--border-radius);
+            padding: 1rem 1.5rem;
+            margin-bottom: 0.5rem;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            min-width: 300px;
+            transform: translateX(400px);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: auto;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .toast.success {
+            border-left: 4px solid var(--success-color);
+        }
+
+        .toast.error {
+            border-left: 4px solid var(--error-color);
+        }
+
+        .toast.info {
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .toast-icon {
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        .toast.success .toast-icon {
+            color: var(--success-color);
+        }
+
+        .toast.error .toast-icon {
+            color: var(--error-color);
+        }
+
+        .toast.info .toast-icon {
+            color: var(--primary-color);
+        }
+
+        .toast-content {
+            flex: 1;
+        }
+
+        .toast-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .toast-message {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .toast-close {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 0.25rem;
+            border-radius: 4px;
+            transition: var(--transition);
+        }
+
+        .toast-close:hover {
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            .toast-container {
+                top: 10px;
+                right: 10px;
+                left: 10px;
+            }
+
+            .toast {
+                min-width: auto;
+                width: 100%;
+            }
+        }
     </style>
 
     <script>
@@ -353,10 +455,60 @@
                 });
             }
         });
+
+        // Toast Notification System
+        window.showToast = function(type, title, message, duration = 4000) {
+            const toastContainer = $('.toast-container');
+            if (toastContainer.length === 0) {
+                $('body').append('<div class="toast-container"></div>');
+            }
+
+            const iconMap = {
+                success: 'fas fa-check-circle',
+                error: 'fas fa-exclamation-circle',
+                info: 'fas fa-info-circle',
+                warning: 'fas fa-exclamation-triangle'
+            };
+
+            const toast = $(`
+                <div class="toast ${type}">
+                    <div class="toast-icon">
+                        <i class="${iconMap[type] || iconMap.info}"></i>
+                    </div>
+                    <div class="toast-content">
+                        <div class="toast-title">${title}</div>
+                        <div class="toast-message">${message}</div>
+                    </div>
+                    <button class="toast-close">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `);
+
+            $('.toast-container').append(toast);
+
+            // Show toast
+            setTimeout(() => toast.addClass('show'), 100);
+
+            // Auto remove
+            setTimeout(() => {
+                toast.removeClass('show');
+                setTimeout(() => toast.remove(), 300);
+            }, duration);
+
+            // Manual close
+            toast.find('.toast-close').click(function() {
+                toast.removeClass('show');
+                setTimeout(() => toast.remove(), 300);
+            });
+        };
     </script>
 </head>
 
 <body>
+    <!-- Toast Container -->
+    <div class="toast-container"></div>
+
     <!-- Modern Navbar -->
     <nav class="navbar modern-navbar" role="navigation" aria-label="main navigation">
         <div class="container">
