@@ -36,4 +36,12 @@
         <priority>0.6</priority>
     </url>
     
+    <!-- Coming Soon -->
+    <url>
+        <loc>{{ url('/coming-soon') }}</loc>
+        <lastmod>{{ date('Y-m-d') }}</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    
 </urlset>

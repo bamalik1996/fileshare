@@ -9,6 +9,7 @@ Route::controller(HomeController::class)->group(function () {
     Route::get('/how-it-works', 'howItWorks');
     Route::get('/faq', 'faq');
     Route::get('/feedback', 'feedback');
+    Route::get('/coming-soon', 'comingSoon');
 });
 
 Route::prefix('api/v1')->group(function () {

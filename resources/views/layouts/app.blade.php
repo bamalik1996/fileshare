@@ -644,6 +644,10 @@
                         <i class="fas fa-comment" style="margin-right: 0.5rem;"></i>
                         Feedback
                     </a>
+                    <a class="navbar-item" href="{{ url('/coming-soon') }}">
+                        <i class="fas fa-rocket" style="margin-right: 0.5rem;"></i>
+                        Coming Soon
+                    </a>
                 </div>
                 
                 <div class="navbar-end">
@@ -680,6 +684,7 @@
                         <a href="{{ url('/how-it-works') }}">How It Works</a>
                         <a href="{{ url('/faq') }}">FAQ</a>
                         <a href="{{ url('/feedback') }}">Contact</a>
+                        <a href="{{ url('/coming-soon') }}">Coming Soon</a>
                         <a href="{{ url('/sitemap.xml') }}">Sitemap</a>
                     </div>
                 </div>
