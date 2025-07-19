@@ -591,7 +591,7 @@
             AirForShare
         </h1>
         <p class="hero-subtitle">
-            Share files and text instantly across devices on the same network. 
+            Share files and text instantly across devices on the same network.
             Simple, fast, and secure file sharing without the hassle.
         </p>
     </div>
@@ -633,13 +633,13 @@
         <!-- Text Tab -->
         <div class="tab-content active" id="text-tab">
             <div class="text-container">
-                <textarea 
-                    class="modern-textarea" 
-                    id="textInput" 
+                <textarea
+                    class="modern-textarea"
+                    id="textInput"
                     placeholder="Type or paste your text here... Links will be automatically detected and made clickable."
                     maxlength="50000"
                 ></textarea>
-                
+
                 <div class="textarea-footer">
                     <div class="char-counter" id="charCounter">0 / 50,000 characters</div>
                     <div class="button-group">
@@ -648,7 +648,7 @@
                             Clear
                         </button>
                         <button class="modern-btn" id="saveBtn">
-                            <i class="fas fa-save"></i>
+                            {{-- <i class="fas fa-save"></i> --}}
                             <span id="saveBtnText">Save</span>
                             <div class="loading-spinner" id="saveLoader" style="display: none;"></div>
                         </button>
@@ -683,7 +683,7 @@
                         <small>Supported: Images, PDF, DOC, TXT, ZIP</small>
                     </div>
                     <input type="file" id="fileInput" multiple accept="image/*,.pdf,.docx,.txt,.zip" style="display: none;">
-                    
+
                     <div class="progress-container" id="progressContainer">
                         <div class="progress-bar">
                             <div class="progress-fill" id="progressFill"></div>
@@ -815,7 +815,7 @@
         function switchTab(tabName) {
             $('.modern-tab').removeClass('active');
             $(`.modern-tab[data-tab="${tabName}"]`).addClass('active');
-            
+
             $('.tab-content').removeClass('active');
             $(`#${tabName}-tab`).addClass('active');
         }
@@ -872,16 +872,16 @@
         function handleTextInput() {
             const text = $('#textInput').val();
             const length = text.length;
-            
+
             // Update character counter
             updateCharCounter(length);
-            
+
             // Show/hide clear button
             $('#clearBtn').toggle(length > 0);
-            
+
             // Detect links
             detectLinks(text);
-            
+
             // Update save button
             updateSaveButton('save');
         }
@@ -889,7 +889,7 @@
         function updateCharCounter(length) {
             const counter = $('#charCounter');
             counter.text(`${length.toLocaleString()} / 50,000 characters`);
-            
+
             counter.removeClass('warning danger');
             if (length > 45000) {
                 counter.addClass('danger');
@@ -903,7 +903,7 @@
             const matches = text.match(urlRegex);
             const container = $('#linksContainer');
             const linksList = $('#linksList');
-            
+
             if (matches && matches.length > 0) {
                 linksList.empty();
                 matches.forEach(url => {
@@ -924,7 +924,7 @@
         function updateSaveButton(mode) {
             const btn = $('#saveBtn');
             const text = $('#saveBtnText');
-            
+
             if (mode === 'copy') {
                 btn.removeClass('modern-btn').addClass('modern-btn success');
                 text.html('<i class="fas fa-copy"></i> Copy');
@@ -938,7 +938,7 @@
 
         function handleSaveText() {
             const text = $('#textInput').val();
-            
+
             if (text.length > 50000) {
                 showMessage('textErrorMessage', 'Text is too long. Maximum 50,000 characters allowed.');
                 return;
@@ -957,7 +957,7 @@
                 success: function(data) {
                     setButtonLoading(false);
                     showMessage('textSuccessMessage', 'Text saved successfully!');
-                    
+
                     if (text.trim().length > 0) {
                         updateSaveButton('copy');
                     }
@@ -972,10 +972,10 @@
 
         function handleCopyText() {
             const text = $('#textInput').val();
-            
+
             navigator.clipboard.writeText(text).then(() => {
                 showMessage('textSuccessMessage', 'Text copied to clipboard!');
-                
+
                 // Visual feedback
                 const btn = $('#saveBtn');
                 btn.addClass('success');
@@ -997,7 +997,7 @@
             const btn = $('#saveBtn');
             const text = $('#saveBtnText');
             const loader = $('#saveLoader');
-            
+
             if (loading) {
                 btn.prop('disabled', true);
                 text.hide();
@@ -1012,7 +1012,7 @@
         function setupFileUpload() {
             const uploadZone = $('#uploadZone');
             const fileInput = $('#fileInput');
-            
+
             // Prevent default drag behaviors globally
             $(document).on('dragenter dragover drop', function(e) {
                 e.preventDefault();
@@ -1026,13 +1026,13 @@
                     fileInput.trigger('click');
                 }
             });
-            
+
             uploadZone.off('dragover').on('dragover', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
                 $(this).addClass('dragover');
             });
-            
+
             uploadZone.off('dragleave').on('dragleave', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
@@ -1040,12 +1040,12 @@
                 const rect = this.getBoundingClientRect();
                 const x = e.originalEvent.clientX;
                 const y = e.originalEvent.clientY;
-                
+
                 if (x < rect.left || x > rect.right || y < rect.top || y > rect.bottom) {
                     $(this).removeClass('dragover');
                 }
             });
-            
+
             uploadZone.off('drop').on('drop', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
@@ -1053,7 +1053,7 @@
                 const files = e.originalEvent.dataTransfer.files;
                 handleFileUpload(files);
             });
-            
+
             fileInput.off('change').on('change', function() {
                 handleFileUpload(this.files);
             });
@@ -1098,31 +1098,31 @@
         }
         function handleFileUpload(files) {
             if (files.length === 0) return;
-            
+
             const maxFiles = parseInt($('#maxFiles').text());
             const currentFiles = parseInt($('#fileCount').text());
-            
+
             if (currentFiles + files.length > maxFiles) {
                 showMessage('fileErrorMessage', `You can only upload up to ${maxFiles} files total.`);
                 return;
             }
-            
+
             Array.from(files).forEach(uploadFile);
         }
 
         function uploadFile(file) {
             const maxSize = 10 * 1024 * 1024; // 10MB
-            
+
             if (file.size > maxSize) {
                 showMessage('fileErrorMessage', `${file.name} exceeds the 10MB limit.`);
                 return;
             }
-            
+
             const formData = new FormData();
             formData.append('file', file);
-            
+
             showProgress(true);
-            
+
             $.ajax({
                 url: '{{ route('share.store.media') }}',
                 method: 'POST',
@@ -1173,7 +1173,7 @@
             const controls = $('#fileControls');
             grid.empty();
             selectedFiles.clear();
-            
+
             if (!files || Object.keys(files).length === 0) {
                 grid.addClass('empty').html(`
                     <div class="empty-state">
@@ -1184,10 +1184,10 @@
                 controls.hide();
                 return;
             }
-            
+
             grid.removeClass('empty');
             controls.show();
-            
+
             Object.values(files).forEach(file => {
                 const fileItem = createFileItem(file);
                 grid.append(fileItem);
@@ -1198,12 +1198,12 @@
 
         function createFileItem(file) {
             const isImage = file.mime_type.startsWith('image/');
-            
+
             const item = $(`
                 <div class="file-item" data-uuid="${file.uuid}">
                     <input type="checkbox" class="file-checkbox">
                     <div class="file-preview">
-                        ${isImage ? 
+                        ${isImage ?
                             `<img src="${file.original_url}" alt="${file.name}">` :
                             `<i class="fas fa-file file-icon"></i>`
                         }
@@ -1222,7 +1222,7 @@
                     </div>
                 </div>
             `);
-            
+
             // Checkbox selection
             item.find('.file-checkbox').change(function() {
                 const uuid = item.data('uuid');
@@ -1242,28 +1242,28 @@
                     showFullscreen(file.original_url);
                 });
             }
-            
+
             // Download button
             item.find('.download').off('click').on('click', function() {
                 downloadSingleFile(file);
             });
-            
+
             // Delete button
             item.find('.delete').off('click').on('click', function() {
                 deleteFile(file.uuid);
             });
-            
+
             return item;
         }
 
         function updateSelectionUI() {
             const count = selectedFiles.size;
             const total = $('.file-item').length;
-            
+
             $('#selectionCount').text(`${count} files selected`);
             $('#downloadSelectedBtn').prop('disabled', count === 0);
             $('#emailSelectedBtn').prop('disabled', count === 0);
-            
+
             const selectAllBtn = $('#selectAllBtn');
             if (count === total && total > 0) {
                 selectAllBtn.html('<i class="fas fa-minus-square"></i> Deselect All');
@@ -1283,15 +1283,15 @@
 
         function downloadSelectedFiles() {
             if (selectedFiles.size === 0) return;
-            
+
             if (selectedFiles.size === 1) {
                 // Single file download
                 const uuid = Array.from(selectedFiles)[0];
                 const fileItem = $(`.file-item[data-uuid="${uuid}"]`);
                 const fileName = fileItem.find('.file-name').text();
-                const fileUrl = fileItem.find('.file-preview img').attr('src') || 
+                const fileUrl = fileItem.find('.file-preview img').attr('src') ||
                                fileItem.find('.action-btn.download').data('url');
-                
+
                 downloadSingleFile({ original_url: fileUrl, name: fileName });
             } else {
                 // Multiple files - create zip
@@ -1301,9 +1301,9 @@
 
         function downloadAsZip() {
             const selectedUuids = Array.from(selectedFiles);
-            
+
             showMessage('fileSuccessMessage', 'Preparing zip file for download...');
-            
+
             $.ajax({
                 url: '/api/v1/download-zip',
                 method: 'POST',
@@ -1324,7 +1324,7 @@
                     link.click();
                     document.body.removeChild(link);
                     window.URL.revokeObjectURL(url);
-                    
+
                     showMessage('fileSuccessMessage', 'Files downloaded successfully!');
                 },
                 error: function() {
@@ -1348,15 +1348,15 @@
             const subject = $('#emailSubject').val();
             const message = $('#emailMessage').val();
             const selectedUuids = Array.from(selectedFiles);
-            
+
             const btn = $('#sendEmailBtn');
             const text = $('#sendEmailText');
             const loader = $('#emailLoader');
-            
+
             btn.prop('disabled', true);
             text.hide();
             loader.show();
-            
+
             $.ajax({
                 url: '/api/v1/email-files',
                 method: 'POST',
@@ -1374,7 +1374,7 @@
                     btn.prop('disabled', false);
                     text.show();
                     loader.hide();
-                    
+
                     hideEmailModal();
                     showMessage('fileSuccessMessage', 'Email sent successfully!');
                 },
@@ -1382,7 +1382,7 @@
                     btn.prop('disabled', false);
                     text.show();
                     loader.hide();
-                    
+
                     const message = xhr.responseJSON?.message || 'Failed to send email.';
                     showMessage('fileErrorMessage', message);
                 }
@@ -1390,9 +1390,9 @@
         }
         function deleteFile(uuid) {
             if (!confirm('Are you sure you want to delete this file?')) return;
-            
+
             selectedFiles.delete(uuid);
-            
+
             $.ajax({
                 url: '{{ route('share.delete.media') }}',
                 method: 'DELETE',
@@ -1426,7 +1426,7 @@
             const element = $(`#${elementId}`);
             element.find('span').text(message);
             element.show();
-            
+
             setTimeout(() => {
                 element.hide();
             }, 5000);
