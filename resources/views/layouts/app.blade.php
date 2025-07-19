@@ -14,6 +14,22 @@
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="{{ url()->current() }}">
     
+    <!-- Additional SEO Meta Tags -->
+    <meta name="language" content="English">
+    <meta name="revisit-after" content="7 days">
+    <meta name="distribution" content="global">
+    <meta name="rating" content="general">
+    <meta name="copyright" content="AirForShare {{ date('Y') }}">
+    
+    <!-- Favicon and Icons -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
+    
+    <!-- Sitemap Reference -->
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="{{ url('/sitemap.xml') }}">
+    
     <!-- Open Graph Meta Tags -->
     <meta property="og:title" content="@yield('og_title', 'AirForShare - Instant File Sharing')">
     <meta property="og:description" content="@yield('og_description', 'Share files and text instantly across devices on the same network. Simple, fast, and secure.')">
@@ -21,14 +37,67 @@
     <meta property="og:url" content="{{ url()->current() }}">
     <meta property="og:site_name" content="AirForShare">
     <meta property="og:locale" content="en_US">
+    <meta property="og:image" content="{{ url('/favicon.ico') }}">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="AirForShare - Instant File Sharing">
     
     <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="@yield('twitter_title', 'AirForShare - Instant File Sharing')">
     <meta name="twitter:description" content="@yield('twitter_description', 'Share files and text instantly across devices on the same network.')">
+    <meta name="twitter:image" content="{{ url('/favicon.ico') }}">
+    <meta name="twitter:site" content="@AirForShare">
+    <meta name="twitter:creator" content="@AirForShare">
     
     <!-- Schema.org JSON-LD -->
     @yield('schema')
+    
+    <!-- Additional Schema for Organization -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "AirForShare",
+      "url": "{{ url('/') }}",
+      "logo": "{{ url('/favicon.ico') }}",
+      "description": "Instant file sharing across devices on the same network",
+      "sameAs": [
+        "https://github.com/airforshare",
+        "https://twitter.com/airforshare"
+      ],
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "Customer Support",
+        "availableLanguage": "English",
+        "url": "{{ url('/feedback') }}"
+      }
+    }
+    </script>
+    
+    <!-- Breadcrumb Schema -->
+    @if(request()->path() !== '/')
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "{{ url('/') }}"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "@yield('title', 'Page')",
+          "item": "{{ url()->current() }}"
+        }
+      ]
+    }
+    </script>
+    @endif
 
     <!-- Google Analytics (Add your tracking ID) -->
     @if(config('app.env') === 'production')
@@ -576,6 +645,16 @@
                         Feedback
                     </a>
                 </div>
+                
+                <div class="navbar-end">
+                    <div class="navbar-item">
+                        <div class="buttons">
+                            <a class="button is-primary is-small" href="{{ url('/') }}">
+                                <strong>Start Sharing</strong>
+                            </a>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </nav>
@@ -588,12 +667,51 @@
     <!-- Modern Footer -->
     <footer class="modern-footer">
         <div class="container">
-            <p>
-                <strong class="gradient-text">AirForShare</strong> &copy; {{ date('Y') }} - 
-                Instant file sharing made simple and secure
-            </p>
+            <div class="columns">
+                <div class="column">
+                    <p>
+                        <strong class="gradient-text">AirForShare</strong> &copy; {{ date('Y') }} - 
+                        Instant file sharing made simple and secure
+                    </p>
+                </div>
+                <div class="column is-narrow">
+                    <div class="footer-links">
+                        <a href="{{ url('/') }}">Home</a>
+                        <a href="{{ url('/how-it-works') }}">How It Works</a>
+                        <a href="{{ url('/faq') }}">FAQ</a>
+                        <a href="{{ url('/feedback') }}">Contact</a>
+                        <a href="{{ url('/sitemap.xml') }}">Sitemap</a>
+                    </div>
+                </div>
+            </div>
         </div>
     </footer>
+    
+    <style>
+        .footer-links {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: var(--transition);
+        }
+        
+        .footer-links a:hover {
+            color: var(--primary-color);
+        }
+        
+        @media (max-width: 768px) {
+            .footer-links {
+                justify-content: center;
+                margin-top: 1rem;
+            }
+        }
+    </style>
 </body>
 
 </html>

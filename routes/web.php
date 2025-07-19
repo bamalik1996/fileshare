@@ -29,3 +29,11 @@ Route::prefix('api/v1')->group(function () {
         Route::delete('/share/media',  'deleteMedia');
     });
 });
+
+// SEO Routes
+Route::get('/sitemap.xml', function () {
+    $sitemap = view('sitemap')->render();
+    return response($sitemap, 200, [
+        'Content-Type' => 'application/xml'
+    ]);
+})->name('sitemap');
