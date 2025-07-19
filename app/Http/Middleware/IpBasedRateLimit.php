@@ -14,10 +14,10 @@ class IpBasedRateLimit
         $ip = $request->ip();
         $key = 'rate_limit_' . $ip;
         
-        // Allow 100 requests per hour per IP
+        // Allow 200 requests per hour per IP
         $attempts = Cache::get($key, 0);
         
-        if ($attempts >= 100) {
+        if ($attempts >= 200) {
             return response()->json([
                 'error' => 'Too many requests. Please try again later.'
             ], 429);
