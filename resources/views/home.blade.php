@@ -1,512 +1,580 @@
 @extends('layouts.app')
 
-@section('title', 'Home Page')
+@section('title', 'AirForShare - Instant File Sharing')
 
 @section('content')
     <style>
-        .tabs {
-            margin-bottom: 20px;
+        /* Text Tab Styles */
+        .text-container {
+            padding: 2rem;
         }
 
-        .tab-content {
-            display: none;
-            padding: 20px;
-            background: white;
+        .modern-textarea {
+            width: 100%;
+            min-height: 300px;
+            border: 2px solid rgba(102, 126, 234, 0.2);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            font-size: 1.1rem;
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            resize: vertical;
+            transition: var(--transition);
+            outline: none;
+        }
+
+        .modern-textarea:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .textarea-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .char-counter {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .char-counter.warning {
+            color: var(--warning-color);
+        }
+
+        .char-counter.danger {
+            color: var(--error-color);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .links-container {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: rgba(102, 126, 234, 0.05);
             border-radius: 8px;
-            box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.1);
-            min-height: 400px;
+            border-left: 4px solid var(--primary-color);
         }
 
-        .tab-content.active {
+        .detected-link {
+            display: block;
+            color: var(--primary-color);
+            text-decoration: none;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .detected-link:hover {
+            color: var(--primary-dark);
+            text-decoration: underline;
+        }
+
+        /* File Tab Styles */
+        .file-container {
+            padding: 2rem;
+        }
+
+        .upload-zone {
+            border: 3px dashed rgba(102, 126, 234, 0.3);
+            border-radius: var(--border-radius);
+            padding: 3rem 2rem;
+            text-align: center;
+            background: rgba(102, 126, 234, 0.02);
+            transition: var(--transition);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upload-zone:hover {
+            border-color: var(--primary-color);
+            background: rgba(102, 126, 234, 0.05);
+            transform: scale(1.01);
+        }
+
+        .upload-zone.dragover {
+            border-color: var(--primary-color);
+            background: rgba(102, 126, 234, 0.1);
+            transform: scale(1.02);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .upload-icon {
+            font-size: 4rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
             display: block;
         }
 
-        .form-file-drop {
-            height: 100%;
+        .upload-text {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
         }
 
-        .cta-button {
-            background-color: rgba(51, 51, 51, 0.05);
-            border-radius: 8px;
-            border-width: 0;
-            color: #333333;
-            cursor: pointer;
-            font-family: "Haas Grot Text R Web", "Helvetica Neue", Helvetica, Arial, sans-serif;
-            font-size: 24px;
-            font-weight: 500;
-            line-height: 20px;
-            list-style: none;
-            margin: 0;
-            padding: 15px 35px;
-            text-align: center;
-            transition: all 200ms;
-            vertical-align: baseline;
-            white-space: nowrap;
-            user-select: none;
-            -webkit-user-select: none;
-            touch-action: manipulation;
-            justify-content: center;
-            align-items: center;
-            display: flex;
-            position: relative;
+        .upload-subtext {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
         }
 
-        .cta-button:hover {
-            background-color: #1b3fab;
-            color: #fff;
-        }
-        
-        .cta-button:disabled {
-            background-color: #ccc;
-            color: #666;
-            cursor: not-allowed;
-        }
-
-        .clear-button {
-            background-color: #ff1d1d;
-            color: white;
-            padding: 15px 35px;
-            font-size: 24px;
-            font-weight: 500;
-            line-height: 20px;
-            text-align: center;
-            margin-right: 10px;
-            border-radius: 8px;
-            border-width: 0;
-            -webkit-user-select: none;
-            touch-action: manipulation;
-            cursor: pointer;
-        }
-
-        .clear-button:hover {
-            background-color: #D10000;
-        }
-
-        .clear-button-container {
+        .progress-container {
+            margin-top: 1rem;
             display: none;
-            text-align: center;
         }
 
-        .loader {
-            border: 4px solid #f3f3f3;
-            /* Light gray */
-            border-top: 4px solid #3498db;
-            /* Blue */
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            animation: spin 1s linear infinite;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            display: none;
-            /* Initially hidden */
-        }
-
-        @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-
-            100% {
-                transform: rotate(360deg);
-            }
-        }
-
-        .loading-text {
-            display: none;
-            /* Initially hidden */
-            color: #ffffff;
-        }
-
-        div#linksContainer {
-            margin-top: 10px;
-            word-wrap: break-word;
-        }
-
-        .cta-button.copied:hover,
-        .copied {
-            background: #48c78e;
-            color: #ffff;
-        }
-
-        /* File Upload Box */
-        .file-upload {
-            border: 2px dashed #007bff;
-            padding: 25px;
-            text-align: center;
-            cursor: pointer;
-            background: #f9f9f9;
-            border-radius: 10px;
-            transition: 0.3s;
-            position: relative;
-            min-height: 120px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-        }
-
-        .file-upload:hover {
-            background: #eef5ff;
-            border-color: #0056b3;
-        }
-        
-        .file-upload.dragover {
-            background: #e3f2fd;
-            border-color: #1976d2;
-            transform: scale(1.02);
-        }
-        
-        .file-upload-text {
-            font-size: 16px;
-            margin-bottom: 10px;
-        }
-        
-        .file-upload-subtext {
-            font-size: 12px;
-            color: #666;
-        }
-
-        /* File Preview Container */
-        .file-preview-container {
-            display: flex;
-            flex-wrap: wrap;
-            margin-top: 15px;
-            gap: 15px;
-            overflow-y: auto;
-            max-height: 400px;
-            min-height: 200px;
-            padding: 10px;
-            border: 1px solid #eee;
-            border-radius: 8px;
-            background: #fafafa;
-        }
-
-        /* Individual File Preview */
-        .file-preview {
-            width: 169px;
-            height: 150px;
-            border: 1px solid #ccc;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 4px;
             overflow: hidden;
-            background: #f8f8f8;
-            border-radius: 5px;
-            font-size: 40px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            flex-direction: column;
         }
 
-        .file-preview:hover {
-            transform: scale(1.05);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            border-color: #007bff;
+        .progress-fill {
+            height: 100%;
+            background: var(--bg-gradient);
+            transition: width 0.3s ease;
+            border-radius: 4px;
         }
 
-        /* Image Preview */
-        .file-preview img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: cover;
-            border-radius: 10px;
-        }
-        
-        .file-info {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(0, 0, 0, 0.7);
-            color: white;
-            padding: 5px;
-            font-size: 10px;
+        .progress-text {
             text-align: center;
-            opacity: 0;
-            transition: opacity 0.3s;
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
         }
-        
-        .file-preview:hover .file-info {
+
+        /* File Preview Grid */
+        .file-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: rgba(102, 126, 234, 0.02);
+            border-radius: var(--border-radius);
+            min-height: 200px;
+        }
+
+        .file-grid.empty {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        .file-item {
+            background: var(--bg-primary);
+            border-radius: var(--border-radius);
+            padding: 1rem;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+            position: relative;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .file-item:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary-color);
+        }
+
+        .file-preview {
+            width: 100%;
+            height: 120px;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+            background: var(--bg-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .file-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .file-icon {
+            font-size: 3rem;
+            color: var(--primary-color);
+        }
+
+        .file-info {
+            text-align: center;
+        }
+
+        .file-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+            font-size: 0.875rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .file-size {
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+        }
+
+        .file-actions {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            display: flex;
+            gap: 0.25rem;
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .file-item:hover .file-actions {
             opacity: 1;
         }
 
-        /* Loader Animation */
-        .file-preview .loader {
-            position: absolute;
-            width: 30px;
-            height: 30px;
-            border: 4px solid #ccc;
-            border-top: 4px solid #007bff;
+        .action-btn {
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
-            animation: spin 1s linear infinite;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.875rem;
+            transition: var(--transition);
         }
 
-        /* Full-Screen Image Preview */
-        .full-screen-preview {
+        .action-btn.delete {
+            background: var(--error-color);
+            color: white;
+        }
+
+        .action-btn.download {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .action-btn:hover {
+            transform: scale(1.1);
+        }
+
+        /* Messages */
+        .message {
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            display: none;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 500;
+        }
+
+        .message.success {
+            background: rgba(72, 187, 120, 0.1);
+            color: var(--success-color);
+            border: 1px solid rgba(72, 187, 120, 0.2);
+        }
+
+        .message.error {
+            background: rgba(245, 101, 101, 0.1);
+            color: var(--error-color);
+            border: 1px solid rgba(245, 101, 101, 0.2);
+        }
+
+        .message.warning {
+            background: rgba(237, 137, 54, 0.1);
+            color: var(--warning-color);
+            border: 1px solid rgba(237, 137, 54, 0.2);
+        }
+
+        /* Full Screen Preview */
+        .fullscreen-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.9);
             display: flex;
             align-items: center;
             justify-content: center;
-            visibility: hidden;
+            z-index: 9999;
             opacity: 0;
-            transition: 0.3s;
-            z-index: 1000;
+            visibility: hidden;
+            transition: var(--transition);
         }
 
-        .full-screen-preview img {
+        .fullscreen-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .fullscreen-content {
             max-width: 90%;
             max-height: 90%;
-            border-radius: 10px;
+            position: relative;
         }
 
-        .full-screen-preview.show {
-            visibility: visible;
-            opacity: 1;
+        .fullscreen-image {
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: var(--border-radius);
         }
 
-        /* Close Button */
-        .close-preview {
+        .fullscreen-close {
             position: absolute;
-            top: 15px;
-            right: 20px;
-            font-size: 30px;
-            color: white;
+            top: -50px;
+            right: 0;
+            background: var(--bg-primary);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
             cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            color: var(--text-primary);
         }
 
-
-        .download-btn {
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
-            background: #007bff;
-            color: white;
-            padding: 10px 15px;
-            border-radius: 5px;
-            text-decoration: none;
-            font-weight: bold;
-            transition: 0.3s;
-        }
-
-        .download-btn:hover {
-            background: #0056b3;
-        }
-
-        .info-text {
-            margin-top: 15px;
-            padding: 10px;
-            background: #e8f4fd;
-            color: #1976d2;
-            text-align: center;
-            font-weight: bold;
-            border-radius: 5px;
-            font-size: 14px;
-        }
-
-        .delete-btn {
+        /* Loading States */
+        .loading-overlay {
             position: absolute;
             top: 0;
-            right: 0;
-            border-radius: 100%;
-            cursor: pointer;
-            margin-top: 5px;
-            padding: 5px 10px;
-            background: red;
-            color: white;
-            border: none;
-            cursor: pointer;
-            font-size: 12px;
-            border-radius: 5px;
-            margin-right: 5px;
-            transition: all 0.3s;
-        }
-        
-        .delete-btn:hover {
-            background: #d32f2f;
-            transform: scale(1.1);
-        }
-
-        .wrapper-loader {
+            left: 0;
             width: 100%;
             height: 100%;
+            background: rgba(255, 255, 255, 0.9);
             display: flex;
-            justify-content: center;
             align-items: center;
-            position: absolute;
-            background: rgb(10 10 10 / 26%);
-            z-index: 999;
-            border-radius: 5px;
+            justify-content: center;
+            border-radius: var(--border-radius);
+            z-index: 10;
         }
 
-        div#text-tab div#loader {
-            display: none;
-            position: absolute;
+        .loading-spinner-large {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(102, 126, 234, 0.2);
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
         }
-        
-        .character-count {
-            position: absolute;
-            bottom: 10px;
-            right: 15px;
-            font-size: 12px;
-            color: #666;
-        }
-        
-        .progress-bar {
-            width: 100%;
-            height: 4px;
-            background: #eee;
-            border-radius: 2px;
-            overflow: hidden;
-            margin-top: 10px;
-        }
-        
-        .progress-fill {
-            height: 100%;
-            background: #007bff;
-            transition: width 0.3s ease;
-        }
-        
-        .error-message {
-            background: #ffebee;
-            color: #c62828;
-            padding: 10px;
-            border-radius: 5px;
-            margin-top: 10px;
-            display: none;
-        }
-        
-        .success-message {
-            background: #e8f5e8;
-            color: #2e7d32;
-            padding: 10px;
-            border-radius: 5px;
-            margin-top: 10px;
-            display: none;
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .text-container,
+            .file-container {
+                padding: 1rem;
+            }
+
+            .file-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 1rem;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .textarea-footer {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: stretch;
+            }
         }
     </style>
 
-    <h1 class="title is-2 has-text-centered has-text-primary">Welcome to AirForShare</h1>
-    
-    <!-- IP Info Display -->
-    <div class="notification is-info is-light" id="ipInfo" style="margin-bottom: 20px;">
-        <strong>Your IP:</strong> <span id="userIp">Loading...</span> | 
-        <strong>Files:</strong> <span id="fileCount">0</span>/<span id="maxFiles">20</span> | 
-        <strong>Max File Size:</strong> <span id="maxFileSize">10 MB</span>
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <h1 class="hero-title">
+            <i class="fas fa-cloud-upload-alt"></i>
+            AirForShare
+        </h1>
+        <p class="hero-subtitle">
+            Share files and text instantly across devices on the same network. 
+            Simple, fast, and secure file sharing without the hassle.
+        </p>
     </div>
 
-    <!-- Tabs for Navigation -->
-    <div class="tabs is-centered is-boxed">
-        <ul>
-            <li class="is-active" data-tab-id='text-tab'>
-                <a>Text</a>
-            </li>
-            <li data-tab-id="file-tab">
-                <a>File</a>
-            </li>
-        </ul>
+    <!-- IP Info Panel -->
+    <div class="info-panel">
+        <div class="info-item">
+            <i class="fas fa-network-wired"></i>
+            <strong>IP:</strong> <span id="userIp">Loading...</span>
+        </div>
+        <div class="info-item">
+            <i class="fas fa-folder"></i>
+            <strong>Files:</strong> <span id="fileCount">0</span>/<span id="maxFiles">20</span>
+        </div>
+        <div class="info-item">
+            <i class="fas fa-weight-hanging"></i>
+            <strong>Max Size:</strong> <span id="maxFileSize">10 MB</span>
+        </div>
+        <div class="info-item">
+            <i class="fas fa-clock"></i>
+            <strong>Auto-delete:</strong> 6 hours
+        </div>
+    </div>
+
+    <!-- Modern Tabs -->
+    <div class="modern-tabs">
+        <button class="modern-tab active" data-tab="text">
+            <i class="fas fa-edit"></i>
+            Text Sharing
+        </button>
+        <button class="modern-tab" data-tab="file">
+            <i class="fas fa-file-upload"></i>
+            File Sharing
+        </button>
     </div>
 
     <!-- Tab Contents -->
-    <div class="tab-content active" id="text-tab" style="padding: 0;">
-        <div class="form-box">
-            <!-- Text Area for Type Something -->
-            <div class="field">
-                <div class="control">
-                    <textarea class="textarea" id="textInput" placeholder="Type something..." rows="8"
-                        style="border: 0; font-size: 25px; overflow: hidden; overflow-wrap: break-word; resize: none;"
-                        oninput="checkText()" maxlength="50000"></textarea>
-                    <div class="character-count">
-                        <span id="charCount">0</span>/50000
+    <div class="modern-card">
+        <!-- Text Tab -->
+        <div class="tab-content active" id="text-tab">
+            <div class="text-container">
+                <textarea 
+                    class="modern-textarea" 
+                    id="textInput" 
+                    placeholder="Type or paste your text here... Links will be automatically detected and made clickable."
+                    maxlength="50000"
+                ></textarea>
+                
+                <div class="textarea-footer">
+                    <div class="char-counter" id="charCounter">0 / 50,000 characters</div>
+                    <div class="button-group">
+                        <button class="modern-btn danger" id="clearBtn" style="display: none;">
+                            <i class="fas fa-trash"></i>
+                            Clear
+                        </button>
+                        <button class="modern-btn" id="saveBtn">
+                            <i class="fas fa-save"></i>
+                            <span id="saveBtnText">Save</span>
+                            <div class="loading-spinner" id="saveLoader" style="display: none;"></div>
+                        </button>
                     </div>
-                    <div id="linksContainer" style="margin-top: 10px;"></div>
+                </div>
+
+                <div class="links-container" id="linksContainer" style="display: none;">
+                    <strong><i class="fas fa-link"></i> Detected Links:</strong>
+                    <div id="linksList"></div>
+                </div>
+
+                <div class="message success" id="textSuccessMessage">
+                    <i class="fas fa-check-circle"></i>
+                    <span></span>
+                </div>
+                <div class="message error" id="textErrorMessage">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span></span>
                 </div>
             </div>
-            
-            <!-- Messages -->
-            <div id="textErrorMessage" class="error-message"></div>
-            <div id="textSuccessMessage" class="success-message"></div>
-            
-            <!-- Save and Clear Buttons -->
-            <div class="has-text-right is-flex is-flex-direction-row-reverse"
-                style="padding-bottom:10px;padding-right:10px">
-                <button class="cta-button" id="saveBtn">
-                    <span id="saveTextBtn">Save</span>
-                    <div id="loader" class="loader"></div>
-                    <div id="loadingText" class="loading-text">Saving...</div>
-                </button>
-                <div class="clear-button-container">
-                    <button class="clear-button" onclick="clearText()">Clear</button>
+        </div>
+
+        <!-- File Tab -->
+        <div class="tab-content" id="file-tab">
+            <div class="file-container">
+                <div class="upload-zone" id="uploadZone">
+                    <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                    <div class="upload-text">Drag & Drop Files Here</div>
+                    <div class="upload-subtext">
+                        or click to browse • Max 10MB per file • Up to 20 files
+                        <br>
+                        <small>Supported: Images, PDF, DOC, TXT, ZIP</small>
+                    </div>
+                    <input type="file" id="fileInput" multiple accept="image/*,.pdf,.docx,.txt,.zip" style="display: none;">
+                    
+                    <div class="progress-container" id="progressContainer">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                        <div class="progress-text" id="progressText">Uploading...</div>
+                    </div>
+                </div>
+
+                <div class="message success" id="fileSuccessMessage">
+                    <i class="fas fa-check-circle"></i>
+                    <span></span>
+                </div>
+                <div class="message error" id="fileErrorMessage">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span></span>
+                </div>
+
+                <div class="file-grid" id="fileGrid">
+                    <div class="empty-state">
+                        <i class="fas fa-folder-open" style="font-size: 3rem; color: var(--text-secondary); margin-bottom: 1rem;"></i>
+                        <p>No files uploaded yet. Start by dragging files above!</p>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="tab-content" id="file-tab">
-        <div class="form-box form-file-drop">
-            <h3 class="title is-3 has-text-centered">Upload Files</h3>
-
-            <!-- Drag and Drop File Upload Section -->
-            <div class="file-upload" id="dropZone">
-                <div class="file-upload-text">🚀 Drag and drop files here, or click to browse</div>
-                <div class="file-upload-subtext">Supported: Images, PDF, DOC, TXT, ZIP (Max: 10MB each)</div>
-                <input type="file" id="fileInput" class="file-input" multiple accept="image/*,.pdf,.docx,.txt" hidden>
-                <div class="progress-bar" id="uploadProgress" style="display: none;">
-                    <div class="progress-fill" id="progressFill"></div>
-                </div>
-            </div>
-            
-            <!-- Messages -->
-            <div id="fileErrorMessage" class="error-message"></div>
-            <div id="fileSuccessMessage" class="success-message"></div>
-
-            <!-- File Previews -->
-            <div class="file-preview-container" id="filePreviewContainer"></div>
-
-            <!-- File Info Text -->
-            <div class="info-text has-text-centered">
-                <p>📁 Upload up to <strong>20 files, 10MB each</strong></p>
-                <p>🔒 Files are automatically deleted after 6 hours or 1 hour of inactivity</p>
-            </div>
+    <!-- Fullscreen Preview -->
+    <div class="fullscreen-overlay" id="fullscreenOverlay">
+        <div class="fullscreen-content">
+            <button class="fullscreen-close" id="fullscreenClose">
+                <i class="fas fa-times"></i>
+            </button>
+            <img class="fullscreen-image" id="fullscreenImage" src="" alt="Preview">
         </div>
-    </div>
-
-    <div class="full-screen-preview" id="fullScreenPreview">
-        <span class="close-preview" id="closePreview">&times;</span>
-        <img id="previewImage" src="" alt="Full Preview">
-        <a id="downloadPreview" class="download-btn" download>
-            ⬇ Download
-        </a>
     </div>
 
     <script>
         $(document).ready(function() {
+            initializeApp();
+        });
+
+        function initializeApp() {
             loadIpInfo();
             fetchText();
-            fetchMedia(); // auto-load media
+            fetchMedia();
+            setupEventListeners();
+        }
 
-            $(".tabs ul li").click(function() {
-                // Remove 'is-active' class from all tabs
-                $(".tabs ul li").removeClass("is-active");
-                $(this).addClass("is-active");
-
-                // Hide all tab content
-                $(".tab-content").hide();
-
-                // Show the clicked tab's content
-                let targetTab = $(this).attr('data-tab-id').toLowerCase();
-                $("#" + targetTab).show();
+        function setupEventListeners() {
+            // Tab switching
+            $('.modern-tab').click(function() {
+                const tabName = $(this).data('tab');
+                switchTab(tabName);
             });
 
-        });
+            // Text input events
+            $('#textInput').on('input', handleTextInput);
+            $('#saveBtn').click(handleSaveText);
+            $('#clearBtn').click(handleClearText);
+
+            // File upload events
+            setupFileUpload();
+        }
+
+        function switchTab(tabName) {
+            $('.modern-tab').removeClass('active');
+            $(`.modern-tab[data-tab="${tabName}"]`).addClass('active');
+            
+            $('.tab-content').removeClass('active');
+            $(`#${tabName}-tab`).addClass('active');
+        }
 
         function loadIpInfo() {
             $.ajax({
@@ -524,84 +592,21 @@
             });
         }
 
-        function showMessage(elementId, message, isError = false) {
-            const element = $(elementId);
-            element.text(message).show();
-            
-            setTimeout(() => {
-                element.hide();
-            }, 5000);
-        }
-
         function fetchText() {
             $.ajax({
                 url: '{{ route('share.get.text') }}',
                 method: 'GET',
-                dataType: 'json',
                 success: function(data) {
-                    $('#textInput').text(data.text);
-                    checkText();
-                    detectLinks();
-                    updateCharCount();
-                    if (data && data.text && data.text.trim().length > 0) {
-                        showCopyButton(); // Agar pehle se text hai to copy button show karein
+                    if (data.status === 'success') {
+                        $('#textInput').val(data.text);
+                        handleTextInput();
+                        if (data.text && data.text.trim().length > 0) {
+                            updateSaveButton('copy');
+                        }
                     }
                 },
                 error: function() {
-                    showMessage('#textErrorMessage', 'Error fetching the text.', true);
-                }
-            });
-        }
-
-        function saveText() {
-            var text = $('#textInput').val();
-            
-            if (text.length > 50000) {
-                showMessage('#textErrorMessage', 'Text is too long. Maximum 50,000 characters allowed.', true);
-                return;
-            }
-
-            $('#loader').show();
-            $('#loadingText').show();
-            $('#saveTextBtn').hide();
-            $('#saveBtn').prop('disabled', true);
-
-            $.ajax({
-                url: '{{ route('share.store.text') }}',
-                method: 'POST',
-                data: JSON.stringify({
-                    text: text
-                }),
-                contentType: 'application/json',
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                success: function(data) {
-                    $('#loader').hide();
-                    $('#loadingText').hide();
-                    $('#saveTextBtn').show();
-                    $('#saveBtn').prop('disabled', false);
-                    
-                    showMessage('#textSuccessMessage', 'Text saved successfully!');
-                    
-                    if (text) {
-                        showCopyButton();
-                    } else {
-                        showSaveButton()
-                        $('#linksContainer').html('')
-                    }
-                },
-                error: function() {
-                    $('#loader').hide();
-                    $('#loadingText').hide();
-                    $('#saveTextBtn').show();
-                    $('#saveBtn').prop('disabled', false);
-                    
-                    let errorMsg = 'Error occurred while saving the text.';
-                    if (xhr.responseJSON && xhr.responseJSON.message) {
-                        errorMsg = xhr.responseJSON.message;
-                    }
-                    showMessage('#textErrorMessage', errorMsg, true);
+                    console.log('No existing text found');
                 }
             });
         }
@@ -610,466 +615,363 @@
             $.ajax({
                 url: '{{ route('share.get.media') }}',
                 method: 'GET',
-                dataType: 'json',
                 success: function(response) {
-                    let files = Object.values(response.files); // 👈 fix here
-
-                    let container = $('#filePreviewContainer');
-                    container.empty();
-
-                    if (files.length === 0) {
-                        container.append('<p style="text-align: center; color: #666; padding: 20px;">No files uploaded yet. Drag and drop files above to get started!</p>');
-                        return;
-                    }
-
-                    // Update file count
-                    $('#fileCount').text(files.length);
-
-                    files.forEach(file => {
-                        let preview = $('<div>', {
-                            class: 'file-preview',
-                            title: 'View: ' + file.name,
-                            'data-uuid': file.uuid
-                        });
-
-                        if (file.mime_type.startsWith('image')) {
-                            preview.append($('<img>', {
-                                src: file.original_url,
-                                alt: file.name
-                            }));
-                        } else if (file.mime_type.startsWith('video')) {
-                            preview.append(
-                                `<video width="200" controls><source src="${file.original_url}" type="${file.file_type}"></video>`
-                            );
-                        } else {
-                            preview.append(
-                                `<div style="font-size: 40px;">📄</div>`
-                            );
-                        }
-                        
-                        // Add file info
-                        let fileInfo = $('<div>', {
-                            class: 'file-info',
-                            html: `${file.name}<br>${file.size}`
-                        });
-                        preview.append(fileInfo);
-
-                        // Add delete button
-                        let deleteBtn = $('<button>', {
-                            class: 'delete-btn',
-                            title: 'Delete',
-                            text: 'X',
-                            click: function() {
-                                deleteMedia(file.uuid);
-                            }
-                        });
-
-                        preview.append(deleteBtn);
-                        container.append(preview);
-                    });
+                    displayFiles(response.files || []);
+                    $('#fileCount').text(Object.keys(response.files || {}).length);
                 },
                 error: function() {
-                    console.error('Failed to fetch media.');
-                    showMessage('#fileErrorMessage', 'Failed to load files.', true);
+                    console.error('Failed to fetch media');
                 }
             });
         }
 
-        function deleteMedia(uuid) {
-            if (!confirm('Are you sure you want to delete this file?')) return;
+        function handleTextInput() {
+            const text = $('#textInput').val();
+            const length = text.length;
+            
+            // Update character counter
+            updateCharCounter(length);
+            
+            // Show/hide clear button
+            $('#clearBtn').toggle(length > 0);
+            
+            // Detect links
+            detectLinks(text);
+            
+            // Update save button
+            updateSaveButton('save');
+        }
+
+        function updateCharCounter(length) {
+            const counter = $('#charCounter');
+            counter.text(`${length.toLocaleString()} / 50,000 characters`);
+            
+            counter.removeClass('warning danger');
+            if (length > 45000) {
+                counter.addClass('danger');
+            } else if (length > 40000) {
+                counter.addClass('warning');
+            }
+        }
+
+        function detectLinks(text) {
+            const urlRegex = /(https?:\/\/[^\s]+)/g;
+            const matches = text.match(urlRegex);
+            const container = $('#linksContainer');
+            const linksList = $('#linksList');
+            
+            if (matches && matches.length > 0) {
+                linksList.empty();
+                matches.forEach(url => {
+                    const link = $('<a>', {
+                        href: url,
+                        target: '_blank',
+                        class: 'detected-link',
+                        text: url
+                    });
+                    linksList.append(link);
+                });
+                container.show();
+            } else {
+                container.hide();
+            }
+        }
+
+        function updateSaveButton(mode) {
+            const btn = $('#saveBtn');
+            const text = $('#saveBtnText');
+            
+            if (mode === 'copy') {
+                btn.removeClass('modern-btn').addClass('modern-btn success');
+                text.html('<i class="fas fa-copy"></i> Copy');
+                btn.off('click').on('click', handleCopyText);
+            } else {
+                btn.removeClass('success').addClass('modern-btn');
+                text.html('<i class="fas fa-save"></i> Save');
+                btn.off('click').on('click', handleSaveText);
+            }
+        }
+
+        function handleSaveText() {
+            const text = $('#textInput').val();
+            
+            if (text.length > 50000) {
+                showMessage('textErrorMessage', 'Text is too long. Maximum 50,000 characters allowed.');
+                return;
+            }
+
+            setButtonLoading(true);
 
             $.ajax({
-                url: '{{ route('share.delete.media') }}',
-                method: 'delete',
-                data: {
-                    uuid: uuid
+                url: '{{ route('share.store.text') }}',
+                method: 'POST',
+                data: JSON.stringify({ text: text }),
+                contentType: 'application/json',
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
+                success: function(data) {
+                    setButtonLoading(false);
+                    showMessage('textSuccessMessage', 'Text saved successfully!');
+                    
+                    if (text.trim().length > 0) {
+                        updateSaveButton('copy');
+                    }
+                },
+                error: function(xhr) {
+                    setButtonLoading(false);
+                    const message = xhr.responseJSON?.message || 'Error occurred while saving text.';
+                    showMessage('textErrorMessage', message);
+                }
+            });
+        }
+
+        function handleCopyText() {
+            const text = $('#textInput').val();
+            
+            navigator.clipboard.writeText(text).then(() => {
+                showMessage('textSuccessMessage', 'Text copied to clipboard!');
+                
+                // Visual feedback
+                const btn = $('#saveBtn');
+                btn.addClass('success');
+                setTimeout(() => btn.removeClass('success'), 1000);
+            }).catch(() => {
+                showMessage('textErrorMessage', 'Failed to copy text to clipboard.');
+            });
+        }
+
+        function handleClearText() {
+            if (confirm('Are you sure you want to clear all text?')) {
+                $('#textInput').val('');
+                handleTextInput();
+                handleSaveText(); // Save empty text
+            }
+        }
+
+        function setButtonLoading(loading) {
+            const btn = $('#saveBtn');
+            const text = $('#saveBtnText');
+            const loader = $('#saveLoader');
+            
+            if (loading) {
+                btn.prop('disabled', true);
+                text.hide();
+                loader.show();
+            } else {
+                btn.prop('disabled', false);
+                text.show();
+                loader.hide();
+            }
+        }
+
+        function setupFileUpload() {
+            const uploadZone = $('#uploadZone');
+            const fileInput = $('#fileInput');
+            
+            uploadZone.click(() => fileInput.click());
+            
+            uploadZone.on('dragover', function(e) {
+                e.preventDefault();
+                $(this).addClass('dragover');
+            });
+            
+            uploadZone.on('dragleave', function(e) {
+                e.preventDefault();
+                $(this).removeClass('dragover');
+            });
+            
+            uploadZone.on('drop', function(e) {
+                e.preventDefault();
+                $(this).removeClass('dragover');
+                const files = e.originalEvent.dataTransfer.files;
+                handleFileUpload(files);
+            });
+            
+            fileInput.change(function() {
+                handleFileUpload(this.files);
+            });
+        }
+
+        function handleFileUpload(files) {
+            if (files.length === 0) return;
+            
+            const maxFiles = parseInt($('#maxFiles').text());
+            const currentFiles = parseInt($('#fileCount').text());
+            
+            if (currentFiles + files.length > maxFiles) {
+                showMessage('fileErrorMessage', `You can only upload up to ${maxFiles} files total.`);
+                return;
+            }
+            
+            Array.from(files).forEach(uploadFile);
+        }
+
+        function uploadFile(file) {
+            const maxSize = 10 * 1024 * 1024; // 10MB
+            
+            if (file.size > maxSize) {
+                showMessage('fileErrorMessage', `${file.name} exceeds the 10MB limit.`);
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            showProgress(true);
+            
+            $.ajax({
+                url: '{{ route('share.store.media') }}',
+                method: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                xhr: function() {
+                    const xhr = new window.XMLHttpRequest();
+                    xhr.upload.addEventListener('progress', function(e) {
+                        if (e.lengthComputable) {
+                            const percent = (e.loaded / e.total) * 100;
+                            updateProgress(percent);
+                        }
+                    });
+                    return xhr;
+                },
+                success: function(data) {
+                    showProgress(false);
+                    showMessage('fileSuccessMessage', 'File uploaded successfully!');
+                    fetchMedia();
+                    loadIpInfo();
+                },
+                error: function(xhr) {
+                    showProgress(false);
+                    const message = xhr.responseJSON?.message || 'Upload failed.';
+                    showMessage('fileErrorMessage', message);
+                }
+            });
+        }
+
+        function showProgress(show) {
+            $('#progressContainer').toggle(show);
+            if (!show) {
+                $('#progressFill').css('width', '0%');
+            }
+        }
+
+        function updateProgress(percent) {
+            $('#progressFill').css('width', percent + '%');
+            $('#progressText').text(`Uploading... ${Math.round(percent)}%`);
+        }
+
+        function displayFiles(files) {
+            const grid = $('#fileGrid');
+            grid.empty();
+            
+            if (!files || Object.keys(files).length === 0) {
+                grid.addClass('empty').html(`
+                    <div class="empty-state">
+                        <i class="fas fa-folder-open" style="font-size: 3rem; color: var(--text-secondary); margin-bottom: 1rem;"></i>
+                        <p>No files uploaded yet. Start by dragging files above!</p>
+                    </div>
+                `);
+                return;
+            }
+            
+            grid.removeClass('empty');
+            
+            Object.values(files).forEach(file => {
+                const fileItem = createFileItem(file);
+                grid.append(fileItem);
+            });
+        }
+
+        function createFileItem(file) {
+            const isImage = file.mime_type.startsWith('image/');
+            
+            const item = $(`
+                <div class="file-item" data-uuid="${file.uuid}">
+                    <div class="file-preview">
+                        ${isImage ? 
+                            `<img src="${file.original_url}" alt="${file.name}">` :
+                            `<i class="fas fa-file file-icon"></i>`
+                        }
+                    </div>
+                    <div class="file-info">
+                        <div class="file-name" title="${file.name}">${file.name}</div>
+                        <div class="file-size">${file.size}</div>
+                    </div>
+                    <div class="file-actions">
+                        <button class="action-btn download" title="Download">
+                            <i class="fas fa-download"></i>
+                        </button>
+                        <button class="action-btn delete" title="Delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `);
+            
+            // Click to preview images
+            if (isImage) {
+                item.find('.file-preview').click(() => showFullscreen(file.original_url));
+            }
+            
+            // Download button
+            item.find('.download').click(() => {
+                const link = document.createElement('a');
+                link.href = file.original_url;
+                link.download = file.name;
+                link.click();
+            });
+            
+            // Delete button
+            item.find('.delete').click(() => deleteFile(file.uuid));
+            
+            return item;
+        }
+
+        function deleteFile(uuid) {
+            if (!confirm('Are you sure you want to delete this file?')) return;
+            
+            $.ajax({
+                url: '{{ route('share.delete.media') }}',
+                method: 'DELETE',
+                data: { uuid: uuid },
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
                 success: function() {
-                    fetchMedia(); // Reload media list
-                    loadIpInfo(); // Update IP info
-                    showMessage('#fileSuccessMessage', 'File deleted successfully!');
+                    showMessage('fileSuccessMessage', 'File deleted successfully!');
+                    fetchMedia();
+                    loadIpInfo();
                 },
                 error: function() {
-                    showMessage('#fileErrorMessage', 'Failed to delete file.', true);
+                    showMessage('fileErrorMessage', 'Failed to delete file.');
                 }
             });
         }
 
-        function copyText() {
-            var text = $('#textInput').val();
+        function showFullscreen(imageSrc) {
+            $('#fullscreenImage').attr('src', imageSrc);
+            $('#fullscreenOverlay').addClass('show');
+        }
 
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                // Modern browsers
-                navigator.clipboard.writeText(text)
-                    .then(function() {
-                        jQuery('#saveBtn').addClass('copied')
-                        showMessage('#textSuccessMessage', 'Text copied to clipboard!');
-                        setTimeout(() => {
-                            jQuery('#saveBtn').removeClass('copied')
-                        }, 1000)
-                    })
-                    .catch(function(err) {
-                        fallbackCopyText(text);
-                    });
-            } else {
-                // Fallback for older browsers
-                fallbackCopyText(text);
+        $('#fullscreenClose, #fullscreenOverlay').click(function(e) {
+            if (e.target === this) {
+                $('#fullscreenOverlay').removeClass('show');
             }
-        }
+        });
 
-        function fallbackCopyText(text) {
-            var tempTextArea = document.createElement("textarea");
-            tempTextArea.value = text;
-            document.body.appendChild(tempTextArea);
-            tempTextArea.select();
-            document.execCommand("copy"); // Fallback method
-            document.body.removeChild(tempTextArea);
-            jQuery('#saveBtn').addClass('copied')
-            showMessage('#textSuccessMessage', 'Text copied to clipboard!');
-            setTimeout(() => {
-                jQuery('#saveBtn').removeClass('copied')
-            }, 1000)
-        }
-
-        function detectLinks() {
-            var text = $('#textInput').val(); // Get text from textarea
-            var urlRegex = /(https?:\/\/[^\s]+)/g; // Regular expression to detect URLs
-            var linksContainer = $('#linksContainer'); // Div where links will be shown
-
-            linksContainer.empty(); // Clear old links
-
-            var matches = text.match(urlRegex); // Find all URLs
-            if (matches) {
-                matches.forEach(function(url) {
-                    var linkElement = $('<a></a>')
-                        .attr('href', url)
-                        .attr('target', '_blank')
-                        .text(url)
-                        .css({
-                            'display': 'block',
-                            'color': '#1b3fab',
-                            'margin-top': '5px'
-                        }); // Styling links
-
-                    linksContainer.append(linkElement); // Append new link
-                });
-            }
-        }
-
-        function showCopyButton() {
-            $('#saveBtn').html(`
-        <span id="copyTextBtn">Copy</span>
-        <div id="loader" class="loader"></div>
-        <div id="loadingText" class="loading-text">Saving...</div>
-    `);
-            $('#saveBtn').off('click').on('click', copyText); // Copy button click event bind karein
-        }
-
-        function showSaveButton() {
-            $('#saveBtn').html(`
-        <span id="saveTextBtn">Save</span>
-        <div id="loader" class="loader"></div>
-        <div id="loadingText" class="loading-text">Saving...</div>
-    `);
-            $('#saveBtn').off('click').on('click', saveText); // Save button click event bind karein
-        }
-
-        function updateCharCount() {
-            const text = $('#textInput').val();
-            const count = text.length;
-            $('#charCount').text(count);
+        function showMessage(elementId, message) {
+            const element = $(`#${elementId}`);
+            element.find('span').text(message);
+            element.show();
             
-            if (count > 45000) {
-                $('#charCount').css('color', '#c62828');
-            } else if (count > 40000) {
-                $('#charCount').css('color', '#f57c00');
-            } else {
-                $('#charCount').css('color', '#666');
-            }
+            setTimeout(() => {
+                element.hide();
+            }, 5000);
         }
-
-        function checkText() {
-            var text = $('#textInput').val();
-            if (text.length > 0) {
-                $('.clear-button-container').show();
-            } else {
-                $('.clear-button-container').hide();
-            }
-            showSaveButton(); // Jaise hi text change ho, Save button wapas aajaye
-            updateCharCount();
-        }
-
-        function clearText() {
-            $('#textInput').val('');
-            $('.clear-button-container').hide();
-            updateCharCount();
-            saveText();
-        }
-
-        $('#textInput').on('input', function() {
-            showSaveButton();
-            detectLinks(); // Call function when user types
-            updateCharCount();
-        });
-
-        $('#saveBtn').on('click', saveText);
-
-        document.addEventListener("DOMContentLoaded", function() {
-            const dropZone = document.getElementById("dropZone");
-            const fileInput = document.getElementById("fileInput");
-            const previewContainer = document.getElementById("filePreviewContainer");
-            const fullScreenPreview = document.getElementById("fullScreenPreview");
-            const previewImage = document.getElementById("previewImage");
-            const closePreview = document.getElementById("closePreview");
-            const uploadProgress = document.getElementById("uploadProgress");
-            const progressFill = document.getElementById("progressFill");
-
-            const maxFiles = 20;
-            const maxFileSize = 10 * 1024 * 1024; // 10MB
-            let uploadedFiles = []; // Store uploaded files
-            let isUploading = false;
-
-            dropZone.addEventListener("click", () => fileInput.click());
-
-            dropZone.addEventListener("dragover", (e) => {
-                e.preventDefault();
-                dropZone.classList.add("dragover");
-            });
-
-            dropZone.addEventListener("dragleave", () => {
-                dropZone.classList.remove("dragover");
-            });
-
-            dropZone.addEventListener("drop", (e) => {
-                e.preventDefault();
-                dropZone.classList.remove("dragover");
-                handleFiles(e.dataTransfer.files);
-            });
-
-            fileInput.addEventListener("change", (e) => {
-                handleFiles(e.target.files);
-            });
-
-            function handleFiles(files) {
-                if (isUploading) {
-                    showMessage('#fileErrorMessage', 'Please wait for current upload to complete.', true);
-                    return;
-                }
-                
-                if (uploadedFiles.length + files.length > maxFiles) {
-                    showMessage('#fileErrorMessage', `You can only upload up to ${maxFiles} files.`, true);
-                    return;
-                }
-
-                [...files].forEach((file) => {
-                    if (file.size > maxFileSize) {
-                        showMessage('#fileErrorMessage', `${file.name} exceeds the 10MB limit.`, true);
-                        return;
-                    }
-                    uploadFile(file);
-                });
-            }
-
-            function uploadFile(file) {
-                isUploading = true;
-                uploadProgress.style.display = 'block';
-                
-                const reader = new FileReader();
-                const previewDiv = document.createElement("div");
-                previewDiv.classList.add("file-preview");
-
-                const parentLoader = document.createElement("div");
-                parentLoader.classList.add("wrapper-loader");
-                const loader = document.createElement("div");
-                loader.classList.add("loader");
-                parentLoader.appendChild(loader);
-
-                previewDiv.appendChild(parentLoader);
-                previewContainer.appendChild(previewDiv);
-
-                reader.onload = function(e) {
-                    if (file.type.startsWith("image/")) {
-                        const img = document.createElement("img");
-                        img.src = e.target.result;
-                        previewDiv.title = `View: ${file.name}`; // 🏷 Tooltip
-                        previewDiv.appendChild(img);
-                        previewDiv.addEventListener("click", () => openFullScreenPreview(e.target.result));
-                    } else {
-                        const fileIcon = document.createElement("span");
-                        fileIcon.textContent = "📄"; // Non-image file icon
-                        fileIcon.style.fontSize = "40px";
-                        previewDiv.appendChild(fileIcon);
-                        previewDiv.title = `Download: ${file.name}`; // 🏷 Tooltip
-                        previewDiv.addEventListener("click", () => downloadFile(file));
-                    }
-                    
-                    // Add file info
-                    const fileInfo = document.createElement("div");
-                    fileInfo.classList.add("file-info");
-                    fileInfo.innerHTML = `${file.name}<br>${formatFileSize(file.size)}`;
-                    previewDiv.appendChild(fileInfo);
-
-                    const deleteBtn = document.createElement("button");
-                    deleteBtn.textContent = "X";
-                    deleteBtn.classList.add("delete-btn");
-                    deleteBtn.title = 'Delete';
-
-                    deleteBtn.addEventListener("click", (e) => {
-                        e.stopPropagation(); // Prevents triggering full-screen preview on click
-
-                        const fileUUID = previewDiv.getAttribute("data-uuid");
-                        if (fileUUID) {
-                            deleteFileFromServer(fileUUID, previewDiv);
-                        } else {
-                            previewDiv.remove(); // Directly remove if not uploaded
-                            uploadedFiles = uploadedFiles.filter(f => f !== file);
-                        }
-                    });
-
-                    previewDiv.appendChild(deleteBtn);
-                    uploadedFiles.push(file); // Add file to uploaded list
-
-                    sendToServer(file, previewDiv, parentLoader);
-                };
-                reader.readAsDataURL(file);
-            }
-
-            function deleteFileFromServer(uuid, previewDiv) {
-                const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-
-                fetch(`/api/v1/media/${uuid}`, {
-                        method: "DELETE",
-                        headers: {
-                            "X-CSRF-TOKEN": csrfToken,
-                            "Content-Type": "application/json"
-                        }
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            previewDiv.remove(); // Remove preview only if delete is successful
-                            uploadedFiles = uploadedFiles.filter(f => f.uuid !== uuid);
-                            loadIpInfo(); // Update IP info
-                            showMessage('#fileSuccessMessage', 'File deleted successfully!');
-                        } else {
-                            showMessage('#fileErrorMessage', 'Failed to delete file.', true);
-                        }
-                    })
-                    .catch(error => {
-                        console.error("Delete Failed:", error);
-                        showMessage('#fileErrorMessage', 'Failed to delete file.', true);
-                    });
-            }
-
-
-            function sendToServer(file, previewDiv, parentLoader) {
-                const formData = new FormData();
-                formData.append("file", file);
-
-                // CSRF token get karne ke liye meta tag se value le rahe hain
-                const csrfToken = $('meta[name="csrf-token"]').attr('content');
-
-                $.ajax({
-                    url: "{{ route('share.store.media') }}",
-                    type: "POST",
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    headers: {
-                        "X-CSRF-TOKEN": csrfToken // CSRF token header mein send kar rahe hain
-                    },
-                    xhr: function() {
-                        const xhr = new window.XMLHttpRequest();
-                        xhr.upload.addEventListener("progress", function(evt) {
-                            if (evt.lengthComputable) {
-                                const percentComplete = (evt.loaded / evt.total) * 100;
-                                progressFill.style.width = percentComplete + '%';
-                            }
-                        }, false);
-                        return xhr;
-                    },
-                    success: function(data) {
-                        parentLoader.remove();
-                        isUploading = false;
-                        uploadProgress.style.display = 'none';
-                        progressFill.style.width = '0%';
-                        
-                        if (data?.uuid) {
-                            previewDiv.setAttribute("data-uuid", data.uuid);
-                            uploadedFiles.push(data?.uuid); // Add file to uploaded list
-                        }
-                        
-                        loadIpInfo(); // Update IP info
-                        showMessage('#fileSuccessMessage', 'File uploaded successfully!');
-                    },
-                    error: function(xhr, status, error) {
-                        parentLoader.remove();
-                        isUploading = false;
-                        uploadProgress.style.display = 'none';
-                        progressFill.style.width = '0%';
-
-                        let errorMessage = "Something went wrong!";
-                        if (xhr.status === 404) {
-                            errorMessage = "Error 404: File not found!";
-                        } else if (xhr.status === 429) {
-                            errorMessage = "Error 429: Too many requests! Please slow down.";
-                        } else if (xhr.status === 500) {
-                            errorMessage = "Error 500: Internal server error! Please try again later.";
-                        } else if (xhr.responseJSON && xhr.responseJSON.message) {
-                            errorMessage = xhr.responseJSON.message;
-                        } else {
-                            errorMessage = `Error ${xhr.status}: ${xhr.responseText}`;
-                        }
-
-                        showMessage('#fileErrorMessage', errorMessage, true);
-                        console.error("Upload Failed:", errorMessage);
-                    }
-                });
-            }
-
-            function formatFileSize(bytes) {
-                if (bytes >= 1073741824) {
-                    return (bytes / 1073741824).toFixed(2) + ' GB';
-                } else if (bytes >= 1048576) {
-                    return (bytes / 1048576).toFixed(2) + ' MB';
-                } else if (bytes >= 1024) {
-                    return (bytes / 1024).toFixed(2) + ' KB';
-                } else {
-                    return bytes + ' bytes';
-                }
-            }
-
-            function openFullScreenPreview(imageSrc) {
-                const previewImage = document.getElementById("previewImage");
-                const fullScreenPreview = document.getElementById("fullScreenPreview");
-                const downloadPreview = document.getElementById("downloadPreview");
-
-                previewImage.src = imageSrc;
-                downloadPreview.href = imageSrc; // Set download link
-                downloadPreview.download = "downloaded-image"; // Default name
-
-                fullScreenPreview.classList.add("show");
-            }
-
-            closePreview.addEventListener("click", () => {
-                fullScreenPreview.classList.remove("show");
-            });
-
-            function downloadFile(file) {
-                const url = URL.createObjectURL(file);
-                const a = document.createElement("a");
-                a.href = url;
-                a.download = file.name;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-            }
-        });
     </script>
-
-
 @endsection
