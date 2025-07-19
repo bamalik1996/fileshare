@@ -13,10 +13,16 @@ class HomeController extends Controller
         return view('home');
     }
 
-    public function aboutUs()
+    public function howItWorks()
     {
-        return view('about');
+        return view('how-it-works');
     }
+
+    public function faq()
+    {
+        return view('faq');
+    }
+    
     public function feedback()
     {
         return view('feedback');

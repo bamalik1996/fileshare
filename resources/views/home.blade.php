@@ -1,6 +1,41 @@
 @extends('layouts.app')
 
-@section('title', 'AirForShare - Instant File Sharing')
+@section('title', 'AirForShare - Instant File Sharing Across Devices | Local Network File Transfer')
+@section('description', 'Share files and text instantly across devices on the same Wi-Fi network. No accounts, no external servers - just secure peer-to-peer file sharing up to 10MB per file.')
+@section('keywords', 'file sharing, instant sharing, local network, Wi-Fi sharing, cross-device, secure sharing, peer-to-peer, no account required')
+
+@section('schema')
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "AirForShare",
+  "description": "Instant file sharing across devices on the same network",
+  "url": "{{ url('/') }}",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Web Browser",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "featureList": [
+    "Instant file sharing",
+    "Text sharing",
+    "Cross-device compatibility",
+    "No account required",
+    "Local network only",
+    "Secure file transfer"
+  ],
+  "browserRequirements": "Requires JavaScript. Requires HTML5.",
+  "softwareVersion": "1.0",
+  "author": {
+    "@type": "Organization",
+    "name": "AirForShare"
+  }
+}
+</script>
+@endsection
 
 @section('content')
     <style>

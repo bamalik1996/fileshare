@@ -4,8 +4,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'AirForShare - Instant File Sharing')</title>
+    <title>@yield('title', 'AirForShare - Instant File Sharing Across Devices')</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="@yield('description', 'Share files and text instantly across devices on the same network. Simple, fast, and secure file sharing without accounts or external servers.')">
+    <meta name="keywords" content="@yield('keywords', 'file sharing, instant sharing, local network, secure sharing, cross-device, no account required')">
+    <meta name="author" content="AirForShare">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="{{ url()->current() }}">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="@yield('og_title', 'AirForShare - Instant File Sharing')">
+    <meta property="og:description" content="@yield('og_description', 'Share files and text instantly across devices on the same network. Simple, fast, and secure.')">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:site_name" content="AirForShare">
+    <meta property="og:locale" content="en_US">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="@yield('twitter_title', 'AirForShare - Instant File Sharing')">
+    <meta name="twitter:description" content="@yield('twitter_description', 'Share files and text instantly across devices on the same network.')">
+    
+    <!-- Schema.org JSON-LD -->
+    @yield('schema')
 
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -356,9 +379,13 @@
                         <i class="fas fa-home" style="margin-right: 0.5rem;"></i>
                         Home
                     </a>
-                    <a class="navbar-item" href="{{ url('/about-us') }}">
+                    <a class="navbar-item" href="{{ url('/how-it-works') }}">
                         <i class="fas fa-info-circle" style="margin-right: 0.5rem;"></i>
-                        About
+                        How It Works
+                    </a>
+                    <a class="navbar-item" href="{{ url('/faq') }}">
+                        <i class="fas fa-question-circle" style="margin-right: 0.5rem;"></i>
+                        FAQ
                     </a>
                     <a class="navbar-item" href="{{ url('/feedback') }}">
                         <i class="fas fa-comment" style="margin-right: 0.5rem;"></i>

@@ -1,6 +1,29 @@
 @extends('layouts.app')
 
-@section('title', 'Feedback - AirForShare')
+@section('title', 'Feedback & Support - AirForShare | Contact Us')
+@section('description', 'Send feedback, report bugs, or request features for AirForShare. Our support team is here to help improve your file sharing experience.')
+@section('keywords', 'AirForShare feedback, contact support, bug report, feature request, file sharing help')
+
+@section('schema')
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ContactPage",
+  "name": "AirForShare Feedback & Support",
+  "description": "Contact AirForShare support team for feedback, bug reports, and feature requests",
+  "url": "{{ url('/feedback') }}",
+  "mainEntity": {
+    "@type": "Organization",
+    "name": "AirForShare",
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "contactType": "Customer Support",
+      "availableLanguage": "English"
+    }
+  }
+}
+</script>
+@endsection
 
 @section('content')
     <style>
