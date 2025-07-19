@@ -1,8 +1,8 @@
 @extends('layouts.app')
 
-@section('title', 'FAQ - Frequently Asked Questions | AirForShare Help Center')
-@section('description', 'Find answers to common questions about AirForShare file sharing. Learn about security, file limits, compatibility, and troubleshooting tips.')
-@section('keywords', 'AirForShare FAQ, file sharing help, troubleshooting, file sharing questions, local network sharing help')
+@section('title', 'FAQ - Frequently Asked Questions | AirToShare Help Center')
+@section('description', 'Find answers to common questions about AirToShare file sharing. Learn about security, file limits, compatibility, and troubleshooting tips.')
+@section('keywords', 'AirToShare FAQ, file sharing help, troubleshooting, file sharing questions, local network sharing help')
 
 @section('schema')
 <script type="application/ld+json">
@@ -12,18 +12,18 @@
   "mainEntity": [
     {
       "@type": "Question",
-      "name": "Is AirForShare safe to use?",
+      "name": "Is AirToShare safe to use?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Yes, AirForShare is completely safe. Your files never leave your local Wi-Fi network and are not uploaded to any external servers. All sharing happens directly between devices on the same network."
+        "text": "Yes, AirToShare is completely safe. Your files never leave your local Wi-Fi network and are not uploaded to any external servers. All sharing happens directly between devices on the same network."
       }
     },
     {
       "@type": "Question", 
-      "name": "What file types are supported?",
+      "name": "What file types does AirToShare support?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "AirForShare supports images (JPEG, PNG, GIF, WebP, SVG), documents (PDF, DOC, DOCX), text files, and archives (ZIP, RAR). Each file can be up to 10MB in size."
+        "text": "AirToShare supports images (JPEG, PNG, GIF, WebP, SVG), documents (PDF, DOC, DOCX), text files, and archives (ZIP, RAR). Each file can be up to 10MB in size."
       }
     },
     {
@@ -44,10 +44,10 @@
     },
     {
       "@type": "Question",
-      "name": "Do I need to create an account?",
+      "name": "Do I need to create an account for AirToShare?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "No account is required! AirForShare works instantly without any registration. Just connect to the same Wi-Fi network and start sharing."
+        "text": "No account is required! AirToShare works instantly without any registration. Just connect to the same Wi-Fi network and start sharing."
       }
     }
   ]
@@ -61,8 +61,10 @@
             text-align: center;
             margin-bottom: 4rem;
             padding: 3rem 2rem;
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            background: var(--bg-gradient-light);
             border-radius: var(--border-radius);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(14, 165, 233, 0.2);
         }
 
         .faq-title {
@@ -359,11 +361,11 @@
             <!-- Security & Privacy Questions -->
             <div class="faq-item" data-category="security">
                 <button class="faq-question">
-                    <span>Is AirForShare safe to use?</span>
+                    <span>Is AirToShare safe to use?</span>
                     <i class="fas fa-chevron-down faq-icon"></i>
                 </button>
                 <div class="faq-answer">
-                    <p>Yes, AirForShare is completely safe to use. Your files never leave your local Wi-Fi network and are not uploaded to any external servers. All sharing happens directly between devices on the same network.</p>
+                    <p>Yes, AirToShare is completely safe to use. Your files never leave your local Wi-Fi network and are not uploaded to any external servers. All sharing happens directly between devices on the same network.</p>
                     <p>Key security features:</p>
                     <ul>
                         <li>Files stay on your local network only</li>
@@ -414,11 +416,11 @@
             <!-- Usage & Features Questions -->
             <div class="faq-item" data-category="usage">
                 <button class="faq-question">
-                    <span>What file types are supported?</span>
+                    <span>What file types does AirToShare support?</span>
                     <i class="fas fa-chevron-down faq-icon"></i>
                 </button>
                 <div class="faq-answer">
-                    <p>AirForShare supports a wide range of file types:</p>
+                    <p>AirToShare supports a wide range of file types:</p>
                     <ul>
                         <li><strong>Images:</strong> JPEG, PNG, GIF, WebP, SVG</li>
                         <li><strong>Documents:</strong> PDF, DOC, DOCX</li>
@@ -463,32 +465,32 @@
 
             <div class="faq-item" data-category="usage">
                 <button class="faq-question">
-                    <span>Can I send files via email?</span>
+                    <span>Can I send files via email using AirToShare?</span>
                     <i class="fas fa-chevron-down faq-icon"></i>
                 </button>
                 <div class="faq-answer">
-                    <p>Yes, you can email files directly from AirForShare. Select the files you want to send, click the "Email" button, and fill in the recipient's email address along with a custom message.</p>
+                    <p>Yes, you can email files directly from AirToShare. Select the files you want to send, click the "Email" button, and fill in the recipient's email address along with a custom message.</p>
                     <p>The files will be sent as email attachments, making it easy to share with people not on your network.</p>
                 </div>
             </div>
 
             <div class="faq-item" data-category="usage">
                 <button class="faq-question">
-                    <span>Do I need to create an account?</span>
+                    <span>Do I need to create an account for AirToShare?</span>
                     <i class="fas fa-chevron-down faq-icon"></i>
                 </button>
                 <div class="faq-answer">
-                    <p>No account is required! AirForShare works instantly without any registration. Just connect to the same Wi-Fi network and start sharing. This makes it perfect for quick, hassle-free file sharing.</p>
+                    <p>No account is required! AirToShare works instantly without any registration. Just connect to the same Wi-Fi network and start sharing. This makes it perfect for quick, hassle-free file sharing.</p>
                 </div>
             </div>
 
             <div class="faq-item" data-category="usage">
                 <button class="faq-question">
-                    <span>Can I share text as well as files?</span>
+                    <span>Can I share text as well as files with AirToShare?</span>
                     <i class="fas fa-chevron-down faq-icon"></i>
                 </button>
                 <div class="faq-answer">
-                    <p>Absolutely! AirForShare has a dedicated text sharing feature. You can paste up to 50,000 characters of text, and it will automatically detect and make URLs clickable.</p>
+                    <p>Absolutely! AirToShare has a dedicated text sharing feature. You can paste up to 50,000 characters of text, and it will automatically detect and make URLs clickable.</p>
                     <p>Text features include:</p>
                     <ul>
                         <li>Character counter</li>
@@ -502,11 +504,11 @@
             <!-- Technical Issues Questions -->
             <div class="faq-item" data-category="technical">
                 <button class="faq-question">
-                    <span>What devices and browsers are supported?</span>
+                    <span>What devices and browsers does AirToShare support?</span>
                     <i class="fas fa-chevron-down faq-icon"></i>
                 </button>
                 <div class="faq-answer">
-                    <p>AirForShare works on any device with a modern web browser, including:</p>
+                    <p>AirToShare works on any device with a modern web browser, including:</p>
                     <ul>
                         <li><strong>Desktop:</strong> Windows, Mac, Linux</li>
                         <li><strong>Mobile:</strong> iOS (Safari), Android (Chrome)</li>
@@ -569,11 +571,11 @@
 
             <div class="faq-item" data-category="technical">
                 <button class="faq-question">
-                    <span>Can I use AirForShare on mobile data?</span>
+                    <span>Can I use AirToShare on mobile data?</span>
                     <i class="fas fa-chevron-down faq-icon"></i>
                 </button>
                 <div class="faq-answer">
-                    <p>While AirForShare works on mobile data, it's designed for local Wi-Fi networks. Using mobile data means:</p>
+                    <p>While AirToShare works on mobile data, it's designed for local Wi-Fi networks. Using mobile data means:</p>
                     <ul>
                         <li>Files are only accessible from that specific device</li>
                         <li>No cross-device sharing capability</li>
@@ -591,7 +593,7 @@
             Still Need Help?
         </h2>
         <p class="contact-text">
-            Can't find the answer you're looking for? Our support team is here to help you get the most out of AirForShare.
+            Can't find the answer you're looking for? Our support team is here to help you get the most out of AirToShare.
         </p>
         <a href="{{ url('/feedback') }}" class="contact-button">
             <i class="fas fa-envelope"></i>

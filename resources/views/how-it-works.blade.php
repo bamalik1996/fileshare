@@ -1,16 +1,16 @@
 @extends('layouts.app')
 
-@section('title', 'How AirForShare Works - Step by Step Guide | File Sharing Tutorial')
-@section('description', 'Learn how to use AirForShare for instant file sharing across devices. Step-by-step guide for sharing files and text on the same Wi-Fi network securely.')
-@section('keywords', 'how to share files, file sharing tutorial, AirForShare guide, cross-device sharing, Wi-Fi file transfer, local network sharing')
+@section('title', 'How AirToShare Works - Step by Step Guide | File Sharing Tutorial')
+@section('description', 'Learn how to use AirToShare for instant file sharing across devices. Step-by-step guide for sharing files and text on the same Wi-Fi network securely.')
+@section('keywords', 'how to share files, file sharing tutorial, AirToShare guide, cross-device sharing, Wi-Fi file transfer, local network sharing')
 
 @section('schema')
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "HowTo",
-  "name": "How to Share Files with AirForShare",
-  "description": "Step-by-step guide to share files and text across devices using AirForShare",
+  "name": "How to Share Files with AirToShare",
+  "description": "Step-by-step guide to share files and text across devices using AirToShare",
   "image": "{{ url('/') }}/favicon.ico",
   "totalTime": "PT2M",
   "estimatedCost": {
@@ -60,18 +60,21 @@
             text-align: center;
             margin-bottom: 4rem;
             padding: 3rem 2rem;
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            background: var(--bg-gradient-light);
             border-radius: var(--border-radius);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(14, 165, 233, 0.2);
         }
 
         .how-it-works-title {
-            font-size: 3rem;
+            font-size: 3.5rem;
             font-weight: 700;
             margin-bottom: 1rem;
             background: var(--bg-gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            letter-spacing: -0.025em;
         }
 
         .how-it-works-subtitle {
@@ -313,7 +316,7 @@
     <div class="how-it-works-hero">
         <h1 class="how-it-works-title">
             <i class="fas fa-lightbulb"></i>
-            How AirForShare Works
+            How AirToShare Works
         </h1>
         <p class="how-it-works-subtitle">
             Simple, secure, and instant file sharing across devices on your local network. 

@@ -1,8 +1,8 @@
 @extends('layouts.app')
 
-@section('title', 'Coming Soon - Exciting New Features | AirForShare')
-@section('description', 'Exciting new features are coming to AirForShare! Dark mode, clipboard sync, real-time collaboration, and more advanced file sharing capabilities.')
-@section('keywords', 'AirForShare updates, new features, dark mode, clipboard sync, file sharing improvements, coming soon')
+@section('title', 'Coming Soon - Exciting New Features | AirToShare')
+@section('description', 'Exciting new features are coming to AirToShare! Dark mode, clipboard sync, real-time collaboration, and more advanced file sharing capabilities.')
+@section('keywords', 'AirToShare updates, new features, dark mode, clipboard sync, file sharing improvements, coming soon')
 
 @section('schema')
 <script type="application/ld+json">
@@ -10,11 +10,11 @@
   "@context": "https://schema.org",
   "@type": "WebPage",
   "name": "Coming Soon - New Features",
-  "description": "Exciting new features coming to AirForShare file sharing platform",
+  "description": "Exciting new features coming to AirToShare file sharing platform",
   "url": "{{ url('/coming-soon') }}",
   "mainEntity": {
     "@type": "SoftwareApplication",
-    "name": "AirForShare",
+    "name": "AirToShare",
     "applicationCategory": "UtilitiesApplication",
     "operatingSystem": "Web Browser",
     "offers": {
@@ -436,7 +436,7 @@
             Exciting Features Coming Soon!
         </h1>
         <p class="coming-soon-subtitle">
-            We're working hard to bring you amazing new features that will make file sharing even more powerful, 
+            We're working hard to bring you amazing new features that will make AirToShare even more powerful, 
             intuitive, and enjoyable. Get ready for the next level of AirForShare!
         </p>
         <div class="launch-badge">
@@ -637,7 +637,7 @@
             Stay Updated
         </h2>
         <p class="newsletter-text">
-            Be the first to know when new features launch! Get exclusive early access and updates delivered to your inbox.
+            Be the first to know when new AirToShare features launch! Get exclusive early access and updates delivered to your inbox.
         </p>
         <form class="newsletter-form" id="newsletterForm">
             <input type="email" class="newsletter-input" placeholder="Enter your email address" required>

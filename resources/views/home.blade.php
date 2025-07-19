@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'AirForShare - Instant File Sharing Across Devices | Local Network File Transfer')
-@section('description', 'Share files and text instantly across devices on the same Wi-Fi network. No accounts, no external servers - just secure peer-to-peer file sharing up to 10MB per file.')
+@section('description', 'AirToShare - Share files and text instantly across devices on the same Wi-Fi network. No accounts, no external servers - just secure peer-to-peer file sharing up to 10MB per file.')
 @section('keywords', 'file sharing, instant sharing, local network, Wi-Fi sharing, cross-device, secure sharing, peer-to-peer, no account required')
 
 @section('schema')
@@ -9,7 +9,7 @@
 {
   "@context": "https://schema.org",
   "@type": "WebApplication",
-  "name": "AirForShare",
+  "name": "AirToShare",
   "description": "Instant file sharing across devices on the same network",
   "url": "{{ url('/') }}",
   "applicationCategory": "UtilitiesApplication",
@@ -31,7 +31,7 @@
   "softwareVersion": "1.0",
   "author": {
     "@type": "Organization",
-    "name": "AirForShare"
+    "name": "AirToShare"
   }
 }
 </script>
@@ -47,7 +47,7 @@
         .modern-textarea {
             width: 100%;
             min-height: 300px;
-            border: 2px solid rgba(102, 126, 234, 0.2);
+            border: 2px solid rgba(14, 165, 233, 0.2);
             border-radius: var(--border-radius);
             padding: 1.5rem;
             font-size: 1.1rem;
@@ -57,11 +57,12 @@
             resize: vertical;
             transition: var(--transition);
             outline: none;
+            backdrop-filter: blur(5px);
         }
 
         .modern-textarea:focus {
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            box-shadow: 0 0 0 3px var(--bg-gradient-light);
         }
 
         .textarea-footer {
@@ -70,13 +71,13 @@
             align-items: center;
             margin-top: 1rem;
             padding-top: 1rem;
-            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            border-top: 1px solid rgba(14, 165, 233, 0.1);
         }
 
         .char-counter {
             font-size: 0.875rem;
             color: var(--text-secondary);
-            font-weight: 500;
+            font-weight: 600;
         }
 
         .char-counter.warning {
@@ -95,9 +96,10 @@
         .links-container {
             margin-top: 1rem;
             padding: 1rem;
-            background: rgba(102, 126, 234, 0.05);
-            border-radius: 8px;
-            border-left: 4px solid var(--primary-color);
+            background: var(--bg-gradient-light);
+            border-radius: var(--border-radius-sm);
+            border: 1px solid rgba(14, 165, 233, 0.2);
+            backdrop-filter: blur(5px);
         }
 
         .detected-link {
@@ -105,12 +107,12 @@
             color: var(--primary-color);
             text-decoration: none;
             margin-bottom: 0.5rem;
-            font-weight: 500;
+            font-weight: 600;
             transition: var(--transition);
         }
 
         .detected-link:hover {
-            color: var(--primary-dark);
+            color: var(--primary-light);
             text-decoration: underline;
         }
 
@@ -120,28 +122,30 @@
         }
 
         .upload-zone {
-            border: 3px dashed rgba(102, 126, 234, 0.3);
+            border: 3px dashed rgba(14, 165, 233, 0.3);
             border-radius: var(--border-radius);
             padding: 3rem 2rem;
             text-align: center;
-            background: rgba(102, 126, 234, 0.02);
+            background: var(--bg-gradient-light);
             transition: var(--transition);
             cursor: pointer;
             position: relative;
             overflow: hidden;
+            backdrop-filter: blur(5px);
         }
 
         .upload-zone:hover {
             border-color: var(--primary-color);
-            background: rgba(102, 126, 234, 0.05);
+            background: var(--bg-gradient-light);
             transform: scale(1.01);
+            box-shadow: var(--shadow-md);
         }
 
         .upload-zone.dragover {
             border-color: var(--primary-color);
-            background: rgba(102, 126, 234, 0.1);
+            background: var(--bg-gradient-light);
             transform: scale(1.02);
-            box-shadow: var(--shadow-lg);
+            box-shadow: var(--shadow-colored);
             border-style: solid;
         }
 
@@ -155,7 +159,7 @@
 
         .upload-zone.dragover .upload-icon {
             transform: scale(1.1);
-            color: var(--primary-dark);
+            color: var(--primary-light);
         }
 
         .upload-text {
@@ -181,7 +185,7 @@
         .progress-bar {
             width: 100%;
             height: 8px;
-            background: rgba(102, 126, 234, 0.1);
+            background: var(--bg-tertiary);
             border-radius: 4px;
             overflow: hidden;
         }
@@ -191,6 +195,7 @@
             background: var(--bg-gradient);
             transition: width 0.3s ease;
             border-radius: 4px;
+            box-shadow: 0 0 10px rgba(14, 165, 233, 0.3);
         }
 
         .progress-text {
@@ -198,6 +203,7 @@
             margin-top: 0.5rem;
             font-size: 0.875rem;
             color: var(--text-secondary);
+            font-weight: 500;
         }
 
         /* File Selection and Download Controls */
@@ -207,9 +213,10 @@
             align-items: center;
             margin-bottom: 1rem;
             padding: 1rem;
-            background: rgba(102, 126, 234, 0.05);
+            background: var(--bg-gradient-light);
             border-radius: var(--border-radius);
-            border-left: 4px solid var(--primary-color);
+            border: 1px solid rgba(14, 165, 233, 0.2);
+            backdrop-filter: blur(5px);
         }
 
         .selection-info {
@@ -222,16 +229,18 @@
             background: transparent;
             border: 2px solid var(--primary-color);
             color: var(--primary-color);
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
+            padding: 0.75rem 1.25rem;
+            border-radius: var(--border-radius-sm);
             cursor: pointer;
-            font-weight: 500;
+            font-weight: 600;
             transition: var(--transition);
         }
 
         .select-all-btn:hover {
             background: var(--primary-color);
             color: white;
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
         }
 
         .download-controls {
@@ -278,9 +287,11 @@
             gap: 1.5rem;
             margin-top: 2rem;
             padding: 1.5rem;
-            background: rgba(102, 126, 234, 0.02);
+            background: var(--bg-gradient-light);
             border-radius: var(--border-radius);
             min-height: 200px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(14, 165, 233, 0.1);
         }
 
         .file-grid.empty {
@@ -295,22 +306,23 @@
             background: var(--bg-primary);
             border-radius: var(--border-radius);
             padding: 1rem;
-            box-shadow: var(--shadow-sm);
+            box-shadow: var(--shadow-md);
             transition: var(--transition);
             position: relative;
             cursor: pointer;
             border: 2px solid transparent;
+            backdrop-filter: blur(10px);
         }
 
         .file-item:hover {
             transform: translateY(-4px);
-            box-shadow: var(--shadow-lg);
+            box-shadow: var(--shadow-colored);
             border-color: var(--primary-color);
         }
 
         .file-item.selected {
             border-color: var(--primary-color);
-            background: rgba(102, 126, 234, 0.05);
+            background: var(--bg-gradient-light);
         }
 
         .file-checkbox {
@@ -622,8 +634,8 @@
     <!-- Hero Section -->
     <div class="hero-section">
         <h1 class="hero-title">
-            <i class="fas fa-cloud-upload-alt"></i>
-            AirForShare
+            <i class="fas fa-paper-plane" style="color: var(--primary-color);"></i>
+            AirToShare
         </h1>
         <p class="hero-subtitle">
             Share files and text instantly across devices on the same network.
