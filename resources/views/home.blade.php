@@ -1,11 +1,13 @@
 @extends('layouts.app')
 
 @section('title', 'AirForShare - Instant File Sharing Across Devices | Local Network File Transfer')
-@section('description', 'AirToShare - Share files and text instantly across devices on the same Wi-Fi network. No accounts, no external servers - just secure peer-to-peer file sharing up to 10MB per file.')
-@section('keywords', 'file sharing, instant sharing, local network, Wi-Fi sharing, cross-device, secure sharing, peer-to-peer, no account required')
+@section('description', 'AirToShare - Share files and text instantly across devices on the same Wi-Fi network. No
+    accounts, no external servers - just secure peer-to-peer file sharing up to 10MB per file.')
+@section('keywords', 'file sharing, instant sharing, local network, Wi-Fi sharing, cross-device, secure sharing,
+    peer-to-peer, no account required')
 
 @section('schema')
-<script type="application/ld+json">
+    <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "WebApplication",
@@ -177,6 +179,7 @@
         .upload-zone.dragover .upload-text {
             color: var(--primary-color);
         }
+
         .progress-container {
             margin-top: 1rem;
             display: none;
@@ -280,6 +283,7 @@
         .email-btn:hover {
             background: var(--primary-dark);
         }
+
         /* File Preview Grid */
         .file-grid {
             display: grid;
@@ -334,6 +338,7 @@
             cursor: pointer;
             z-index: 5;
         }
+
         .file-preview {
             width: 100%;
             height: 120px;
@@ -494,6 +499,7 @@
             outline: none;
             border-color: var(--primary-color);
         }
+
         /* Messages */
         .message {
             padding: 1rem 1.5rem;
@@ -600,6 +606,7 @@
 
         /* Responsive Design */
         @media (max-width: 768px) {
+
             .text-container,
             .file-container {
                 padding: 1rem;
@@ -680,12 +687,9 @@
         <!-- Text Tab -->
         <div class="tab-content active" id="text-tab">
             <div class="text-container">
-                <textarea
-                    class="modern-textarea"
-                    id="textInput"
+                <textarea class="modern-textarea" id="textInput"
                     placeholder="Type or paste your text here... Links will be automatically detected and made clickable."
-                    maxlength="50000"
-                ></textarea>
+                    maxlength="50000"></textarea>
 
                 <div class="textarea-footer">
                     <div class="char-counter" id="charCounter">0 / 50,000 characters</div>
@@ -729,7 +733,8 @@
                         <br>
                         <small>Supported: Images, PDF, DOC, TXT, ZIP</small>
                     </div>
-                    <input type="file" id="fileInput" multiple accept="image/*,.pdf,.docx,.txt,.zip" style="display: none;">
+                    <input type="file" id="fileInput" multiple accept="image/*,.pdf,.docx,.txt,.zip"
+                        style="display: none;">
 
                     <div class="progress-container" id="progressContainer">
                         <div class="progress-bar">
@@ -747,7 +752,7 @@
                     <i class="fas fa-exclamation-circle"></i>
                     <span></span>
                 </div>
-
+                <br />
                 <!-- File Controls -->
                 <div class="file-controls" id="fileControls" style="display: none;">
                     <div class="selection-info">
@@ -770,7 +775,8 @@
                 </div>
                 <div class="file-grid" id="fileGrid">
                     <div class="empty-state">
-                        <i class="fas fa-folder-open" style="font-size: 3rem; color: var(--text-secondary); margin-bottom: 1rem;"></i>
+                        <i class="fas fa-folder-open"
+                            style="font-size: 3rem; color: var(--text-secondary); margin-bottom: 1rem;"></i>
                         <p>No files uploaded yet. Start by dragging files above!</p>
                     </div>
                 </div>
@@ -803,7 +809,8 @@
             <form id="emailForm">
                 <div class="form-group">
                     <label class="form-label">To Email:</label>
-                    <input type="email" class="form-input" id="toEmail" placeholder="recipient@example.com" required>
+                    <input type="email" class="form-input" id="toEmail" placeholder="recipient@example.com"
+                        required>
                 </div>
                 <div class="form-group">
                     <label class="form-label">Subject:</label>
@@ -996,7 +1003,9 @@
             $.ajax({
                 url: '{{ route('share.store.text') }}',
                 method: 'POST',
-                data: JSON.stringify({ text: text }),
+                data: JSON.stringify({
+                    text: text
+                }),
                 contentType: 'application/json',
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -1069,7 +1078,8 @@
             // Fix click handler to prevent infinite loop
             uploadZone.off('click').on('click', function(e) {
                 // Only trigger file input if not clicking on other elements
-                if (e.target === this || $(e.target).hasClass('upload-icon') || $(e.target).hasClass('upload-text') || $(e.target).hasClass('upload-subtext')) {
+                if (e.target === this || $(e.target).hasClass('upload-icon') || $(e.target).hasClass(
+                    'upload-text') || $(e.target).hasClass('upload-subtext')) {
                     fileInput.trigger('click');
                 }
             });
@@ -1143,6 +1153,7 @@
                 sendEmailWithFiles();
             });
         }
+
         function handleFileUpload(files) {
             if (files.length === 0) return;
 
@@ -1337,9 +1348,12 @@
                 const fileItem = $(`.file-item[data-uuid="${uuid}"]`);
                 const fileName = fileItem.find('.file-name').text();
                 const fileUrl = fileItem.find('.file-preview img').attr('src') ||
-                               fileItem.find('.action-btn.download').data('url');
+                    fileItem.find('.action-btn.download').data('url');
 
-                downloadSingleFile({ original_url: fileUrl, name: fileName });
+                downloadSingleFile({
+                    original_url: fileUrl,
+                    name: fileName
+                });
             } else {
                 // Multiple files - create zip
                 downloadAsZip();
@@ -1354,7 +1368,9 @@
             $.ajax({
                 url: '/api/v1/download-zip',
                 method: 'POST',
-                data: JSON.stringify({ uuids: selectedUuids }),
+                data: JSON.stringify({
+                    uuids: selectedUuids
+                }),
                 contentType: 'application/json',
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -1435,6 +1451,7 @@
                 }
             });
         }
+
         function deleteFile(uuid) {
             if (!confirm('Are you sure you want to delete this file?')) return;
 
@@ -1443,7 +1460,9 @@
             $.ajax({
                 url: '{{ route('share.delete.media') }}',
                 method: 'DELETE',
-                data: { uuid: uuid },
+                data: {
+                    uuid: uuid
+                },
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
