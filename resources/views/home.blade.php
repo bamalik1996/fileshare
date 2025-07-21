@@ -282,6 +282,14 @@
             background: var(--primary-dark);
         }
 
+        .danger-btn {
+            background: var(--error-color);
+        }
+
+        .danger-btn:hover {
+            background: #dc2626;
+        }
+
         /* File Preview Grid */
         .file-grid {
             display: grid;
@@ -824,8 +832,47 @@
                         <span id="sendEmailText">Send Email</span>
                         <div class="loading-spinner" id="emailLoader" style="display: none;"></div>
                     </button>
+                    <button class="download-btn danger-btn" id="removeAllBtn">
+                        <i class="fas fa-trash-alt"></i>
+                        Remove All
+                    </button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Remove All Confirmation Modal -->
+    <div class="modal-overlay" id="removeAllModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" style="color: var(--error-color);">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Remove All Files
+                </h3>
+                <button class="modal-close" id="removeAllModalClose">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div style="padding: 1rem 0;">
+                <p style="color: var(--text-primary); font-size: 1.1rem; margin-bottom: 1rem;">
+                    <strong>Are you sure you want to remove all files?</strong>
+                </p>
+                <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                    This action will permanently delete all <span id="totalFilesCount">0</span> files from your session. 
+                    This cannot be undone.
+                </p>
+                <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                    <button class="modern-btn secondary" id="cancelRemoveAll">
+                        <i class="fas fa-times"></i>
+                        Cancel
+                    </button>
+                    <button class="modern-btn danger" id="confirmRemoveAll">
+                        <i class="fas fa-trash-alt"></i>
+                        <span id="removeAllText">Remove All Files</span>
+                        <div class="loading-spinner" id="removeAllLoader" style="display: none;"></div>
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
     <script>
@@ -1136,6 +1183,7 @@
 
             $('#downloadSelectedBtn').off('click').on('click', downloadSelectedFiles);
             $('#emailSelectedBtn').off('click').on('click', showEmailModal);
+           $('#removeAllBtn').off('click').on('click', showRemoveAllModal);
         }
 
         function setupEmailModal() {
@@ -1150,6 +1198,15 @@
                 e.preventDefault();
                 sendEmailWithFiles();
             });
+
+            // Remove All Modal events
+            $('#removeAllModalClose, #cancelRemoveAll').off('click').on('click', hideRemoveAllModal);
+            $('#removeAllModal').off('click').on('click', function(e) {
+                if (e.target === this) {
+                    hideRemoveAllModal();
+                }
+            });
+            $('#confirmRemoveAll').off('click').on('click', removeAllFiles);
         }
 
         function handleFileUpload(files) {
@@ -1250,6 +1307,7 @@
             });
 
             updateSelectionUI();
+           updateRemoveAllButton(Object.keys(files).length);
         }
 
         function createFileItem(file) {
