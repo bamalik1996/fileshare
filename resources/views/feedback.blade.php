@@ -231,11 +231,11 @@
             .feedback-title {
                 font-size: 2rem;
             }
-            
+
             .feedback-form {
                 padding: 1rem;
             }
-            
+
             .contact-methods {
                 flex-direction: column;
                 align-items: center;
@@ -306,11 +306,11 @@
                     <label for="email" class="form-label">
                         Email Address <span style="color: var(--error-color);">*</span>
                     </label>
-                    <input 
-                        type="email" 
-                        id="email" 
-                        name="email" 
-                        class="form-input" 
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        class="form-input"
                         placeholder="your.email@example.com"
                         required
                     >
@@ -320,11 +320,11 @@
                     <label for="subject" class="form-label">
                         Subject <span style="color: var(--error-color);">*</span>
                     </label>
-                    <input 
-                        type="text" 
-                        id="subject" 
-                        name="subject" 
-                        class="form-input" 
+                    <input
+                        type="text"
+                        id="subject"
+                        name="subject"
+                        class="form-input"
                         placeholder="Brief description of your feedback"
                         required
                     >
@@ -334,10 +334,10 @@
                     <label for="message" class="form-label">
                         Message <span style="color: var(--error-color);">*</span>
                     </label>
-                    <textarea 
-                        id="message" 
-                        name="message" 
-                        class="form-textarea" 
+                    <textarea
+                        id="message"
+                        name="message"
+                        class="form-textarea"
                         placeholder="Please provide detailed feedback. For bug reports, include steps to reproduce the issue."
                         required
                     ></textarea>
@@ -361,9 +361,9 @@
             Prefer a different way to get in touch? We're here to help through multiple channels.
         </p>
         <div class="contact-methods">
-            <a href="mailto:support@airforshare.com" class="contact-method">
+            <a href="mailto:support@airtoshare.com" class="contact-method">
                 <i class="fas fa-envelope"></i>
-                support@airforshare.com
+                support@airtoshare.com
             </a>
             <a href="https://web.facebook.com/airtoshare/" target="_blank" class="contact-method">
                 <i class="fab fa-facebook-f"></i>
@@ -373,9 +373,9 @@
                 <i class="fab fa-github"></i>
                 GitHub Issues
             </a>
-            <a href="https://twitter.com/airtoshare" target="_blank" class="contact-method">
+            <a href="https://x.com/airtoshare" target="_blank" class="contact-method">
                 <i class="fab fa-twitter"></i>
-                @AirForShare
+                @AirToShare
             </a>
         </div>
     </div>
@@ -426,7 +426,7 @@
 
                 // Show success message
                 showMessage('success', 'Thank you for your feedback!');
-                
+
                 // Reset form
                 form[0].reset();
                 $('.feedback-type').removeClass('selected');
@@ -454,7 +454,7 @@
             if (type === 'success') {
                 successMsg.find('div').last().text(message);
                 successMsg.show();
-                
+
                 // Scroll to top to show message
                 $('html, body').animate({
                     scrollTop: successMsg.offset().top - 100

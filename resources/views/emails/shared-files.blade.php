@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Shared Files from AirForShare</title>
+    <title>Shared Files from AirToShare</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -70,35 +70,35 @@
 <body>
     <div class="container">
         <div class="header">
-            <div class="logo">🌐 AirForShare</div>
+            <div class="logo">🌐 AirToShare</div>
             <p>Files shared with you</p>
         </div>
-        
+
         <div class="content">
             <h2>Hello!</h2>
-            <p>Someone has shared {{ $file_count }} file(s) with you using AirForShare.</p>
-            
+            <p>Someone has shared {{ $file_count }} file(s) with you using AirToShare.</p>
+
             @if($user_message)
             <div class="message-box">
                 <strong>Message from sender:</strong>
                 <p>{{ $user_message }}</p>
             </div>
             @endif
-            
+
             <div class="file-info">
                 <strong>📁 Files attached:</strong> {{ $file_count }} file(s)<br>
                 <strong>📡 Sent from IP:</strong> {{ $sender_ip }}<br>
                 <strong>📅 Sent on:</strong> {{ date('F j, Y \a\t g:i A') }}
             </div>
-            
+
             <p>The files are attached to this email. You can download them directly from your email client.</p>
-            
-            <p><strong>About AirForShare:</strong><br>
-            AirForShare is a simple, secure file sharing service that allows instant sharing across devices on the same network. No accounts required, no external servers - just pure peer-to-peer sharing.</p>
+
+            <p><strong>About AirToShare:</strong><br>
+            AirToShare is a simple, secure file sharing service that allows instant sharing across devices on the same network. No accounts required, no external servers - just pure peer-to-peer sharing.</p>
         </div>
-        
+
         <div class="footer">
-            <p>This email was sent via AirForShare - Instant File Sharing<br>
+            <p>This email was sent via AirToShare - Instant File Sharing<br>
             <small>Files are automatically deleted after 6 hours for security</small></p>
         </div>
     </div>

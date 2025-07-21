@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'AirForShare - Instant File Sharing Across Devices | Local Network File Transfer')
+@section('title', 'AirToShare - Instant File Sharing Across Devices | Local Network File Transfer')
 @section('description', 'AirToShare - Share files and text instantly across devices on the same Wi-Fi network. No accounts, no external servers - just secure peer-to-peer file sharing up to 10MB per file. Follow us on Facebook!')
 @section('keywords', 'file sharing, instant sharing, local network, Wi-Fi sharing, cross-device, secure sharing, peer-to-peer, no account required')
 
@@ -824,7 +824,7 @@
                 </div>
                 <div class="form-group">
                     <label class="form-label">Subject:</label>
-                    <input type="text" class="form-input" id="emailSubject" value="Shared Files from AirForShare">
+                    <input type="text" class="form-input" id="emailSubject" value="Shared Files from AirToShare">
                 </div>
                 <div class="form-group">
                     <label class="form-label">Message:</label>
@@ -862,7 +862,7 @@
                     <strong>Are you sure you want to remove all files?</strong>
                 </p>
                 <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
-                    This action will permanently delete all <span id="totalFilesCount">0</span> files from your session. 
+                    This action will permanently delete all <span id="totalFilesCount">0</span> files from your session.
                     This cannot be undone.
                 </p>
                 <div style="display: flex; gap: 1rem; justify-content: flex-end;">
@@ -1342,7 +1342,7 @@
             const btn = $('#confirmRemoveAll');
             const text = $('#removeAllText');
             const loader = $('#removeAllLoader');
-            
+
             // Show loading state
             btn.prop('disabled', true);
             text.hide();
@@ -1371,7 +1371,7 @@
                     text.show();
                     loader.hide();
                     hideRemoveAllModal();
-                    
+
                     showToast('success', 'All Files Removed!', `Successfully removed ${totalFiles} files`);
                     fetchMedia();
                     loadIpInfo();
@@ -1380,7 +1380,7 @@
                 }
 
                 const uuid = allUuids[deletedCount];
-                
+
                 $.ajax({
                     url: '{{ route('share.delete.media') }}',
                     method: 'DELETE',

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'About AirForShare')
+@section('title', 'About AirToShare')
 
 @section('content')
     <style>
@@ -167,11 +167,11 @@
             .about-title {
                 font-size: 2rem;
             }
-            
+
             .steps-grid {
                 grid-template-columns: 1fr;
             }
-            
+
             .cta-section {
                 padding: 2rem 1rem;
             }
@@ -181,10 +181,10 @@
     <div class="about-hero">
         <h1 class="about-title">
             <i class="fas fa-info-circle"></i>
-            How AirForShare Works
+            How AirToShare Works
         </h1>
         <p class="about-subtitle">
-            Simple, secure, and instant file sharing across devices on your local network. 
+            Simple, secure, and instant file sharing across devices on your local network.
             No accounts, no uploads to external servers, just pure peer-to-peer sharing.
         </p>
     </div>
@@ -199,7 +199,7 @@
                     </div>
                     <h3 class="step-title">1. Connect to Same Wi-Fi</h3>
                     <p class="step-description">
-                        Ensure all devices you want to share files with are connected to the same Wi-Fi network. 
+                        Ensure all devices you want to share files with are connected to the same Wi-Fi network.
                         This creates a secure local environment for sharing.
                     </p>
                 </div>
@@ -211,7 +211,7 @@
                     </div>
                     <h3 class="step-title">2. Upload & Share</h3>
                     <p class="step-description">
-                        Upload files or paste text from any device. Your content is instantly available 
+                        Upload files or paste text from any device. Your content is instantly available
                         to all devices on the same network using the same IP address.
                     </p>
                 </div>
@@ -223,7 +223,7 @@
                     </div>
                     <h3 class="step-title">3. Access Anywhere</h3>
                     <p class="step-description">
-                        Access your shared content from any device on the network. Download files, 
+                        Access your shared content from any device on the network. Download files,
                         copy text, and manage your content with ease.
                     </p>
                 </div>
@@ -241,7 +241,7 @@
                     <i class="fas fa-star"></i>
                     Key Features
                 </h2>
-                
+
                 <div class="features-grid">
                     <div class="feature-item">
                         <div class="feature-icon">
@@ -310,7 +310,7 @@
     <div class="cta-section">
         <h2 class="cta-title">Ready to Start Sharing?</h2>
         <p class="cta-text">
-            Join thousands of users who trust AirForShare for their local file sharing needs.
+            Join thousands of users who trust AirToShare for their local file sharing needs.
         </p>
         <a href="{{ url('/') }}" class="cta-button">
             <i class="fas fa-rocket"></i>

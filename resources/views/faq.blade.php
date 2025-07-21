@@ -19,7 +19,7 @@
       }
     },
     {
-      "@type": "Question", 
+      "@type": "Question",
       "name": "What file types does AirToShare support?",
       "acceptedAnswer": {
         "@type": "Answer",
@@ -30,7 +30,7 @@
       "@type": "Question",
       "name": "How many files can I share at once?",
       "acceptedAnswer": {
-        "@type": "Answer", 
+        "@type": "Answer",
         "text": "You can share up to 20 files per session, with each file being up to 10MB in size. This limit helps ensure optimal performance for all users."
       }
     },
@@ -290,16 +290,16 @@
             .faq-title {
                 font-size: 2rem;
             }
-            
+
             .faq-question {
                 padding: 1rem 1.5rem;
                 font-size: 1rem;
             }
-            
+
             .faq-answer {
                 padding: 0 1.5rem 1rem;
             }
-            
+
             .contact-section {
                 padding: 2rem 1rem;
             }
@@ -312,7 +312,7 @@
             Frequently Asked Questions
         </h1>
         <p class="faq-subtitle">
-            Find quick answers to common questions about AirForShare. 
+            Find quick answers to common questions about AirToShare.
             Can't find what you're looking for? Contact us for help!
         </p>
     </div>
@@ -330,7 +330,7 @@
             <div class="category-title">All Questions</div>
             <div class="category-count">15 questions</div>
         </div>
-        
+
         <div class="category-card" data-category="security">
             <div class="category-icon">
                 <i class="fas fa-shield-alt"></i>
@@ -338,7 +338,7 @@
             <div class="category-title">Security & Privacy</div>
             <div class="category-count">4 questions</div>
         </div>
-        
+
         <div class="category-card" data-category="usage">
             <div class="category-icon">
                 <i class="fas fa-cogs"></i>
@@ -346,7 +346,7 @@
             <div class="category-title">Usage & Features</div>
             <div class="category-count">6 questions</div>
         </div>
-        
+
         <div class="category-card" data-category="technical">
             <div class="category-icon">
                 <i class="fas fa-tools"></i>
@@ -383,7 +383,7 @@
                 </button>
                 <div class="faq-answer">
                     <p>Files are associated with your specific IP address. Only devices using the same IP address can access the shared content. However, if multiple devices share the same public IP (common in home networks), they may be able to access each other's content.</p>
-                    <p>For maximum privacy, use AirForShare on trusted networks only.</p>
+                    <p>For maximum privacy, use AirToShare on trusted networks only.</p>
                 </div>
             </div>
 
@@ -409,7 +409,7 @@
                     <i class="fas fa-chevron-down faq-icon"></i>
                 </button>
                 <div class="faq-answer">
-                    <p>No, we don't collect any personal information. AirForShare doesn't require accounts, emails, or any personal details. We only temporarily store your IP address to associate files with your session, and this is automatically deleted when content expires.</p>
+                    <p>No, we don't collect any personal information. AirToShare doesn't require accounts, emails, or any personal details. We only temporarily store your IP address to associate files with your session, and this is automatically deleted when content expires.</p>
                 </div>
             </div>
 
@@ -528,7 +528,7 @@
                     <ul>
                         <li>Connected to the same Wi-Fi network</li>
                         <li>Using the same IP address (common in home networks)</li>
-                        <li>Accessing the same AirForShare URL</li>
+                        <li>Accessing the same AirToShare URL</li>
                     </ul>
                     <p>If you're still having issues, try refreshing the page or checking your network connection.</p>
                 </div>
@@ -612,12 +612,12 @@
                 const $this = $(this);
                 const answer = $this.next('.faq-answer');
                 const icon = $this.find('.faq-icon');
-                
+
                 // Close other open FAQs
                 $('.faq-question').not($this).removeClass('active');
                 $('.faq-answer').not(answer).removeClass('show').slideUp(300);
                 $('.faq-icon').not(icon).css('transform', 'rotate(0deg)');
-                
+
                 // Toggle current FAQ
                 if ($this.hasClass('active')) {
                     $this.removeClass('active');
@@ -631,17 +631,17 @@
             // Category filtering
             $('.category-card').click(function() {
                 const category = $(this).data('category');
-                
+
                 $('.category-card').removeClass('active');
                 $(this).addClass('active');
-                
+
                 if (category === 'all') {
                     $('.faq-item').show();
                 } else {
                     $('.faq-item').hide();
                     $(`.faq-item[data-category="${category}"]`).show();
                 }
-                
+
                 // Close all open FAQs when switching categories
                 $('.faq-question').removeClass('active');
                 $('.faq-answer').removeClass('show').slideUp(300);
@@ -650,14 +650,14 @@
             // Search functionality
             $('#searchInput').on('input', function() {
                 const searchTerm = $(this).val().toLowerCase();
-                
+
                 $('.faq-item').each(function() {
                     const question = $(this).find('.faq-question span').text().toLowerCase();
                     const answer = $(this).find('.faq-answer').text().toLowerCase();
-                    
+
                     if (question.includes(searchTerm) || answer.includes(searchTerm)) {
                         $(this).show();
-                        
+
                         // Highlight search terms
                         if (searchTerm.length > 2) {
                             highlightSearchTerm($(this), searchTerm);
@@ -666,7 +666,7 @@
                         $(this).hide();
                     }
                 });
-                
+
                 // Show all categories when searching
                 if (searchTerm.length > 0) {
                     $('.category-card').removeClass('active');
@@ -678,11 +678,11 @@
         function highlightSearchTerm(element, term) {
             const question = element.find('.faq-question span');
             const answer = element.find('.faq-answer');
-            
+
             // Remove previous highlights
             question.html(question.html().replace(/<span class="highlight">(.*?)<\/span>/gi, '$1'));
             answer.html(answer.html().replace(/<span class="highlight">(.*?)<\/span>/gi, '$1'));
-            
+
             // Add new highlights
             const regex = new RegExp(`(${term})`, 'gi');
             question.html(question.html().replace(regex, '<span class="highlight">$1</span>'));

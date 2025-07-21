@@ -390,40 +390,40 @@
             .coming-soon-title {
                 font-size: 2.5rem;
             }
-            
+
             .features-grid {
                 grid-template-columns: 1fr;
                 gap: 1.5rem;
             }
-            
+
             .timeline::before {
                 left: 20px;
             }
-            
+
             .timeline-item {
                 flex-direction: row !important;
                 padding-left: 50px;
             }
-            
+
             .timeline-content {
                 margin: 0;
             }
-            
+
             .timeline-content::before {
                 left: -20px !important;
                 right: auto !important;
                 border-right-color: var(--bg-primary) !important;
                 border-left-color: transparent !important;
             }
-            
+
             .timeline-dot {
                 left: 20px;
             }
-            
+
             .newsletter-form {
                 flex-direction: column;
             }
-            
+
             .newsletter-section {
                 padding: 3rem 1rem;
             }
@@ -436,8 +436,8 @@
             Exciting Features Coming Soon!
         </h1>
         <p class="coming-soon-subtitle">
-            We're working hard to bring you amazing new features that will make AirToShare even more powerful, 
-            intuitive, and enjoyable. Get ready for the next level of AirForShare!
+            We're working hard to bring you amazing new features that will make AirToShare even more powerful,
+            intuitive, and enjoyable. Get ready for the next level of AirToShare!
         </p>
         <div class="launch-badge">
             <i class="fas fa-clock"></i>
@@ -451,7 +451,7 @@
                 <i class="fas fa-star"></i>
                 What's Coming Next
             </h2>
-            
+
             <div class="features-grid">
                 <!-- Dark Mode -->
                 <div class="feature-card">
@@ -460,7 +460,7 @@
                     </div>
                     <h3 class="feature-title">Dark Mode</h3>
                     <p class="feature-description">
-                        Toggle between light and dark themes for a comfortable viewing experience in any lighting condition. 
+                        Toggle between light and dark themes for a comfortable viewing experience in any lighting condition.
                         Your eyes will thank you during those late-night file sharing sessions!
                     </p>
                     <div class="feature-status">
@@ -476,7 +476,7 @@
                     </div>
                     <h3 class="feature-title">Clipboard Sync</h3>
                     <p class="feature-description">
-                        Automatically sync clipboard content between devices on the same network. 
+                        Automatically sync clipboard content between devices on the same network.
                         Copy on one device, paste on another - seamless productivity across all your devices!
                     </p>
                     <div class="feature-status">
@@ -492,7 +492,7 @@
                     </div>
                     <h3 class="feature-title">Real-time Collaboration</h3>
                     <p class="feature-description">
-                        See who's online and collaborate in real-time. Share files instantly with multiple users 
+                        See who's online and collaborate in real-time. Share files instantly with multiple users
                         and get live notifications when someone joins or shares content.
                     </p>
                     <div class="feature-status">
@@ -508,7 +508,7 @@
                     </div>
                     <h3 class="feature-title">Advanced File Preview</h3>
                     <p class="feature-description">
-                        Preview more file types including videos, audio files, and documents without downloading. 
+                        Preview more file types including videos, audio files, and documents without downloading.
                         Built-in media player and document viewer for instant access.
                     </p>
                     <div class="feature-status">
@@ -524,7 +524,7 @@
                     </div>
                     <h3 class="feature-title">QR Code Sharing</h3>
                     <p class="feature-description">
-                        Generate QR codes for instant access to your shared content. 
+                        Generate QR codes for instant access to your shared content.
                         Perfect for quickly connecting new devices or sharing with guests.
                     </p>
                     <div class="feature-status">
@@ -540,7 +540,7 @@
                     </div>
                     <h3 class="feature-title">Smart File Organization</h3>
                     <p class="feature-description">
-                        Automatic file categorization, search functionality, and custom folders. 
+                        Automatic file categorization, search functionality, and custom folders.
                         Keep your shared files organized and easily discoverable.
                     </p>
                     <div class="feature-status">
@@ -557,7 +557,7 @@
             <i class="fas fa-calendar-alt"></i>
             Development Roadmap
         </h2>
-        
+
         <div class="timeline">
             <div class="timeline-item">
                 <div class="timeline-content">
@@ -610,7 +610,7 @@
             <i class="fas fa-chart-line"></i>
             Growing Every Day
         </h2>
-        
+
         <div class="stats-grid">
             <div class="stat-item">
                 <div class="stat-number">10K+</div>
@@ -657,7 +657,7 @@
             $('#newsletterForm').submit(function(e) {
                 e.preventDefault();
                 const email = $(this).find('input[type="email"]').val();
-                
+
                 // Simulate newsletter signup
                 showToast('success', 'Subscribed!', `We'll notify you at ${email} when new features launch!`);
                 $(this)[0].reset();

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'AirForShare - Instant File Sharing Across Devices')</title>
+    <title>@yield('title', 'AirToShare - Instant File Sharing Across Devices')</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <!-- SEO Meta Tags -->
