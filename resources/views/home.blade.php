@@ -777,6 +777,10 @@
                             <i class="fas fa-envelope"></i>
                             Email
                         </button>
+                        <button class="modern-btn danger" id="removeAllBtn" style="display: none;">
+                            <i class="fas fa-trash-alt"></i>
+                            Remove All Files
+                        </button>
                     </div>
                 </div>
                 <div class="file-grid" id="fileGrid">
