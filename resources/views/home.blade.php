@@ -1310,6 +1310,95 @@
            updateRemoveAllButton(Object.keys(files).length);
         }
 
+        function updateRemoveAllButton(fileCount) {
+            const removeAllBtn = $('#removeAllBtn');
+            if (fileCount > 0) {
+                removeAllBtn.show();
+                $('#totalFilesCount').text(fileCount);
+            } else {
+                removeAllBtn.hide();
+            }
+        }
+
+        function showRemoveAllModal() {
+            const fileCount = $('.file-item').length;
+            if (fileCount === 0) {
+                showToast('info', 'No Files', 'No files to remove');
+                return;
+            }
+            $('#totalFilesCount').text(fileCount);
+            $('#removeAllModal').addClass('show');
+        }
+
+        function hideRemoveAllModal() {
+            $('#removeAllModal').removeClass('show');
+        }
+
+        function removeAllFiles() {
+            const btn = $('#confirmRemoveAll');
+            const text = $('#removeAllText');
+            const loader = $('#removeAllLoader');
+            
+            // Show loading state
+            btn.prop('disabled', true);
+            text.hide();
+            loader.show();
+
+            // Get all file UUIDs
+            const allUuids = [];
+            $('.file-item').each(function() {
+                allUuids.push($(this).data('uuid'));
+            });
+
+            if (allUuids.length === 0) {
+                hideRemoveAllModal();
+                showToast('info', 'No Files', 'No files to remove');
+                return;
+            }
+
+            // Delete all files one by one
+            let deletedCount = 0;
+            let totalFiles = allUuids.length;
+
+            const deleteNext = () => {
+                if (deletedCount >= totalFiles) {
+                    // All files deleted
+                    btn.prop('disabled', false);
+                    text.show();
+                    loader.hide();
+                    hideRemoveAllModal();
+                    
+                    showToast('success', 'All Files Removed!', `Successfully removed ${totalFiles} files`);
+                    fetchMedia();
+                    loadIpInfo();
+                    selectedFiles.clear();
+                    return;
+                }
+
+                const uuid = allUuids[deletedCount];
+                
+                $.ajax({
+                    url: '{{ route('share.delete.media') }}',
+                    method: 'DELETE',
+                    data: { uuid: uuid },
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function() {
+                        deletedCount++;
+                        deleteNext();
+                    },
+                    error: function() {
+                        // Continue with next file even if one fails
+                        deletedCount++;
+                        deleteNext();
+                    }
+                });
+            };
+
+            deleteNext();
+        }
+
         function createFileItem(file) {
             const isImage = file.mime_type.startsWith('image/');
 

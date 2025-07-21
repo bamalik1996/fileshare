@@ -27,7 +27,8 @@ Route::prefix('api/v1')->group(function () {
         Route::get('/text', 'getText')->name('share.get.text');
         Route::get('/ip-info', 'getIpInfo')->name('share.ip.info');
         Route::get('/share/get/media', 'getMedia')->name('share.get.media');
-        Route::delete('/share/media',  'deleteMedia');
+        Route::delete('/share/media', 'deleteMedia');
+        Route::delete('/share/media/all', 'deleteAllMedia')->name('share.delete.all.media');
     });
 });
 

@@ -263,6 +263,33 @@ class ShareController extends Controller
         return response()->json(['success' => true]);
     }
     
+    public function deleteAllMedia(Request $request)
+    {
+        $ip = $request->ip();
+        
+        $sharedText = SharedText::where('ip_address', $ip)
+            ->where('expires_at', '>', Carbon::now())
+            ->first();
+            
+        if (!$sharedText) {
+            return response()->json(['success' => false, 'message' => 'No files found'], 404);
+        }
+        
+        $mediaFiles = $sharedText->getMedia();
+        $deletedCount = $mediaFiles->count();
+        
+        // Delete all media files
+        $sharedText->clearMediaCollection();
+        
+        Log::info("All files deleted for IP: {$ip}, Count: {$deletedCount}");
+        
+        return response()->json([
+            'success' => true, 
+            'message' => "Successfully deleted {$deletedCount} files",
+            'deleted_count' => $deletedCount
+        ]);
+    }
+    
     private function formatFileSize($bytes)
     {
         if ($bytes >= 1073741824) {
