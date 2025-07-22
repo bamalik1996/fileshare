@@ -38,6 +38,21 @@ class Handler extends ExceptionHandler
             return response()->view('errors.404', [], 404);
         }
 
+        // Handle 400 Bad Request errors
+        if ($this->isHttpException($exception) && $exception->getStatusCode() === 400) {
+            return response()->view('errors.400', [], 400);
+        }
+
+        // Handle 500 Internal Server errors
+        if ($this->isHttpException($exception) && $exception->getStatusCode() === 500) {
+            return response()->view('errors.500', [], 500);
+        }
+
+        // Handle other 5xx server errors
+        if ($this->isHttpException($exception) && $exception->getStatusCode() >= 500) {
+            return response()->view('errors.500', [], $exception->getStatusCode());
+        }
+
         return parent::render($request, $exception);
     }
 }
