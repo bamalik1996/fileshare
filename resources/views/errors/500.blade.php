@@ -27,22 +27,22 @@
         <div class="error-content">
             <!-- Floating Icons -->
             <div class="error-illustration">
-                <div class="floating-icon warning">
-                    <i class="fas fa-exclamation-triangle"></i>
+                <div class="floating-icon error">
+                    <i class="fas fa-server"></i>
                 </div>
-                <div class="floating-icon warning">
-                    <i class="fas fa-times-circle"></i>
+                <div class="floating-icon error">
+                    <i class="fas fa-tools"></i>
                 </div>
-                <div class="floating-icon warning">
-                    <i class="fas fa-ban"></i>
+                <div class="floating-icon error">
+                    <i class="fas fa-cog"></i>
                 </div>
-                <div class="floating-icon warning">
-                    <i class="fas fa-question-circle"></i>
+                <div class="floating-icon error">
+                    <i class="fas fa-exclamation-circle"></i>
                 </div>
             </div>
 
             <!-- Error Number -->
-            <div class="error-number error-400">400</div>
+            <div class="error-number error-500">500</div>
 
             <!-- Error Message -->
             <h1 class="error-title">
