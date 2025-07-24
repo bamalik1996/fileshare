@@ -157,7 +157,6 @@
         }
 
         .helpful-links {
-            margin-top: 3rem;
             padding: 2rem;
             background: var(--bg-gradient-light);
             border-radius: var(--border-radius);
@@ -302,18 +301,18 @@
                 <i class="fas fa-search" style="color: var(--primary-color); margin-right: 0.5rem;"></i>
                 Page Not Found
             </h1>
-            
+
             <p class="error-subtitle">
-                Oops! The page you're looking for seems to have taken flight. 
+                Oops! The page you're looking for seems to have taken flight.
                 Don't worry, your files are still safe and ready to share!
             </p>
 
             <!-- Search Box -->
             <div class="search-box">
                 <i class="fas fa-search search-icon"></i>
-                <input 
-                    type="text" 
-                    class="search-input" 
+                <input
+                    type="text"
+                    class="search-input"
                     placeholder="Search for what you need..."
                     id="searchInput"
                 >
@@ -340,7 +339,7 @@
                 <i class="fas fa-compass"></i>
                 Find What You're Looking For
             </h2>
-            
+
             <div class="links-grid">
                 <a href="{{ url('/') }}" class="link-item">
                     <div class="link-icon">
@@ -402,7 +401,7 @@
             $('#searchInput').on('keypress', function(e) {
                 if (e.which === 13) { // Enter key
                     const query = $(this).val().trim().toLowerCase();
-                    
+
                     // Simple search logic
                     if (query.includes('share') || query.includes('upload') || query.includes('file')) {
                         window.location.href = '{{ url("/") }}';

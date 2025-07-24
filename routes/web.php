@@ -4,6 +4,8 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ShareController;
 use Illuminate\Support\Facades\Route;
 
+
+
 Route::controller(HomeController::class)->group(function () {
     Route::get('/', 'index');
     Route::get('/how-it-works', 'howItWorks');
