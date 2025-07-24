@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'AirToShare - Instant File Sharing Across Devices')</title>
+    <title>@yield('title', 'AirForShare - Instant File Sharing Across Devices')</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <!-- SEO Meta Tags -->
@@ -51,6 +51,7 @@
     <meta name="twitter:image" content="{{ url('/favicon.ico') }}">
     <meta name="twitter:site" content="@AirToShare">
     <meta name="twitter:creator" content="@AirToShare">
+    <link href="/assets/css/custom.css" rel="stylesheet" />
 
     <!-- Schema.org JSON-LD -->
     @yield('schema')
@@ -104,6 +105,57 @@
     @endif
 
     <!-- Google Analytics (Add your tracking ID) -->
+    @if (config('app.env') === 'production')
+        <!-- Global site tag (gtag.js) - Google Analytics -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=GA_TRACKING_ID"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+
+            function gtag() {
+                dataLayer.push(arguments);
+            }
+            gtag('js', new Date());
+            gtag('config', 'GA_TRACKING_ID', {
+                anonymize_ip: true,
+                cookie_flags: 'SameSite=None;Secure'
+            });
+        </script>
+
+        <!-- Facebook Pixel (Add your pixel ID) -->
+        <script>
+            ! function(f, b, e, v, n, t, s) {
+                if (f.fbq) return;
+                n = f.fbq = function() {
+                    n.callMethod ?
+                        n.callMethod.apply(n, arguments) : n.queue.push(arguments)
+                };
+                if (!f._fbq) f._fbq = n;
+                n.push = n;
+                n.loaded = !0;
+                n.version = '2.0';
+                n.queue = [];
+                t = b.createElement(e);
+                t.async = !0;
+                t.src = v;
+                s = b.getElementsByTagName(e)[0];
+                s.parentNode.insertBefore(t, s)
+            }(window, document, 'script',
+                'https://connect.facebook.net/en_US/fbevents.js');
+            fbq('init', 'FACEBOOK_PIXEL_ID');
+            fbq('track', 'PageView');
+        </script>
+        <noscript><img height="1" width="1" style="display:none"
+                src="https://www.facebook.com/tr?id=FACEBOOK_PIXEL_ID&ev=PageView&noscript=1" /></noscript>
+    @endif
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="{{ asset('assets/font-awesome/css/all.min.css') }}">
+    <!-- Bulma CSS -->
+    <link rel="stylesheet" href="{{ asset('assets/css/bulma.min.css') }}">
+    <script src="{{ asset('assets/js/jquery.min.js') }}"></script>
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const burger = document.querySelector('.navbar-burger');

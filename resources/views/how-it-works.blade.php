@@ -38,14 +38,14 @@
       "image": "{{ url('/') }}/favicon.ico"
     },
     {
-      "@type": "HowToStep", 
+      "@type": "HowToStep",
       "name": "Upload Files or Text",
       "text": "Upload files or paste text from any device on the network",
       "image": "{{ url('/') }}/favicon.ico"
     },
     {
       "@type": "HowToStep",
-      "name": "Access from Other Devices", 
+      "name": "Access from Other Devices",
       "text": "Access shared content from any device on the same network",
       "image": "{{ url('/') }}/favicon.ico"
     }
@@ -55,13 +55,15 @@
 @endsection
 
 @section('content')
+
+
     <div class="how-it-works-hero">
         <h1 class="how-it-works-title">
             <i class="fas fa-lightbulb"></i>
             How AirToShare Works
         </h1>
         <p class="how-it-works-subtitle">
-            Simple, secure, and instant file sharing across devices on your local network. 
+            Simple, secure, and instant file sharing across devices on your local network.
             No accounts, no uploads to external servers, just pure peer-to-peer sharing in three easy steps.
         </p>
     </div>
@@ -77,7 +79,7 @@
                     </div>
                     <h3 class="step-title">Connect to Same Wi-Fi</h3>
                     <p class="step-description">
-                        Ensure all devices you want to share files with are connected to the same Wi-Fi network. 
+                        Ensure all devices you want to share files with are connected to the same Wi-Fi network.
                         This creates a secure local environment where your data never leaves your network.
                     </p>
                 </div>
@@ -90,7 +92,7 @@
                     </div>
                     <h3 class="step-title">Upload & Share</h3>
                     <p class="step-description">
-                        Upload files by dragging and dropping or clicking to browse. Paste text directly into the text area. 
+                        Upload files by dragging and dropping or clicking to browse. Paste text directly into the text area.
                         Your content is instantly available to all devices using the same IP address.
                     </p>
                 </div>
@@ -103,7 +105,7 @@
                     </div>
                     <h3 class="step-title">Access Anywhere</h3>
                     <p class="step-description">
-                        Access your shared content from any device on the network. Download individual files, 
+                        Access your shared content from any device on the network. Download individual files,
                         create zip archives for multiple files, or send files via email with just a few clicks.
                     </p>
                 </div>
@@ -116,7 +118,7 @@
             <i class="fas fa-star"></i>
             Powerful Features
         </h2>
-        
+
         <div class="features-grid">
             <div class="feature-card">
                 <div class="feature-icon">
@@ -124,7 +126,7 @@
                 </div>
                 <div class="feature-title">100% Secure & Private</div>
                 <div class="feature-text">
-                    Your files never leave your local network. No external servers, no data mining, 
+                    Your files never leave your local network. No external servers, no data mining,
                     no privacy concerns. Everything stays within your Wi-Fi network.
                 </div>
             </div>
@@ -135,7 +137,7 @@
                 </div>
                 <div class="feature-title">Lightning Fast Transfer</div>
                 <div class="feature-text">
-                    Direct network transfer means instant sharing without internet delays. 
+                    Direct network transfer means instant sharing without internet delays.
                     Transfer speeds limited only by your local network bandwidth.
                 </div>
             </div>
@@ -146,7 +148,7 @@
                 </div>
                 <div class="feature-title">Universal Compatibility</div>
                 <div class="feature-text">
-                    Works on any device with a web browser - phones, tablets, laptops, desktops. 
+                    Works on any device with a web browser - phones, tablets, laptops, desktops.
                     No apps to install, no platform restrictions.
                 </div>
             </div>
@@ -157,7 +159,7 @@
                 </div>
                 <div class="feature-title">Multiple File Formats</div>
                 <div class="feature-text">
-                    Support for images, documents, PDFs, text files, and archives. 
+                    Support for images, documents, PDFs, text files, and archives.
                     Up to 10MB per file with 20 files maximum per session.
                 </div>
             </div>
@@ -168,7 +170,7 @@
                 </div>
                 <div class="feature-title">Smart Text Features</div>
                 <div class="feature-text">
-                    Automatically detects and makes URLs clickable in shared text. 
+                    Automatically detects and makes URLs clickable in shared text.
                     Character counter and clipboard integration for better productivity.
                 </div>
             </div>
@@ -179,7 +181,7 @@
                 </div>
                 <div class="feature-title">Auto-Cleanup</div>
                 <div class="feature-text">
-                    Content automatically expires after 6 hours or 1 hour of inactivity 
+                    Content automatically expires after 6 hours or 1 hour of inactivity
                     for security and storage management.
                 </div>
             </div>
@@ -191,7 +193,7 @@
             <i class="fas fa-lock"></i>
             Security & Privacy First
         </h2>
-        
+
         <div class="security-grid">
             <div class="security-item">
                 <div class="security-icon">
@@ -238,7 +240,7 @@
     <div class="cta-section">
         <h2 class="cta-title">Ready to Start Sharing?</h2>
         <p class="cta-text">
-            Experience the fastest and most secure way to share files across your devices. 
+            Experience the fastest and most secure way to share files across your devices.
             No setup required - just start sharing!
         </p>
         <a href="{{ url('/') }}" class="cta-button">

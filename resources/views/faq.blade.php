@@ -56,6 +56,7 @@
 @endsection
 
 @section('content')
+
     <div class="faq-hero">
         <h1 class="faq-title">
             <i class="fas fa-question-circle"></i>

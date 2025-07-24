@@ -23,35 +23,37 @@
 @endsection
 
 @section('content')
+
+
     <div class="error-container">
         <div class="error-content">
             <!-- Floating Icons -->
             <div class="error-illustration">
-                <div class="floating-icon error">
+                <div class="floating-icon">
                     <i class="fas fa-server"></i>
                 </div>
-                <div class="floating-icon error">
+                <div class="floating-icon">
                     <i class="fas fa-tools"></i>
                 </div>
-                <div class="floating-icon error">
+                <div class="floating-icon">
                     <i class="fas fa-cog"></i>
                 </div>
-                <div class="floating-icon error">
+                <div class="floating-icon">
                     <i class="fas fa-exclamation-circle"></i>
                 </div>
             </div>
 
             <!-- Error Number -->
-            <div class="error-number error-500">500</div>
+            <div class="error-number">500</div>
 
             <!-- Error Message -->
             <h1 class="error-title">
                 <i class="fas fa-server" style="color: var(--error-color); margin-right: 0.5rem;"></i>
                 Server Error
             </h1>
-            
+
             <p class="error-subtitle">
-                We're experiencing some technical difficulties. Our team has been automatically notified 
+                We're experiencing some technical difficulties. Our team has been automatically notified
                 and is working hard to fix this issue. Please try again in a few moments.
             </p>
 
@@ -85,7 +87,7 @@
                 <i class="fas fa-info-circle"></i>
                 What's Happening?
             </h2>
-            
+
             <div class="status-grid">
                 <div class="status-item">
                     <div class="status-icon">
@@ -141,11 +143,11 @@
         // Auto-refresh countdown
         let countdown = 30;
         const countdownElement = document.getElementById('countdown');
-        
+
         const timer = setInterval(() => {
             countdown--;
             countdownElement.textContent = countdown;
-            
+
             if (countdown <= 0) {
                 clearInterval(timer);
                 window.location.reload();

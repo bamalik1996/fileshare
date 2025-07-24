@@ -23,26 +23,27 @@
 @endsection
 
 @section('content')
+
     <div class="error-container">
         <div class="error-content">
             <!-- Floating Icons -->
             <div class="error-illustration">
-                <div class="floating-icon primary">
+                <div class="floating-icon">
                     <i class="fas fa-file"></i>
                 </div>
-                <div class="floating-icon primary">
+                <div class="floating-icon">
                     <i class="fas fa-cloud"></i>
                 </div>
-                <div class="floating-icon primary">
+                <div class="floating-icon">
                     <i class="fas fa-share-alt"></i>
                 </div>
-                <div class="floating-icon primary">
+                <div class="floating-icon">
                     <i class="fas fa-wifi"></i>
                 </div>
             </div>
 
             <!-- Error Number -->
-            <div class="error-number error-404">404</div>
+            <div class="error-number">404</div>
 
             <!-- Error Message -->
             <h1 class="error-title">

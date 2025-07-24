@@ -26,6 +26,8 @@
 @endsection
 
 @section('content')
+
+
     <div class="feedback-hero">
         <h1 class="feedback-title">
             <i class="fas fa-comment-dots"></i>
