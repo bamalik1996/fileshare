@@ -1,8 +1,10 @@
 @extends('layouts.app')
 
 @section('title', 'AirToShare - Instant File Sharing Across Devices | Local Network File Transfer')
-@section('description', 'AirToShare - Share files and text instantly across devices on the same Wi-Fi network. No accounts, no external servers - just secure peer-to-peer file sharing up to 10MB per file. Follow us on Facebook!')
-@section('keywords', 'file sharing, instant sharing, local network, Wi-Fi sharing, cross-device, secure sharing, peer-to-peer, no account required')
+@section('description', 'AirToShare - Share files and text instantly across devices on the same Wi-Fi network. No
+    accounts, no external servers - just secure peer-to-peer file sharing up to 10MB per file. Follow us on Facebook!')
+@section('keywords', 'file sharing, instant sharing, local network, Wi-Fi sharing, cross-device, secure sharing,
+    peer-to-peer, no account required')
 
 @section('schema')
     <script type="application/ld+json">
@@ -42,7 +44,9 @@
     <!-- Hero Section -->
     <div class="hero-section">
         <h1 class="hero-title">
-            <i class="fas fa-paper-plane" style="color: var(--primary-color);"></i>
+            <img src="/icon.svg" style="
+    width: 50px;
+" />
             AirToShare
         </h1>
         <p class="hero-subtitle">
@@ -523,7 +527,7 @@
             uploadZone.off('click').on('click', function(e) {
                 // Only trigger file input if not clicking on other elements
                 if (e.target === this || $(e.target).hasClass('upload-icon') || $(e.target).hasClass(
-                    'upload-text') || $(e.target).hasClass('upload-subtext')) {
+                        'upload-text') || $(e.target).hasClass('upload-subtext')) {
                     fileInput.trigger('click');
                 }
             });
@@ -582,7 +586,7 @@
 
             $('#downloadSelectedBtn').off('click').on('click', downloadSelectedFiles);
             $('#emailSelectedBtn').off('click').on('click', showEmailModal);
-           $('#removeAllBtn').off('click').on('click', showRemoveAllModal);
+            $('#removeAllBtn').off('click').on('click', showRemoveAllModal);
         }
 
         function setupEmailModal() {
@@ -706,7 +710,7 @@
             });
 
             updateSelectionUI();
-           updateRemoveAllButton(Object.keys(files).length);
+            updateRemoveAllButton(Object.keys(files).length);
         }
 
         function updateRemoveAllButton(fileCount) {
@@ -779,7 +783,9 @@
                 $.ajax({
                     url: '{{ route('share.delete.media') }}',
                     method: 'DELETE',
-                    data: { uuid: uuid },
+                    data: {
+                        uuid: uuid
+                    },
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     },
@@ -802,7 +808,7 @@
             const isImage = file.mime_type.startsWith('image/');
 
             const item = $(`
-                <div class="file-item" data-uuid="${file.uuid}">
+                <div class="column is-12 file-item" data-uuid="${file.uuid}">
                     <input type="checkbox" class="file-checkbox">
                     <div class="file-preview">
                         ${isImage ?
@@ -816,10 +822,10 @@
                     </div>
                     <div class="file-actions">
                         <button class="action-btn download" title="Download">
-                            <i class="fas fa-download"></i>
+                            <span class="icon"><i class="fas fa-download"></i></span>
                         </button>
                         <button class="action-btn delete" title="Delete">
-                            <i class="fas fa-trash"></i>
+                            <span class="icon"><i class="fas fa-trash"></i></span>
                         </button>
                     </div>
                 </div>
@@ -830,10 +836,10 @@
                 const uuid = item.data('uuid');
                 if (this.checked) {
                     selectedFiles.add(uuid);
-                    item.addClass('selected');
+                    item.addClass('is-selected');
                 } else {
                     selectedFiles.delete(uuid);
-                    item.removeClass('selected');
+                    item.removeClass('is-selected');
                 }
                 updateSelectionUI();
             });
@@ -942,11 +948,11 @@
 
         function showEmailModal() {
             if (selectedFiles.size === 0) return;
-            $('#emailModal').addClass('show');
+            $('#emailModal').addClass('is-active');
         }
 
         function hideEmailModal() {
-            $('#emailModal').removeClass('show');
+            $('#emailModal').removeClass('is-active');
             $('#emailForm')[0].reset();
         }
 
@@ -1023,12 +1029,12 @@
 
         function showFullscreen(imageSrc) {
             $('#fullscreenImage').attr('src', imageSrc);
-            $('#fullscreenOverlay').addClass('show');
+            $('#fullscreenOverlay').addClass('is-active');
         }
 
         $('#fullscreenClose, #fullscreenOverlay').click(function(e) {
             if (e.target === this) {
-                $('#fullscreenOverlay').removeClass('show');
+                $('#fullscreenOverlay').removeClass('is-active');
             }
         });
 

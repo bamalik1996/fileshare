@@ -22,11 +22,12 @@
     <meta name="copyright" content="AirToShare {{ date('Y') }}">
 
     <!-- Favicon and Icons -->
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
-    <link rel="apple-touch-icon" sizes="180x180" href="/favicon.ico">
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
 
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
     <!-- Sitemap Reference -->
     <link rel="sitemap" type="application/xml" title="Sitemap" href="{{ url('/sitemap.xml') }}">
 
@@ -37,7 +38,7 @@
     <meta property="og:url" content="{{ url()->current() }}">
     <meta property="og:site_name" content="AirToShare">
     <meta property="og:locale" content="en_US">
-    <meta property="og:image" content="{{ url('/favicon.ico') }}">
+    <meta property="og:image" content="{{ url('/logo.svg') }}">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta property="og:image:alt" content="AirToShare - Instant File Sharing">
@@ -48,7 +49,7 @@
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="@yield('twitter_title', 'AirToShare - Instant File Sharing')">
     <meta name="twitter:description" content="@yield('twitter_description', 'Share files and text instantly across devices on the same network.')">
-    <meta name="twitter:image" content="{{ url('/favicon.ico') }}">
+    <meta name="twitter:image" content="{{ url('/logo.svg') }}">
     <meta name="twitter:site" content="@AirToShare">
     <meta name="twitter:creator" content="@AirToShare">
     <link href="/assets/css/custom.css" rel="stylesheet" />
@@ -226,9 +227,11 @@
     <nav class="navbar modern-navbar" role="navigation" aria-label="main navigation">
         <div class="container">
             <div class="navbar-brand">
-                <a class="navbar-item" href="{{ url('/') }}">
-                    <i class="fas fa-paper-plane" style="margin-right: 0.5rem; color: var(--primary-color);"></i>
-                    <strong>AirToShare</strong>
+                <a class="navbar-item" href="{{ url('/') }}" style="
+    width: 125px;
+    height: 50px;
+">
+                    <img src="/logo.svg" />
                 </a>
 
                 <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
