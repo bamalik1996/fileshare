@@ -19,7 +19,7 @@ jobs:
           username: ${{ secrets.PRODUCTION_USER }}
           key: ${{ secrets.PRODUCTION_KEY }}
           script: |
-            cd /var/www/production
+            cd /var/www/production/fileshare
 
             echo "📦 Pulling latest changes..."
             git pull origin production
