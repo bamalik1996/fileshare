@@ -108,18 +108,14 @@
     <!-- Google Analytics (Add your tracking ID) -->
     @if (config('app.env') === 'production')
         <!-- Global site tag (gtag.js) - Google Analytics -->
-        <script async src="https://www.googletagmanager.com/gtag/js?id=GA_TRACKING_ID"></script>
+       <!-- Google tag (gtag.js) -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-0228GR7HD3"></script>
         <script>
-            window.dataLayer = window.dataLayer || [];
-
-            function gtag() {
-                dataLayer.push(arguments);
-            }
-            gtag('js', new Date());
-            gtag('config', 'GA_TRACKING_ID', {
-                anonymize_ip: true,
-                cookie_flags: 'SameSite=None;Secure'
-            });
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+        
+          gtag('config', 'G-0228GR7HD3');
         </script>
 
         <!-- Facebook Pixel (Add your pixel ID) -->
