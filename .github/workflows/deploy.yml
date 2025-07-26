@@ -12,23 +12,33 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Connect to server and pull latest code
+      - name: 📡 Connect to server and deploy
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.PRODUCTION_HOST }}
           username: ${{ secrets.PRODUCTION_USER }}
           key: ${{ secrets.PRODUCTION_KEY }}
           script: |
+            echo "➡️ Connecting to server..."
+
+            if [ ! -d "/var/www/production/fileshare" ]; then
+              echo "📁 Directory does not exist. Cloning project..."
+              git clone -b production git@github.com:your-username/your-repo.git /var/www/production/fileshare || { echo "❌ Git clone failed"; exit 1; }
+            else
+              echo "📂 Directory exists. Pulling latest changes..."
+              cd /var/www/production/fileshare || { echo "❌ Failed to access project directory"; exit 1; }
+              git pull origin production || { echo "❌ Git pull failed"; exit 1; }
+            fi
+
+            echo "📦 Installing Composer dependencies..."
             cd /var/www/production/fileshare
+            composer install --no-interaction --prefer-dist --optimize-autoloader || { echo "❌ Composer install failed"; exit 1; }
 
-            echo "📦 Pulling latest changes..."
-            git pull origin production
+            echo "🔧 Setting folder permissions..."
+            sudo chown -R www-data:www-data storage bootstrap/cache || { echo "❌ chown failed"; exit 1; }
+            sudo chmod -R 775 storage bootstrap/cache || { echo "❌ chmod failed"; exit 1; }
 
-            echo "🎼 Running composer install..."
-            composer install --no-interaction --prefer-dist --optimize-autoloader
+            echo "🚀 Optimizing Laravel..."
+            php artisan optimize || { echo "❌ Artisan optimize failed"; exit 1; }
 
-            echo "🧼 Setting permissions..."
-            sudo chown -R www-data:www-data storage bootstrap/cache
-            sudo chmod -R 775 storage bootstrap/cache
-
-            echo "🚀 Laravel Deployment Complete!"
+            echo "✅ Deployment completed successfully!"
