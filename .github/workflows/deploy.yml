@@ -6,311 +6,82 @@ on:
       - production
   workflow_dispatch:
 
-env:
-  PROJECT_DIR: /var/www/production/fileshare
-  PHP_VERSION: "8.2"
-
 jobs:
   deploy:
-    name: Pull and Deploy
+    name: Deploy
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 10
     
     steps:
-      - name: 📡 Connect to server and deploy
+      - name: 📡 Deploy to Server
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.PRODUCTION_HOST }}
           username: ${{ secrets.PRODUCTION_USER }}
           key: ${{ secrets.PRODUCTION_KEY }}
           port: ${{ secrets.PRODUCTION_PORT || 22 }}
-          timeout: 600s
           script: |
-            set -e  # Exit on any error
+            set -e
             
-            echo "🚀 Starting deployment process..."
-            echo "📅 Deployment started at: $(date)"
-            
+            echo "🚀 Starting deployment..."
             PROJECT_DIR="/var/www/production/fileshare"
-            BACKUP_DIR="/var/www/production/backups"
-            TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-            
-            # Function to handle errors
-            handle_error() {
-                echo "❌ Error occurred in: $1"
-                echo "🔍 Current directory: $(pwd)"
-                echo "📋 Exit code: $?"
-                echo "🕒 Error time: $(date)"
-                
-                # Optional: Restore from backup on critical errors
-                if [[ "$1" == *"Composer"* ]] || [[ "$1" == *"Laravel"* ]]; then
-                    echo "🔄 Critical error detected. Consider manual rollback if needed."
-                fi
-                
-                exit 1
-            }
-            
-            # Function to create backup
-            create_backup() {
-                if [ -d "$PROJECT_DIR" ]; then
-                    echo "💾 Creating backup..."
-                    sudo mkdir -p "$BACKUP_DIR"
-                    sudo cp -r "$PROJECT_DIR" "$BACKUP_DIR/backup_$TIMESTAMP" || echo "⚠️ Backup failed"
-                    echo "✅ Backup created at: $BACKUP_DIR/backup_$TIMESTAMP"
-                fi
-            }
-            
-            # Function to check system requirements
-            check_requirements() {
-                echo "🔍 Checking system requirements..."
-                
-                # Check disk space (need at least 1GB free)
-                AVAILABLE_SPACE=$(df /var/www | awk 'NR==2 {print $4}')
-                if [ "$AVAILABLE_SPACE" -lt 1048576 ]; then
-                    echo "⚠️ Low disk space warning: $(df -h /var/www)"
-                fi
-                
-                # Check if PHP is installed
-                if ! command -v php &> /dev/null; then
-                    echo "❌ PHP is not installed"
-                    exit 1
-                fi
-                
-                echo "✅ PHP version: $(php -v | head -n 1)"
-                
-                # Check if required PHP extensions are loaded
-                REQUIRED_EXTENSIONS=("mbstring" "xml" "ctype" "json" "tokenizer" "openssl" "pdo" "bcmath" "curl" "fileinfo")
-                for ext in "${REQUIRED_EXTENSIONS[@]}"; do
-                    if ! php -m | grep -i "$ext" > /dev/null; then
-                        echo "⚠️ PHP extension missing: $ext"
-                    fi
-                done
-            }
-            
-            # Function to setup directories and permissions
-            setup_directories() {
-                echo "📁 Setting up directory structure..."
-                
-                # Create project directory if it doesn't exist
-                sudo mkdir -p "$(dirname "$PROJECT_DIR")"
-                
-                # Create all necessary Laravel directories
-                if [ -d "$PROJECT_DIR" ]; then
-                    cd "$PROJECT_DIR" || handle_error "Directory access"
-                    
-                    sudo mkdir -p storage/{app/{public,framework/{cache,sessions,testing,views}},logs} || handle_error "Storage directory creation"
-                    sudo mkdir -p bootstrap/cache || handle_error "Bootstrap cache directory creation"
-                    sudo mkdir -p public/storage || true
-                    
-                    # Create additional directories that might be needed
-                    sudo mkdir -p storage/app/uploads
-                    sudo mkdir -p storage/framework/cache/data
-                    sudo mkdir -p storage/debugbar
-                fi
-            }
-            
-            # Function to set permissions
-            set_permissions() {
-                echo "🔧 Setting up permissions..."
-                
-                cd "$PROJECT_DIR" || handle_error "Directory access for permissions"
-                
-                # Set ownership for the entire project
-                sudo chown -R www-data:www-data . || handle_error "Full ownership change"
-                
-                # Set specific permissions for directories
-                sudo find . -type d -exec chmod 755 {} \; || handle_error "Directory permissions"
-                
-                # Set specific permissions for files
-                sudo find . -type f -exec chmod 644 {} \; || handle_error "File permissions"
-                
-                # Set special permissions for Laravel directories
-                sudo chmod -R 775 storage bootstrap/cache || handle_error "Laravel directory permissions"
-                
-                # Ensure log file exists and has correct permissions
-                sudo touch storage/logs/laravel.log
-                sudo chown www-data:www-data storage/logs/laravel.log
-                sudo chmod 664 storage/logs/laravel.log
-                
-                # Make artisan executable
-                sudo chmod +x artisan 2>/dev/null || true
-                
-                echo "✅ Permissions set successfully"
-            }
-            
-            # Start deployment process
-            check_requirements
-            create_backup
             
             # Clone or pull repository
             if [ ! -d "$PROJECT_DIR" ]; then
-                echo "📁 Directory does not exist. Cloning project..."
-                sudo git clone -b production https://github.com/your-username/your-repo.git "$PROJECT_DIR" || handle_error "Git clone"
+                echo "📁 Cloning repository..."
+                sudo git clone -b production https://github.com/your-username/your-repo.git "$PROJECT_DIR"
             else
-                echo "📂 Directory exists. Pulling latest changes..."
-                cd "$PROJECT_DIR" || handle_error "Directory access"
-                
-                # Show current commit before pulling
-                echo "📊 Current commit: $(git rev-parse --short HEAD) - $(git log -1 --pretty=format:'%s')"
-                
-                # Stash any local changes before pulling
-                sudo git stash --include-untracked 2>/dev/null || true
-                sudo git pull origin production || handle_error "Git pull"
-                
-                # Show new commit after pulling
-                echo "📊 New commit: $(git rev-parse --short HEAD) - $(git log -1 --pretty=format:'%s')"
+                echo "📂 Pulling latest changes..."
+                cd "$PROJECT_DIR"
+                sudo git pull origin production
             fi
             
-            setup_directories
-            set_permissions
+            cd "$PROJECT_DIR"
             
-            # Handle environment file
-            echo "📝 Setting up environment file..."
-            cd "$PROJECT_DIR" || handle_error "Directory access for env"
+            # Create directories
+            echo "📁 Creating directories..."
+            sudo mkdir -p storage/{app,framework/{cache,sessions,views},logs}
+            sudo mkdir -p bootstrap/cache
             
-            if [ ! -f ".env" ]; then
-                if [ -f ".env.production" ]; then
-                    sudo cp .env.production .env
-                    echo "✅ Copied .env.production to .env"
-                elif [ -f ".env.example" ]; then
-                    sudo cp .env.example .env
-                    echo "⚠️ Copied .env.example to .env - Please configure your environment variables"
-                else
-                    echo "❌ No environment template found!"
-                    handle_error "Environment file setup"
-                fi
-                sudo chown www-data:www-data .env
-                sudo chmod 644 .env
-            fi
+            # Set permissions
+            echo "🔧 Setting permissions..."
+            sudo chown -R www-data:www-data .
+            sudo chmod -R 775 storage bootstrap/cache
             
-            # Install/update Composer
-            echo "📦 Setting up Composer..."
-            if ! command -v composer &> /dev/null; then
-                echo "📥 Installing Composer..."
-                curl -sS https://getcomposer.org/installer | php
-                sudo mv composer.phar /usr/local/bin/composer
-                sudo chmod +x /usr/local/bin/composer
-            else
-                echo "✅ Composer already installed: $(composer --version | head -n1)"
-            fi
+            # Install dependencies
+            echo "📦 Installing dependencies..."
+            sudo -u www-data composer install --no-interaction --no-dev --optimize-autoloader
             
-            # Clean up any existing vendor directory to avoid conflicts
-            if [ -d "vendor" ]; then
-                echo "🧹 Cleaning up existing vendor directory..."
-                sudo rm -rf vendor/
-            fi
+            # Clear caches
+            echo "🧹 Clearing caches..."
+            sudo rm -f bootstrap/cache/*.php
+            sudo -u www-data php artisan config:clear || true
+            sudo -u www-data php artisan cache:clear || true
+            sudo -u www-data php artisan view:clear || true
             
-            # Remove composer.lock to ensure fresh install
-            if [ -f "composer.lock" ]; then
-                sudo rm -f composer.lock
-            fi
-            
-            # Install composer dependencies
-            echo "📦 Installing Composer dependencies..."
-            sudo -u www-data composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev --no-scripts || handle_error "Composer install"
-            
-            # Run composer scripts separately for better error handling
-            echo "🔍 Running package discovery..."
-            sudo -u www-data composer run-script post-autoload-dump || handle_error "Package discovery"
-            
-            # Laravel setup and optimization
-            echo "🚀 Setting up Laravel..."
-            
-            # Generate application key if needed
+            # Generate key if needed
             if ! grep -q "APP_KEY=base64:" .env 2>/dev/null; then
-                echo "🔑 Generating application key..."
-                sudo -u www-data php artisan key:generate --force || handle_error "Key generation"
+                echo "🔑 Generating app key..."
+                sudo -u www-data php artisan key:generate --force
             fi
-            
-            # Clear all caches before optimization
-            echo "🧹 Clearing existing caches..."
-            sudo -u www-data php artisan config:clear 2>/dev/null || true
-            sudo -u www-data php artisan cache:clear 2>/dev/null || true
-            sudo -u www-data php artisan view:clear 2>/dev/null || true
-            sudo -u www-data php artisan route:clear 2>/dev/null || true
-            sudo -u www-data php artisan event:clear 2>/dev/null || true
-            
-            # Run database migrations (uncomment if needed)
-            # echo "🗄️ Running database migrations..."
-            # sudo -u www-data php artisan migrate --force || handle_error "Database migration"
-            
-            # Seed database (uncomment if needed)
-            # echo "🌱 Seeding database..."
-            # sudo -u www-data php artisan db:seed --force || echo "⚠️ Database seeding failed or not configured"
             
             # Create storage link
             echo "🔗 Creating storage link..."
-            if [ -L "public/storage" ]; then
-                sudo rm public/storage
-            fi
-            sudo -u www-data php artisan storage:link || echo "⚠️ Storage link creation failed"
+            sudo -u www-data php artisan storage:link || true
             
             # Optimize for production
-            echo "⚡ Optimizing for production..."
-            sudo -u www-data php artisan config:cache || handle_error "Config cache"
-            sudo -u www-data php artisan route:cache || handle_error "Route cache"
-            sudo -u www-data php artisan view:cache || handle_error "View cache"
-            sudo -u www-data php artisan event:cache 2>/dev/null || true
+            echo "⚡ Optimizing..."
+            sudo -u www-data php artisan config:cache
+            sudo -u www-data php artisan route:cache
+            sudo -u www-data php artisan view:cache
             
-            # Final permission fix
-            echo "🔧 Final permission adjustments..."
+            # Final permissions
             sudo chown -R www-data:www-data storage bootstrap/cache
             sudo chmod -R 775 storage bootstrap/cache
             
-            # Restart services (uncomment and modify as needed for your setup)
-            echo "🔄 Restarting services..."
-            # sudo systemctl reload nginx || sudo systemctl reload apache2 || echo "⚠️ Web server reload failed"
-            # sudo systemctl restart php8.2-fpm || sudo systemctl restart php-fpm || echo "⚠️ PHP-FPM restart failed"
+            echo "✅ Deployment completed!"
             
-            # Queue workers restart (uncomment if using queues)
-            # echo "👷 Restarting queue workers..."
-            # sudo supervisorctl restart all || echo "⚠️ Queue worker restart failed"
-            
-            # Health checks
-            echo "🏥 Running health checks..."
-            
-            # Check if Laravel responds
-            if sudo -u www-data php artisan --version > /dev/null 2>&1; then
-                echo "✅ Laravel artisan is responding"
-            else
-                echo "❌ Laravel artisan health check failed"
-                handle_error "Laravel health check"
-            fi
-            
-            # Check if logs are writable
-            if sudo -u www-data touch storage/logs/test.log && sudo -u www-data rm storage/logs/test.log; then
-                echo "✅ Log directory is writable"
-            else
-                echo "❌ Log directory is not writable"
-            fi
-            
-            # Check if cache is writable
-            if sudo -u www-data touch bootstrap/cache/test.cache && sudo -u www-data rm bootstrap/cache/test.cache; then
-                echo "✅ Cache directory is writable"
-            else
-                echo "❌ Cache directory is not writable"
-            fi
-            
-            # Performance check
-            echo "📊 Performance metrics:"
-            echo "   - Disk usage: $(du -sh $PROJECT_DIR)"
-            echo "   - Available space: $(df -h /var/www | awk 'NR==2 {print $4}')"
-            echo "   - Memory usage: $(free -h | awk 'NR==2{print $3}')"
-            
-            echo "✅ Deployment completed successfully!"
-            echo ""
-            echo "📊 Deployment Summary:"
-            echo "   =================================="
-            echo "   🏷️  Project: $(basename $PROJECT_DIR)"
-            echo "   🌿 Branch: production"
-            echo "   📝 Commit: $(git rev-parse --short HEAD)"
-            echo "   👤 Author: $(git log -1 --pretty=format:'%an')"
-            echo "   💬 Message: $(git log -1 --pretty=format:'%s')"
-            echo "   🕒 Deployed: $(date)"
-            echo "   ⏱️  Duration: $SECONDS seconds"
-            echo "   =================================="
-            
-      - name: 🔔 Notify on Success
+      - name: 🎉 Success Notification
         if: success()
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -319,10 +90,9 @@ jobs:
           key: ${{ secrets.PRODUCTION_KEY }}
           script: |
             echo "🎉 Deployment successful!"
-            echo "🌐 Your application should now be live"
-            echo "📱 Don't forget to test your application"
+            echo "🌐 Application is now live"
             
-      - name: 💥 Notify on Failure
+      - name: ❌ Failure Notification
         if: failure()
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -330,22 +100,5 @@ jobs:
           username: ${{ secrets.PRODUCTION_USER }}
           key: ${{ secrets.PRODUCTION_KEY }}
           script: |
-            echo "💥 Deployment failed!"
-            echo ""
-            echo "🔍 Troubleshooting checklist:"
-            echo "   1. Check file permissions (www-data ownership)"
-            echo "   2. Verify disk space availability"  
-            echo "   3. Check database connectivity"
-            echo "   4. Validate .env file configuration"
-            echo "   5. Review Laravel logs: tail -f /var/www/production/fileshare/storage/logs/laravel.log"
-            echo "   6. Check web server logs"
-            echo ""
-            echo "🔄 To rollback, use the backup created at:"
-            echo "   /var/www/production/backups/backup_$(date +%Y%m%d)_*"
-            echo ""
-            echo "🆘 Quick recovery commands:"
-            echo "   cd /var/www/production/fileshare"
-            echo "   sudo chown -R www-data:www-data ."
-            echo "   sudo chmod -R 775 storage bootstrap/cache"
-            echo "   sudo -u www-data composer install --no-dev"
-            echo "   sudo -u www-data php artisan config:clear"
+            echo "❌ Deployment failed!"
+            echo "🔍 Check logs: tail -f /var/www/production/fileshare/storage/logs/laravel.log"
