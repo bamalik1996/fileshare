@@ -30,14 +30,22 @@ jobs:
               git pull origin production || { echo "❌ Git pull failed"; exit 1; }
             fi
 
+            
+
             echo "📦 Installing Composer dependencies..."
             cd /var/www/production/fileshare
-            composer install --no-interaction --prefer-dist --optimize-autoloader || { echo "❌ Composer install failed"; exit 1; }
+
+            echo "📂 Ensuring required directories exist..."
+            mkdir -p storage/logs
+            mkdir -p bootstrap/cache
 
             echo "🔧 Setting folder permissions..."
             sudo chown -R www-data:www-data storage bootstrap/cache || { echo "❌ chown failed"; exit 1; }
             sudo chmod -R 775 storage bootstrap/cache || { echo "❌ chmod failed"; exit 1; }
-
+            
+            echo "📦 Installing Composer dependencies..."    
+            composer install --no-interaction --prefer-dist --optimize-autoloader || { echo "❌ Composer install failed"; exit 1; }
+        
             echo "🚀 Optimizing Laravel..."
             php artisan optimize || { echo "❌ Artisan optimize failed"; exit 1; }
 
