@@ -33,6 +33,10 @@ jobs:
             else
                 echo "📂 Pulling latest changes..."
                 cd "$PROJECT_DIR"
+                
+                # Fix git ownership issue
+                sudo git config --global --add safe.directory "$PROJECT_DIR"
+                sudo git stash --include-untracked 2>/dev/null || true
                 sudo git pull origin production
             fi
             
