@@ -48,7 +48,7 @@
         <h1 class="hero-title">
             <img src="/icon.svg" style="
     width: 50px;
-" />
+" alt="Air to share logo" />
             AirToShare
         </h1>
         <p class="hero-subtitle">

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-us">
 
 <head>
 
@@ -230,7 +230,7 @@
     width: 125px;
     height: 50px;
 ">
-                    <img src="/logo.svg" />
+                    <img src="/logo.svg" alt="Air to share logo" />
                 </a>
 
                 <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
