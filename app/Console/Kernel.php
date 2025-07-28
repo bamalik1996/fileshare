@@ -15,9 +15,9 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         // Run cleanup every 30 minutes
-        $schedule->command('cleanup:expired-content')
-                 ->everyThirtyMinutes()
-                 ->withoutOverlapping();
+     //   $schedule->command('cleanup:expired-content')
+       //          ->everyThirtyMinutes()
+         //        ->withoutOverlapping();
     }
 
     protected function commands()
