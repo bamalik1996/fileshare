@@ -18,19 +18,27 @@ Route::prefix('api/v1')->group(function () {
     // 📜 Text Sharing Routes
     Route::controller(ShareController::class)->middleware('throttle:save-text')->group(function () {
         Route::post('/text', 'saveText')->name('share.store.text');
-        Route::post('/media', 'saveMedia')->name('share.store.media');
-        Route::delete('/media/{uuid?}', 'deleteMedia')->name('share.delete.media');
         Route::post('/download-zip', 'downloadZip')->name('share.download.zip');
         Route::post('/email-files', 'emailFiles')->name('share.email.files');
+    });
+
+    // 📁 Media File Routes (Independent from ShareText)
+    Route::controller(\App\Http\Controllers\MediaController::class)->middleware('throttle:save-text')->group(function () {
+        Route::post('/media', 'store')->name('media.store');
+        Route::delete('/media/{uuid?}', 'destroy')->name('media.destroy');
+        Route::delete('/media', 'destroyAll')->name('media.destroy.all');
     });
 
     // Routes without rate limiting
     Route::controller(ShareController::class)->group(function () {
         Route::get('/text', 'getText')->name('share.get.text');
         Route::get('/ip-info', 'getIpInfo')->name('share.ip.info');
-        Route::get('/share/get/media', 'getMedia')->name('share.get.media');
-        Route::delete('/share/media', 'deleteMedia');
-        Route::delete('/share/media/all', 'deleteAllMedia')->name('share.delete.all.media');
+    });
+
+    // Media routes without rate limiting
+    Route::controller(\App\Http\Controllers\MediaController::class)->group(function () {
+        Route::get('/media', 'index')->name('media.index');
+        Route::get('/media/ip-info', 'getIpInfo')->name('media.ip.info');
     });
 });
 
