@@ -326,7 +326,7 @@
 
         function loadIpInfo() {
             $.ajax({
-                url: '{{ route('media.ip.info') }}',
+                url: '/api/v1/media/ip-info',
                 method: 'GET',
                 success: function(data) {
                     $('#userIp').text(data.ip);
