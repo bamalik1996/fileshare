@@ -7,16 +7,16 @@
 @section('schema')
 <script type="application/ld+json">
 {
-  "@context": "https://schema.org",
-  "@type": "ContactPage",
+  "@@context": "https://schema.org",
+  "@@type": "ContactPage",
   "name": "AirToShare Feedback & Support",
   "description": "Contact AirToShare support team for feedback, bug reports, and feature requests",
   "url": "{{ url('/feedback') }}",
   "mainEntity": {
-    "@type": "Organization",
+    "@@type": "Organization",
     "name": "AirToShare",
     "contactPoint": {
-      "@type": "ContactPoint",
+      "@@type": "ContactPoint",
       "contactType": "Customer Support",
       "availableLanguage": "English"
     }

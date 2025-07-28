@@ -7,18 +7,18 @@
 @section('schema')
 <script type="application/ld+json">
 {
-  "@context": "https://schema.org",
-  "@type": "WebPage",
+  "@@context": "https://schema.org",
+  "@@type": "WebPage",
   "name": "Coming Soon - New Features",
   "description": "Exciting new features coming to AirToShare file sharing platform",
   "url": "{{ url('/coming-soon') }}",
   "mainEntity": {
-    "@type": "SoftwareApplication",
+    "@@type": "SoftwareApplication",
     "name": "AirToShare",
     "applicationCategory": "UtilitiesApplication",
     "operatingSystem": "Web Browser",
     "offers": {
-      "@type": "Offer",
+      "@@type": "Offer",
       "price": "0",
       "priceCurrency": "USD"
     }

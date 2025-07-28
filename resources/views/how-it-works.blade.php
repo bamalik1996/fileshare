@@ -9,44 +9,44 @@
 @section('schema')
     <script type="application/ld+json">
 {
-  "@context": "https://schema.org",
-  "@type": "HowTo",
+  "@@context": "https://schema.org",
+  "@@type": "HowTo",
   "name": "How to Share Files with AirToShare",
   "description": "Step-by-step guide to share files and text across devices using AirToShare",
   "image": "{{ url('/') }}/favicon.ico",
   "totalTime": "PT2M",
   "estimatedCost": {
-    "@type": "MonetaryAmount",
+    "@@type": "MonetaryAmount",
     "currency": "USD",
     "value": "0"
   },
   "supply": [
     {
-      "@type": "HowToSupply",
+      "@@type": "HowToSupply",
       "name": "Devices connected to same Wi-Fi network"
     }
   ],
   "tool": [
     {
-      "@type": "HowToTool",
+      "@@type": "HowToTool",
       "name": "Web browser"
     }
   ],
   "step": [
     {
-      "@type": "HowToStep",
+      "@@type": "HowToStep",
       "name": "Connect to Same Wi-Fi",
       "text": "Ensure all devices are connected to the same Wi-Fi network",
       "image": "{{ url('/') }}/favicon.ico"
     },
     {
-      "@type": "HowToStep",
+      "@@type": "HowToStep",
       "name": "Upload Files or Text",
       "text": "Upload files or paste text from any device on the network",
       "image": "{{ url('/') }}/favicon.ico"
     },
     {
-      "@type": "HowToStep",
+      "@@type": "HowToStep",
       "name": "Access from Other Devices",
       "text": "Access shared content from any device on the same network",
       "image": "{{ url('/') }}/favicon.ico"

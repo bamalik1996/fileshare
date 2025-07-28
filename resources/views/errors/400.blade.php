@@ -7,13 +7,13 @@
 @section('schema')
 <script type="application/ld+json">
 {
-  "@context": "https://schema.org",
-  "@type": "WebPage",
+  "@@context": "https://schema.org",
+  "@@type": "WebPage",
   "name": "400 - Bad Request",
   "description": "Bad request error on AirToShare file sharing platform",
   "url": "{{ url()->current() }}",
   "mainEntity": {
-    "@type": "SoftwareApplication",
+    "@@type": "SoftwareApplication",
     "name": "AirToShare",
     "applicationCategory": "UtilitiesApplication",
     "operatingSystem": "Web Browser"
