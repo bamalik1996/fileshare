@@ -1,9 +1,11 @@
 @extends('layouts.app')
 
 @section('title', 'AirToShare - Instant File Sharing Across Devices | Local Network File Transfer')
-@section('description', 'AirToShare - Share files and text instantly across devices on the same Wi-Fi network. No
-    accounts, no external servers - just secure peer-to-peer file sharing up to 10MB per file. Follow us on Facebook!')
-@section('keywords', 'file sharing, instant sharing, local network, Wi-Fi sharing, cross-device, secure sharing,
+@section('description',
+    'AirToShare - Share files and text instantly across devices on the same Wi-Fi network. No
+    accounts, no external servers - just secure peer-to-peer file sharing up to 25MB per file. Follow us on Facebook!')
+@section('keywords',
+    'file sharing, instant sharing, local network, Wi-Fi sharing, cross-device, secure sharing,
     peer-to-peer, no account required')
 
 @section('schema')
@@ -67,11 +69,11 @@
         </div>
         <div class="info-item">
             <i class="fas fa-weight-hanging"></i>
-            <strong>Max Size:</strong> <span id="maxFileSize">10 MB</span>
+            <strong>Max Size:</strong> <span id="maxFileSize">25 MB</span>
         </div>
         <div class="info-item">
             <i class="fas fa-clock"></i>
-            <strong>Auto-delete:</strong> 6 hours
+            <strong>Auto-delete:</strong> 24 hours
         </div>
     </div>
 
@@ -94,10 +96,10 @@
             <div class="text-container">
                 <textarea class="modern-textarea" id="textInput"
                     placeholder="Type or paste your text here... Links will be automatically detected and made clickable."
-                    maxlength="50000"></textarea>
+                    maxlength="5000000"></textarea>
 
                 <div class="textarea-footer">
-                    <div class="char-counter" id="charCounter">0 / 50,000 characters</div>
+                    <div class="char-counter" id="charCounter">0 / 500,000 characters</div>
                     <div class="button-group">
                         <button class="modern-btn danger" id="clearBtn" style="display: none;">
                             <i class="fas fa-trash"></i>
@@ -134,7 +136,7 @@
                     <i class="fas fa-cloud-upload-alt upload-icon"></i>
                     <div class="upload-text">Drag & Drop Files Here</div>
                     <div class="upload-subtext">
-                        or click to browse • Max 10MB per file • Up to 20 files
+                        or click to browse • Max 25MB per file • Up to 20 files
                         <br>
                         <small>Supported: Images, PDF, DOC, TXT, ZIP</small>
                     </div>
@@ -172,10 +174,10 @@
                             <i class="fas fa-download"></i>
                             Download
                         </button>
-                        <button class="download-btn email-btn" id="emailSelectedBtn" disabled>
+                        {{-- <button class="download-btn email-btn" id="emailSelectedBtn" disabled>
                             <i class="fas fa-envelope"></i>
                             Email
-                        </button>
+                        </button> --}}
                         <button class="modern-btn danger" id="removeAllBtn" style="display: none;">
                             <i class="fas fa-trash-alt"></i>
                             Remove All Files
@@ -207,10 +209,10 @@
     <div class="modal-overlay" id="emailModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 class="modal-title">
+                <div class="modal-title">
                     <i class="fas fa-envelope"></i>
                     Email Files
-                </h3>
+                </div>
                 <button class="modal-close" id="emailModalClose">
                     <i class="fas fa-times"></i>
                 </button>
@@ -248,10 +250,10 @@
     <div class="modal-overlay" id="removeAllModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 class="modal-title" style="color: var(--error-color);">
+                <div class="modal-title" style="color: var(--error-color);">
                     <i class="fas fa-exclamation-triangle"></i>
                     Remove All Files
-                </h3>
+                </div>
                 <button class="modal-close" id="removeAllModalClose">
                     <i class="fas fa-times"></i>
                 </button>
@@ -324,7 +326,7 @@
 
         function loadIpInfo() {
             $.ajax({
-                url: '/api/v1/ip-info',
+                url: '{{ route('media.ip.info') }}',
                 method: 'GET',
                 success: function(data) {
                     $('#userIp').text(data.ip);
@@ -359,7 +361,7 @@
 
         function fetchMedia() {
             $.ajax({
-                url: '{{ route('share.get.media') }}',
+                url: '{{ route('media.index') }}',
                 method: 'GET',
                 success: function(response) {
                     displayFiles(response.files || []);
@@ -390,12 +392,12 @@
 
         function updateCharCounter(length) {
             const counter = $('#charCounter');
-            counter.text(`${length.toLocaleString()} / 50,000 characters`);
+            counter.text(`${length.toLocaleString()} / 500,000 characters`);
 
             counter.removeClass('warning danger');
-            if (length > 45000) {
+            if (length > 450000) {
                 counter.addClass('danger');
-            } else if (length > 40000) {
+            } else if (length > 400000) {
                 counter.addClass('warning');
             }
         }
@@ -441,8 +443,8 @@
         function handleSaveText() {
             const text = $('#textInput').val();
 
-            if (text.length > 50000) {
-                showMessage('textErrorMessage', 'Text is too long. Maximum 50,000 characters allowed.');
+            if (text.length > 500000) {
+                showMessage('textErrorMessage', 'Text is too long. Maximum 500,000 characters allowed.');
                 return;
             }
 
@@ -476,17 +478,23 @@
 
         function handleCopyText() {
             const text = $('#textInput').val();
+            if (navigator.clipboard && navigator.clipboard.writeText) {
 
-            navigator.clipboard.writeText(text).then(() => {
-                showToast('success', 'Success!', 'Text copied to clipboard successfully');
 
-                // Visual feedback
-                const btn = $('#saveBtn');
-                btn.addClass('success');
-                setTimeout(() => btn.removeClass('success'), 1000);
-            }).catch(() => {
-                showToast('error', 'Error!', 'Failed to copy text to clipboard');
-            });
+                navigator.clipboard.writeText(text).then(() => {
+                    showToast('success', 'Success!', 'Text copied to clipboard successfully');
+
+                    // Visual feedback
+                    const btn = $('#saveBtn');
+                    btn.addClass('success');
+                    setTimeout(() => btn.removeClass('success'), 1000);
+                }).catch(() => {
+                    showToast('error', 'Error!', 'Failed to copy text to clipboard');
+                });
+            } else {
+                alert("Clipboard API not supported in this browser.");
+
+            }
         }
 
         function handleClearText() {
@@ -627,10 +635,10 @@
         }
 
         function uploadFile(file) {
-            const maxSize = 10 * 1024 * 1024; // 10MB
+            const maxSize = 25 * 1024 * 1024; // 10MB
 
             if (file.size > maxSize) {
-                showMessage('fileErrorMessage', `${file.name} exceeds the 10MB limit.`);
+                showMessage('fileErrorMessage', `${file.name} exceeds the 25MB limit.`);
                 return;
             }
 
@@ -640,7 +648,7 @@
             showProgress(true);
 
             $.ajax({
-                url: '{{ route('share.store.media') }}',
+                url: '{{ route('media.store') }}',
                 method: 'POST',
                 data: formData,
                 processData: false,
@@ -710,7 +718,7 @@
                     console.warn('File missing URLs:', file);
                     return;
                 }
-                
+
                 const fileItem = createFileItem(file);
                 grid.append(fileItem);
             });
@@ -787,7 +795,7 @@
                 const uuid = allUuids[deletedCount];
 
                 $.ajax({
-                    url: '{{ route('share.delete.media') }}',
+                    url: '{{ route('media.destroy.all') }}',
                     method: 'DELETE',
                     data: {
                         uuid: uuid
@@ -922,7 +930,7 @@
             showToast('info', 'Preparing Download', 'Creating zip file for multiple files...');
 
             $.ajax({
-                url: '/api/v1/download-zip',
+                url: '/api/v1/media/download-zip',
                 method: 'POST',
                 data: JSON.stringify({
                     uuids: selectedUuids
@@ -1014,7 +1022,7 @@
             selectedFiles.delete(uuid);
 
             $.ajax({
-                url: '{{ route('share.delete.media') }}',
+                url: '{{ route('media.destroy.all') }}',
                 method: 'DELETE',
                 data: {
                     uuid: uuid
