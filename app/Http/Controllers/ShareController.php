@@ -139,12 +139,20 @@ class ShareController extends Controller
         }
         
         $files = $sharedText->getMedia()->map(function ($item) {
+            // Ensure file still exists on disk
+            if (!file_exists($item->getPath())) {
+                Log::warning("File missing from disk: " . $item->getPath());
+                // Optionally delete the media record if file is missing
+                // $item->delete();
+                return null;
+            }
+            
             return [
                 'mime_type' => $item->mime_type,
                 'name' => $item->name,
                 'file_name' => $item->file_name,
                 'uuid' => $item->uuid,
-                'preview_url' => $item->getUrl(),
+                'preview_url' => $item->getFullUrl(),
                 'original_url' => $item->getUrl(),
                 'order' => $item->order_column,
                 'custom_properties' => $item->custom_properties,
@@ -153,7 +161,7 @@ class ShareController extends Controller
                 'size_bytes' => $item->size,
                 'created_at' => $item->created_at->diffForHumans()
             ];
-        });
+        })->filter(); // Remove null entries
 
         return response()->json([
             'files' => $files,
@@ -221,12 +229,15 @@ class ShareController extends Controller
             $media = $sharedText->addMedia($file)
                 ->usingName($originalName)
                 ->usingFileName($safeName)
-                ->toMediaCollection('default', 'public');
+                ->toMediaCollection('shared_files', 'public');
                 
             // Verify file was actually saved
-            if (!$media->exists() || !file_exists($media->getPath())) {
+            if (!$media || !file_exists($media->getPath())) {
                 throw new \Exception('File was not properly saved to storage');
             }
+            
+            // Set proper permissions
+            chmod($media->getPath(), 0644);
             
         } catch (\Exception $e) {
             Log::error("File upload failed for IP: {$ip}, Error: " . $e->getMessage());
@@ -242,7 +253,7 @@ class ShareController extends Controller
             'status' => 'success',
             'message' => 'Media uploaded successfully.',
             'uuid' => $media->uuid,
-            'url' => $media->getFullUrl(),
+            'url' => $media->getUrl(),
             'name' => $media->name,
             'size' => $this->formatFileSize($media->size),
             'expires_at' => $expiry->toDateTimeString(),

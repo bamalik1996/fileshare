@@ -705,6 +705,12 @@
             controls.show();
 
             Object.values(files).forEach(file => {
+                // Check if file URL is accessible
+                if (!file.original_url || !file.preview_url) {
+                    console.warn('File missing URLs:', file);
+                    return;
+                }
+                
                 const fileItem = createFileItem(file);
                 grid.append(fileItem);
             });
