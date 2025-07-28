@@ -109,13 +109,13 @@ class ShareController extends Controller
                 'text' => $sharedText->content,
                 'expires_at' => $sharedText->expires_at,
                 'last_accessed' => $sharedText->last_accessed,
-                'media' => $sharedText->getMedia()->map(function ($item) {
+                        'original_url' => $item->getFullUrl(),
                     return [
                         'uuid' => $item->uuid,
                         'url' => $item->getUrl(),
                         'name' => $item->name,
                         'size' => $item->size,
-                        'mime_type' => $item->mime_type
+                        'preview_url' => $item->getFullUrl(),
                     ];
                 })
             ]);
@@ -217,10 +217,24 @@ class ShareController extends Controller
         $extension = $file->getClientOriginalExtension();
         $safeName = Str::slug(pathinfo($originalName, PATHINFO_FILENAME)) . '_' . time() . '.' . $extension;
         
-        $media = $sharedText->addMedia($file)
-            ->usingName($originalName)
-            ->usingFileName($safeName)
-            ->toMediaCollection();
+        try {
+            $media = $sharedText->addMedia($file)
+                ->usingName($originalName)
+                ->usingFileName($safeName)
+                ->toMediaCollection('default', 'public');
+                
+            // Verify file was actually saved
+            if (!$media->exists() || !file_exists($media->getPath())) {
+                throw new \Exception('File was not properly saved to storage');
+            }
+            
+        } catch (\Exception $e) {
+            Log::error("File upload failed for IP: {$ip}, Error: " . $e->getMessage());
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to save file. Please try again.'
+            ], 500);
+        }
             
         Log::info("File uploaded for IP: {$ip}, File: {$originalName}");
 
@@ -228,7 +242,7 @@ class ShareController extends Controller
             'status' => 'success',
             'message' => 'Media uploaded successfully.',
             'uuid' => $media->uuid,
-            'url' => $media->getUrl(),
+            'url' => $media->getFullUrl(),
             'name' => $media->name,
             'size' => $this->formatFileSize($media->size),
             'expires_at' => $expiry->toDateTimeString(),
