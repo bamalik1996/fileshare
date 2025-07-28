@@ -109,13 +109,13 @@ class ShareController extends Controller
                 'text' => $sharedText->content,
                 'expires_at' => $sharedText->expires_at,
                 'last_accessed' => $sharedText->last_accessed,
-                'media' => $sharedText->getMedia()->map(function ($item) {
+                        'original_url' => $item->getFullUrl(),
                     return [
                         'uuid' => $item->uuid,
                         'url' => $item->getUrl(),
                         'name' => $item->name,
                         'size' => $item->size,
-                        'mime_type' => $item->mime_type
+                        'preview_url' => $item->getFullUrl(),
                     ];
                 })
             ]);
@@ -139,12 +139,20 @@ class ShareController extends Controller
         }
         
         $files = $sharedText->getMedia()->map(function ($item) {
+            // Ensure file still exists on disk
+            if (!file_exists($item->getPath())) {
+                Log::warning("File missing from disk: " . $item->getPath());
+                // Optionally delete the media record if file is missing
+                // $item->delete();
+                return null;
+            }
+            
             return [
                 'mime_type' => $item->mime_type,
                 'name' => $item->name,
                 'file_name' => $item->file_name,
                 'uuid' => $item->uuid,
-                'preview_url' => $item->getUrl(),
+                'preview_url' => $item->getFullUrl(),
                 'original_url' => $item->getUrl(),
                 'order' => $item->order_column,
                 'custom_properties' => $item->custom_properties,
@@ -153,7 +161,7 @@ class ShareController extends Controller
                 'size_bytes' => $item->size,
                 'created_at' => $item->created_at->diffForHumans()
             ];
-        });
+        })->filter(); // Remove null entries
 
         return response()->json([
             'files' => $files,
@@ -217,10 +225,27 @@ class ShareController extends Controller
         $extension = $file->getClientOriginalExtension();
         $safeName = Str::slug(pathinfo($originalName, PATHINFO_FILENAME)) . '_' . time() . '.' . $extension;
         
-        $media = $sharedText->addMedia($file)
-            ->usingName($originalName)
-            ->usingFileName($safeName)
-            ->toMediaCollection();
+        try {
+            $media = $sharedText->addMedia($file)
+                ->usingName($originalName)
+                ->usingFileName($safeName)
+                ->toMediaCollection('shared_files', 'public');
+                
+            // Verify file was actually saved
+            if (!$media || !file_exists($media->getPath())) {
+                throw new \Exception('File was not properly saved to storage');
+            }
+            
+            // Set proper permissions
+            chmod($media->getPath(), 0644);
+            
+        } catch (\Exception $e) {
+            Log::error("File upload failed for IP: {$ip}, Error: " . $e->getMessage());
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to save file. Please try again.'
+            ], 500);
+        }
             
         Log::info("File uploaded for IP: {$ip}, File: {$originalName}");
 
