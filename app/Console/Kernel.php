@@ -8,16 +8,16 @@ use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 class Kernel extends ConsoleKernel
 {
     protected $commands = [
-        Commands\CleanupExpiredContent::class,
-        Commands\FixFilePermissions::class,
+       // Commands\CleanupExpiredContent::class,
+       // Commands\FixFilePermissions::class,
     ];
 
     protected function schedule(Schedule $schedule)
     {
         // Run cleanup every 30 minutes
-        $schedule->command('cleanup:expired-content')
-                 ->everyThirtyMinutes()
-                 ->withoutOverlapping();
+     //   $schedule->command('cleanup:expired-content')
+       //          ->everyThirtyMinutes()
+         //        ->withoutOverlapping();
     }
 
     protected function commands()
