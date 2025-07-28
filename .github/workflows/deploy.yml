@@ -63,12 +63,6 @@ jobs:
             sudo -u www-data php artisan cache:clear || true
             sudo -u www-data php artisan view:clear || true
             
-            # Generate key if needed
-            if ! grep -q "APP_KEY=base64:" .env 2>/dev/null; then
-                echo "🔑 Generating app key..."
-                sudo -u www-data php artisan key:generate --force
-            fi
-            
             # Create storage link
             echo "🔗 Creating storage link..."
             sudo -u www-data php artisan storage:link || true
