@@ -6,11 +6,16 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class MediaFile extends Model
+
+class MediaFile extends Model implements HasMedia
 {
+
+    use InteractsWithMedia;
+
     protected $fillable = [
-        'uuid',
         'file_name',
         'original_name',
         'mime_type',
@@ -25,27 +30,6 @@ class MediaFile extends Model
         'file_size' => 'integer',
     ];
 
-    /**
-     * Boot the model
-     */
-    protected static function boot()
-    {
-        parent::boot();
-
-        // Auto-generate UUID when creating
-        static::creating(function ($model) {
-            if (empty($model->uuid)) {
-                $model->uuid = Str::uuid();
-            }
-        });
-
-        // Delete physical file when model is deleted
-        static::deleting(function ($model) {
-            if (Storage::disk('public')->exists($model->storage_path)) {
-                Storage::disk('public')->delete($model->storage_path);
-            }
-        });
-    }
 
     /**
      * Scope to get non-expired files
@@ -72,14 +56,6 @@ class MediaFile extends Model
     }
 
     /**
-     * Get the full URL to the file
-     */
-    public function getUrlAttribute()
-    {
-        return Storage::disk('public')->url($this->storage_path);
-    }
-
-    /**
      * Get the full file path
      */
     public function getFullPathAttribute()
@@ -101,7 +77,7 @@ class MediaFile extends Model
     public function getFormattedSizeAttribute()
     {
         $bytes = $this->file_size;
-        
+
         if ($bytes >= 1073741824) {
             return number_format($bytes / 1073741824, 2) . ' GB';
         } elseif ($bytes >= 1048576) {
@@ -135,11 +111,11 @@ class MediaFile extends Model
     public static function cleanupExpired()
     {
         $expiredFiles = static::where('expires_at', '<', Carbon::now())->get();
-        
+
         foreach ($expiredFiles as $file) {
             $file->delete(); // This will also delete the physical file
         }
-        
+
         return $expiredFiles->count();
     }
 }

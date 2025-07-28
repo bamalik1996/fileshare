@@ -18,7 +18,7 @@ Route::prefix('api/v1')->group(function () {
     // 📜 Text Sharing Routes
     Route::controller(ShareController::class)->middleware('throttle:save-text')->group(function () {
         Route::post('/text', 'saveText')->name('share.store.text');
-        Route::post('/download-zip', 'downloadZip')->name('share.download.zip');
+        // Route::post('/download-zip', 'downloadZip')->name('share.download.zip');
         Route::post('/email-files', 'emailFiles')->name('share.email.files');
     });
 
@@ -27,6 +27,7 @@ Route::prefix('api/v1')->group(function () {
         Route::post('/media', 'store')->name('media.store');
         Route::delete('/media/{uuid?}', 'destroy')->name('media.destroy');
         Route::delete('/media', 'destroyAll')->name('media.destroy.all');
+        Route::post('/media/download-zip', 'downloadZip')->name('media.download');
     });
 
     // Routes without rate limiting
