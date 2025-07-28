@@ -109,7 +109,7 @@ class ShareController extends Controller
                 'text' => $sharedText->content,
                 'expires_at' => $sharedText->expires_at,
                 'last_accessed' => $sharedText->last_accessed,
-                        'original_url' => $item->getFullUrl(),
+                'files' => $sharedText->files->map(function ($item) {
                     return [
                         'uuid' => $item->uuid,
                         'url' => $item->getUrl(),
@@ -117,7 +117,7 @@ class ShareController extends Controller
                         'size' => $item->size,
                         'preview_url' => $item->getFullUrl(),
                     ];
-                })
+                }),
             ]);
         }
 
