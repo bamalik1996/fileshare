@@ -11,15 +11,15 @@
 @section('schema')
     <script type="application/ld+json">
 {
-  "@context": "https://schema.org",
-  "@type": "WebApplication",
+  "@@context": "https://schema.org",
+  "@@type": "WebApplication",
   "name": "AirToShare",
   "description": "Instant file sharing across devices on the same network",
   "url": "{{ url('/') }}",
   "applicationCategory": "UtilitiesApplication",
   "operatingSystem": "Web Browser",
   "offers": {
-    "@type": "Offer",
+    "@@type": "Offer",
     "price": "0",
     "priceCurrency": "USD"
   },
@@ -34,7 +34,7 @@
   "browserRequirements": "Requires JavaScript. Requires HTML5.",
   "softwareVersion": "1.0",
   "author": {
-    "@type": "Organization",
+    "@@type": "Organization",
     "name": "AirToShare"
   }
 }

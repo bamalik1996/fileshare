@@ -7,46 +7,46 @@
 @section('schema')
 <script type="application/ld+json">
 {
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
+  "@@context": "https://schema.org",
+  "@@type": "FAQPage",
   "mainEntity": [
     {
-      "@type": "Question",
+      "@@type": "Question",
       "name": "Is AirToShare safe to use?",
       "acceptedAnswer": {
-        "@type": "Answer",
+        "@@type": "Answer",
         "text": "Yes, AirToShare is completely safe. Your files never leave your local Wi-Fi network and are not uploaded to any external servers. All sharing happens directly between devices on the same network."
       }
     },
     {
-      "@type": "Question",
+      "@@type": "Question",
       "name": "What file types does AirToShare support?",
       "acceptedAnswer": {
-        "@type": "Answer",
+        "@@type": "Answer",
         "text": "AirToShare supports images (JPEG, PNG, GIF, WebP, SVG), documents (PDF, DOC, DOCX), text files, and archives (ZIP, RAR). Each file can be up to 10MB in size."
       }
     },
     {
-      "@type": "Question",
+      "@@type": "Question",
       "name": "How many files can I share at once?",
       "acceptedAnswer": {
-        "@type": "Answer",
+        "@@type": "Answer",
         "text": "You can share up to 20 files per session, with each file being up to 10MB in size. This limit helps ensure optimal performance for all users."
       }
     },
     {
-      "@type": "Question",
+      "@@type": "Question",
       "name": "How long do shared files stay available?",
       "acceptedAnswer": {
-        "@type": "Answer",
+        "@@type": "Answer",
         "text": "Shared files automatically expire after 6 hours or after 1 hour of inactivity, whichever comes first. This ensures your privacy and helps manage storage space."
       }
     },
     {
-      "@type": "Question",
+      "@@type": "Question",
       "name": "Do I need to create an account for AirToShare?",
       "acceptedAnswer": {
-        "@type": "Answer",
+        "@@type": "Answer",
         "text": "No account is required! AirToShare works instantly without any registration. Just connect to the same Wi-Fi network and start sharing."
       }
     }

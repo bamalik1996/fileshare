@@ -12,7 +12,7 @@
           window.dataLayer = window.dataLayer || [];
           function gtag(){dataLayer.push(arguments);}
           gtag('js', new Date());
-        
+
           gtag('config', 'G-0228GR7HD3');
         </script>
 
@@ -42,7 +42,7 @@
         <noscript><img height="1" width="1" style="display:none"
                 src="https://www.facebook.com/tr?id=FACEBOOK_PIXEL_ID&ev=PageView&noscript=1" /></noscript>
     @endif
-    
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'AirForShare - Instant File Sharing Across Devices')</title>
@@ -101,8 +101,8 @@
     <!-- Additional Schema for Organization -->
     <script type="application/ld+json">
     {
-      "@context": "https://schema.org",
-      "@type": "Organization",
+      "@@context": "https://schema.org",
+      "@@type": "Organization",
       "name": "AirToShare",
       "url": "{{ url('/') }}",
       "logo": "{{ url('/favicon.ico') }}",
@@ -114,7 +114,7 @@
         "https://www.linkedin.com/company/airtoshare"
       ],
       "contactPoint": {
-        "@type": "ContactPoint",
+        "@@type": "ContactPoint",
         "contactType": "Customer Support",
         "availableLanguage": "English",
         "url": "{{ url('/feedback') }}"
@@ -126,17 +126,17 @@
     @if (request()->path() !== '/')
         <script type="application/ld+json">
     {
-      "@context": "https://schema.org",
-      "@type": "BreadcrumbList",
+      "@@context": "https://schema.org",
+      "@@type": "BreadcrumbList",
       "itemListElement": [
         {
-          "@type": "ListItem",
+          "@@type": "ListItem",
           "position": 1,
           "name": "Home",
           "item": "{{ url('/') }}"
         },
         {
-          "@type": "ListItem",
+          "@@type": "ListItem",
           "position": 2,
           "name": "@yield('title', 'Page')",
           "item": "{{ url()->current() }}"
@@ -146,7 +146,7 @@
     </script>
     @endif
 
-   
+
 
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
