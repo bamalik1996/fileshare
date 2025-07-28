@@ -8,27 +8,101 @@ on:
 
 jobs:
   deploy:
-    name: Pull and Deploy
+    name: Deploy
     runs-on: ubuntu-latest
-
+    timeout-minutes: 10
+    
     steps:
-      - name: Connect to server and pull latest code
-        uses: appleboy/ssh-action@master
+      - name: 📡 Deploy to Server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.PRODUCTION_HOST }}
+          username: ${{ secrets.PRODUCTION_USER }}
+          key: ${{ secrets.PRODUCTION_KEY }}
+          port: ${{ secrets.PRODUCTION_PORT || 22 }}
+          script: |
+            set -e
+            
+            echo "🚀 Starting deployment..."
+            PROJECT_DIR="/var/www/production/fileshare"
+            
+            # Clone or pull repository
+            if [ ! -d "$PROJECT_DIR" ]; then
+                echo "📁 Cloning repository..."
+                sudo git clone -b production https://github.com/your-username/your-repo.git "$PROJECT_DIR"
+            else
+                echo "📂 Pulling latest changes..."
+                cd "$PROJECT_DIR"
+                
+                # Fix git ownership issue
+                sudo git config --global --add safe.directory "$PROJECT_DIR"
+                sudo git stash --include-untracked 2>/dev/null || true
+                sudo git pull origin production
+            fi
+            
+            cd "$PROJECT_DIR"
+            
+            # Create directories
+            echo "📁 Creating directories..."
+            sudo mkdir -p storage/{app,framework/{cache,sessions,views},logs}
+            sudo mkdir -p bootstrap/cache
+            
+            # Set permissions
+            echo "🔧 Setting permissions..."
+            sudo chown -R www-data:www-data .
+            sudo chmod -R 775 storage bootstrap/cache
+            
+            # Install dependencies
+            echo "📦 Installing dependencies..."
+            sudo -u www-data composer install --no-interaction --no-dev --optimize-autoloader
+            
+            # Clear caches
+            echo "🧹 Clearing caches..."
+            sudo rm -f bootstrap/cache/*.php
+            sudo -u www-data php artisan config:clear || true
+            sudo -u www-data php artisan cache:clear || true
+            sudo -u www-data php artisan view:clear || true
+            
+            # Generate key if needed
+            if ! grep -q "APP_KEY=base64:" .env 2>/dev/null; then
+                echo "🔑 Generating app key..."
+                sudo -u www-data php artisan key:generate --force
+            fi
+            
+            # Create storage link
+            echo "🔗 Creating storage link..."
+            sudo -u www-data php artisan storage:link || true
+            
+            # Optimize for production
+            echo "⚡ Optimizing..."
+            sudo -u www-data php artisan config:cache
+            sudo -u www-data php artisan route:cache
+            sudo -u www-data php artisan view:cache
+            
+            # Final permissions
+            sudo chown -R www-data:www-data storage bootstrap/cache
+            sudo chmod -R 775 storage bootstrap/cache
+            
+            echo "✅ Deployment completed!"
+            
+      - name: 🎉 Success Notification
+        if: success()
+        uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.PRODUCTION_HOST }}
           username: ${{ secrets.PRODUCTION_USER }}
           key: ${{ secrets.PRODUCTION_KEY }}
           script: |
-            cd /var/www/production
-
-            echo "📦 Pulling latest changes..."
-            git pull origin production
-
-            echo "🎼 Running composer install..."
-            composer install --no-interaction --prefer-dist --optimize-autoloader
-
-            echo "🧼 Setting permissions..."
-            sudo chown -R www-data:www-data storage bootstrap/cache
-            sudo chmod -R 775 storage bootstrap/cache
-
-            echo "🚀 Laravel Deployment Complete!"
+            echo "🎉 Deployment successful!"
+            echo "🌐 Application is now live"
+            
+      - name: ❌ Failure Notification
+        if: failure()
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.PRODUCTION_HOST }}
+          username: ${{ secrets.PRODUCTION_USER }}
+          key: ${{ secrets.PRODUCTION_KEY }}
+          script: |
+            echo "❌ Deployment failed!"
+            echo "🔍 Check logs: tail -f /var/www/production/fileshare/storage/logs/laravel.log"
