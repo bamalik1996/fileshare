@@ -15,31 +15,31 @@ class CleanupExpiredContent extends Command
     public function handle()
     {
         $this->info('Starting cleanup of expired content...');
-        
+
         // Delete expired shared texts
         $expiredTexts = SharedText::where('expires_at', '<', Carbon::now())->get();
-        
+
         foreach ($expiredTexts as $text) {
             // Delete associated media files
             $text->clearMediaCollection();
             $text->delete();
         }
-        
+
         // Delete texts that haven't been accessed for more than 1 hour
         $inactiveTexts = SharedText::where('last_accessed', '<', Carbon::now()->subHour())
             ->whereNotNull('last_accessed')
             ->get();
-            
+
         foreach ($inactiveTexts as $text) {
             $text->clearMediaCollection();
             $text->delete();
         }
-        
+
         $totalDeleted = $expiredTexts->count() + $inactiveTexts->count();
-        
+
         $this->info("Cleanup completed. Deleted {$totalDeleted} expired entries.");
         Log::info("Cleanup completed. Deleted {$totalDeleted} expired entries.");
-        
+
         return 0;
     }
 }
