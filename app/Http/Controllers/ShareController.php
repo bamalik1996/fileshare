@@ -28,7 +28,7 @@ class ShareController extends Controller
     public function saveText(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'text' => 'required|string|max:50000'
+            'text' => 'required|string|max:500000'
         ]);
 
         if ($validator->fails()) {
@@ -42,10 +42,6 @@ class ShareController extends Controller
         $ip = $request->ip();
         $text = $request->input('text');
         $expiry = Carbon::now()->addHours(24);  // Text expires after 6 hours
-
-        // Sanitize text input
-        $text = strip_tags($text);
-        $text = htmlspecialchars($text, ENT_QUOTES, 'UTF-8');
 
         // Update or create text for the IP
         $sharedText = SharedText::updateOrCreate(
@@ -106,7 +102,7 @@ class ShareController extends Controller
 
             return response()->json([
                 'status' => 'success',
-                'text' => $sharedText->content,
+                'text' =>  $sharedText->content,
                 'expires_at' => $sharedText->expires_at,
                 'last_accessed' => $sharedText->last_accessed,
                 'files' => $sharedText->files->map(function ($item) {
