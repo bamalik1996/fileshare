@@ -16,15 +16,17 @@ class SecurityHeaders
         $response->headers->set('X-Frame-Options', 'DENY');
         $response->headers->set('X-XSS-Protection', '1; mode=block');
         $response->headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
-       $response->headers->set(
-    'Content-Security-Policy',
-    "default-src 'self'; " .
-    "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://connect.facebook.net; " .
-    "connect-src 'self' https://www.google-analytics.com; " .
-    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; " .
-    "font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; " .
-    "img-src 'self' data: blob:;"
-);
+        $response->headers->set(
+            'Content-Security-Policy',
+            "default-src 'self'; " .
+                "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://connect.facebook.net https://www.google.com https://www.gstatic.com; " .
+                "connect-src 'self' https://www.google.com https://www.google-analytics.com; " .
+                "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; " .
+                "font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; " .
+                "img-src 'self' data: blob:; " .
+                "frame-src https://www.google.com https://www.gstatic.com;"
+        );
+
 
 
         return $response;
