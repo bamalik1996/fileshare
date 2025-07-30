@@ -1,11 +1,13 @@
 @extends('layouts.app')
 
 @section('title', 'Feedback & Support - AirToShare | Contact Us')
-@section('description', 'Send feedback, report bugs, or request features for AirToShare. Our support team is here to help improve your file sharing experience.')
+@section('description',
+    'Send feedback, report bugs, or request features for AirToShare. Our support team is here to
+    help improve your file sharing experience.')
 @section('keywords', 'AirToShare feedback, contact support, bug report, feature request, file sharing help')
 
 @section('schema')
-<script type="application/ld+json">
+    <script type="application/ld+json">
 {
   "@@context": "https://schema.org",
   "@@type": "ContactPage",
@@ -90,41 +92,34 @@
                     <label for="email" class="form-label">
                         Email Address <span style="color: var(--error-color);">*</span>
                     </label>
-                    <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        class="form-input"
-                        placeholder="your.email@example.com"
-                        required
-                    >
+                    <input type="email" id="email" name="email" class="form-input"
+                        placeholder="your.email@example.com" required>
                 </div>
 
                 <div class="form-group">
                     <label for="subject" class="form-label">
                         Subject <span style="color: var(--error-color);">*</span>
                     </label>
-                    <input
-                        type="text"
-                        id="subject"
-                        name="subject"
-                        class="form-input"
-                        placeholder="Brief description of your feedback"
-                        required
-                    >
+                    <input type="text" id="subject" name="subject" class="form-input"
+                        placeholder="Brief description of your feedback" required>
                 </div>
 
                 <div class="form-group">
                     <label for="message" class="form-label">
                         Message <span style="color: var(--error-color);">*</span>
                     </label>
-                    <textarea
-                        id="message"
-                        name="message"
-                        class="form-textarea"
-                        placeholder="Please provide detailed feedback. For bug reports, include steps to reproduce the issue."
-                        required
-                    ></textarea>
+                    <textarea id="message" name="message" class="form-textarea"
+                        placeholder="Please provide detailed feedback. For bug reports, include steps to reproduce the issue." required></textarea>
+                </div>
+                <div class="form-group">
+
+                    {{-- Google reCAPTCHA Widget --}}
+                    <div class="g-recaptcha mb-2" data-sitekey="{{ env('RECAPTCHA_SITE_KEY') }}"></div>
+
+                    {{-- Show error --}}
+                    @if ($errors->has('g-recaptcha-response'))
+                        <div class="text-danger">{{ $errors->first('g-recaptcha-response') }}</div>
+                    @endif
                 </div>
 
                 <button type="submit" class="form-button" id="submitBtn">
@@ -163,9 +158,11 @@
             </a>
         </div>
     </div>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 
     <script>
         $(document).ready(function() {
+
             setupFeedbackForm();
         });
 
@@ -201,22 +198,50 @@
             submitText.hide();
             submitLoader.show();
 
-            // Simulate form submission (replace with actual endpoint)
-            setTimeout(() => {
-                // Reset loading state
-                submitBtn.prop('disabled', false);
-                submitText.show();
-                submitLoader.hide();
+            // Get form data
+            const formData = form.serialize();
 
-                // Show success message
-                showMessage('success', 'Thank you for your feedback!');
+            // AJAX request
+            $.ajax({
+                url: '/api/v1/submit-feedback', // 🔁 Update this to your Laravel route
+                method: 'POST',
+                data: formData,
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') // Laravel CSRF token
+                },
+                success: function(response) {
+                    // Reset loading state
+                    submitBtn.prop('disabled', false);
+                    submitText.show();
+                    submitLoader.hide();
 
-                // Reset form
-                form[0].reset();
-                $('.feedback-type').removeClass('selected');
-                $('#feedbackType').val('');
-            }, 2000);
+                    // Show success message
+                    showMessage('success', response.message || 'Thank you for your feedback!');
+                    showToast('success', 'Send', response.message || 'Thank you for your feedback!');
+
+                    // Reset form
+                    form[0].reset();
+                    $('.feedback-type').removeClass('selected');
+                    $('#feedbackType').val('');
+                    grecaptcha.reset();
+
+                },
+                error: function(xhr) {
+                    // Reset loading state
+                    submitBtn.prop('disabled', false);
+                    submitText.show();
+                    submitLoader.hide();
+                    grecaptcha.reset();
+
+                    // Parse and show error
+                    const errorMsg = xhr.responseJSON?.message || 'Something went wrong. Please try again.';
+                    showMessage('error', errorMsg);
+                    showToast('error', 'Error!', errorMsg);
+
+                }
+            });
         }
+
 
         function validateForm() {
             const email = $('#email').val().trim();

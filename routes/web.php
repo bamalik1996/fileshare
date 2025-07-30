@@ -41,6 +41,10 @@ Route::prefix('api/v1')->group(function () {
         Route::get('/media', 'index')->name('media.index');
         Route::get('/media/ip-info', 'getIpInfo')->name('media.ip.info');
     });
+
+    Route::controller(\App\Http\Controllers\FeedBackController::class)->group(function () {
+        Route::post('/submit-feedback', 'store')->name('feedback.store');
+    });
 });
 
 // SEO Routes
