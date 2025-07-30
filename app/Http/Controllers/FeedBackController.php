@@ -18,7 +18,7 @@ class FeedBackController extends Controller
         ]);
 
         // Step 2: Verify CAPTCHA
-        $recaptchaSecret = env('RECAPTCHA_SECRET_KEY'); // Add in .env
+        $recaptchaSecret = config('app.recpatcha.RECAPTCHA_SECRET_KEY'); // Add in .env
         $captchaResponse = $request->input('g-recaptcha-response');
 
         $verification = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [

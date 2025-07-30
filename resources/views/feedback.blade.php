@@ -114,7 +114,7 @@
                 <div class="form-group">
 
                     {{-- Google reCAPTCHA Widget --}}
-                    <div class="g-recaptcha mb-2" data-sitekey="{{ env('RECAPTCHA_SITE_KEY') }}"></div>
+                    <div class="g-recaptcha mb-2" data-sitekey="{{ config('app.recpatcha.RECAPTCHA_SITE_KEY') }}"></div>
 
                     {{-- Show error --}}
                     @if ($errors->has('g-recaptcha-response'))
