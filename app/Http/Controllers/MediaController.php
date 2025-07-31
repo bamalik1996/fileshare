@@ -16,11 +16,9 @@ class MediaController extends Controller
     private const MAX_FILE_SIZE = 25 * 1024 * 1024; // 10MB
     private const MAX_FILES_PER_IP = 20;
     private const ALLOWED_MIME_TYPES = [
-        'image/jpeg',
-        'image/png',
-        'image/gif',
-        'image/webp',
-        'image/svg+xml',
+       'image/*',
+        'video/*',
+        'audio/*',
         'application/pdf',
         'text/plain',
         'application/msword',
