@@ -138,9 +138,16 @@
                     <div class="upload-subtext">
                         or click to browse • Max 25MB per file • Up to 20 files
                         <br>
-                        <small>Supported: Images, PDF, DOC, TXT, ZIP</small>
+                        <small>Supported: Images, PDF, DOC, TXT, ZIP,Videos</small>
                     </div>
-                    <input type="file" id="fileInput" multiple accept="image/*,.pdf,.docx,.txt,.zip"
+                    <input type="file" id="fileInput" multiple accept="image/*,
+  application/pdf,
+  application/msword,
+  application/vnd.openxmlformats-officedocument.wordprocessingml.document,
+  text/plain,
+  application/zip,
+  video/*,
+  audio/*"
                         style="display: none;">
 
                     <div class="progress-container" id="progressContainer">
