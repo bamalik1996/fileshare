@@ -13,10 +13,10 @@ use ZipArchive;
 
 class MediaController extends Controller
 {
-    private const MAX_FILE_SIZE = 25 * 1024 * 1024; // 10MB
+    private const MAX_FILE_SIZE = 25 * 1024 * 1024; // 25MB
     private const MAX_FILES_PER_IP = 20;
     private const ALLOWED_MIME_TYPES = [
-       'image/*',
+        'image/*',
         'video/*',
         'audio/*',
         'application/pdf',
@@ -47,7 +47,15 @@ class MediaController extends Controller
         $ip = $request->ip();
         $file = $request->file('file');
 
-        if (!in_array($file->getMimeType(), self::ALLOWED_MIME_TYPES)) {
+        $isAllowed = false;
+        foreach (self::ALLOWED_MIME_TYPES as $allowed) {
+            if (Str::is($allowed, $file->getMimeType())) {
+                $isAllowed = true;
+                break;
+            }
+        }
+
+        if (!$isAllowed) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'File type not allowed.'
