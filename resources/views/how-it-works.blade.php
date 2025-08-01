@@ -1,10 +1,11 @@
 @extends('layouts.app')
 
 @section('title', 'How AirToShare Works - Step by Step Guide | File Sharing Tutorial')
-@section('description', 'Learn how to use AirToShare for instant file sharing across devices. Step-by-step guide for
+@section('description',
+    'Learn how to use AirToShare for instant file sharing across devices. Step-by-step guide for
     sharing files and text on the same Wi-Fi network securely.')
-@section('keywords', 'how to share files, file sharing tutorial, AirToShare guide, cross-device sharing, Wi-Fi file
-    transfer, local network sharing')
+@section('keywords',
+    'file sharing app, transfer files via Wi-Fi, local network transfer, cross-device file share, private file sharing')
 
 @section('schema')
     <script type="application/ld+json">
