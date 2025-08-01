@@ -8,10 +8,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'AirForShare - Instant File Sharing Across Devices')</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
+<meta name="theme-color" content="#1A73E8">
 
     <!-- SEO Meta Tags -->
     <meta name="description" content="@yield('description', 'AirToShare - Share files and text instantly across devices on the same network. Simple, fast, and secure file sharing without accounts or external servers.')">
     <meta name="keywords" content="@yield('keywords', 'file sharing, instant sharing, local network, secure sharing, cross-device, no account required')">
+
     <meta name="author" content="AirToShare">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="{{ url()->current() }}">
@@ -117,7 +119,7 @@
     <link rel="stylesheet" href="{{ asset('assets/css/bulma.min.css') }}">
     <script src="{{ asset('assets/js/jquery.min.js') }}"></script>
 
-    
+
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -180,7 +182,7 @@
         };
     </script>
 
-    
+
      <!-- Google Analytics (Add your tracking ID) -->
     @if (config('app.env') === 'production')
         <!-- Global site tag (gtag.js) - Google Analytics -->
