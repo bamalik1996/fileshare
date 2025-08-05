@@ -41,19 +41,4 @@ class HomeController extends Controller
     {
         return view('smart-file-organization');
     }
-
-    public function smartFileOrganization()
-    {
-        return view('smart-file-organization');
-    }
-
-    public function smartFileOrganization()
-    {
-        return view('smart-file-organization');
-    }
-
-    public function smartFileOrganization()
-    {
-        return view('smart-file-organization');
-    }
 }
