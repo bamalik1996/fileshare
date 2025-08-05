@@ -14,6 +14,7 @@ Route::controller(HomeController::class)->group(function () {
     Route::get('/coming-soon', 'comingSoon');
     Route::get('/smart-file-organization', 'smartFileOrganization');
     Route::get('/smart-file-organization', 'smartFileOrganization');
+    Route::get('/smart-file-organization', 'smartFileOrganization');
 });
 
 Route::prefix('api/v1')->group(function () {
