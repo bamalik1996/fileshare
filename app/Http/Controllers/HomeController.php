@@ -36,4 +36,9 @@ class HomeController extends Controller
     {
         return view('coming-soon');
     }
+
+    public function smartFileOrganization()
+    {
+        return view('smart-file-organization');
+    }
 }
