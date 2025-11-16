@@ -210,6 +210,13 @@
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') // Laravel CSRF token
                 },
                 success: function(response) {
+
+                    gtag('event', 'feedback_submitted', {
+                        'event_category': 'Feedback',
+                        'event_label': 'Feedback Form',
+                        'value': 1
+                    });
+
                     // Reset loading state
                     submitBtn.prop('disabled', false);
                     submitText.show();
