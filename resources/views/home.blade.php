@@ -2,7 +2,8 @@
 
 @section('title', 'AirToShare – Instant, Secure File Sharing Across Devices')
 @section('description',
-   'Peer‑to‑peer sharing of files & text across devices on your local Wi‑Fi—no cloud, no login. Fast, secure, and private network transfers.')
+    'Peer‑to‑peer sharing of files & text across devices on your local Wi‑Fi—no cloud, no login.
+    Fast, secure, and private network transfers.')
 
 @section('keywords',
     'file sharing, instant sharing, local network, Wi-Fi sharing, cross-device, secure sharing,
@@ -140,7 +141,8 @@
                         <br>
                         <small>Supported: Images, PDF, DOC, TXT, ZIP,Videos</small>
                     </div>
-                    <input type="file" id="fileInput" multiple accept="image/*,
+                    <input type="file" id="fileInput" multiple
+                        accept="image/*,
   application/pdf,
   application/msword,
   application/vnd.openxmlformats-officedocument.wordprocessingml.document,
@@ -203,12 +205,64 @@
     </div>
 
     <!-- Fullscreen Preview -->
-    <div class="fullscreen-overlay" id="fullscreenOverlay">
-        <div class="fullscreen-content">
-            <button class="fullscreen-close" id="fullscreenClose">
-                <i class="fas fa-times"></i>
-            </button>
-            <img class="fullscreen-image" id="fullscreenImage" src="" alt="Preview">
+    <div class="preview-modal-overlay" id="previewModal">
+        <div class="preview-modal-content">
+            <div class="preview-modal-header">
+                <div class="preview-file-info">
+                    <h3 id="previewFileName">File Name</h3>
+                    <span id="previewFileSize">File Size</span>
+                </div>
+                <div class="preview-modal-actions">
+                    <button class="preview-action-btn" id="previewDownloadBtn" title="Download">
+                        <i class="fas fa-download"></i>
+                    </button>
+                    <button class="preview-action-btn" id="previewCloseBtn" title="Close">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="preview-modal-body">
+                <button class="preview-nav-btn prev" id="previewPrevBtn">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+
+                <div class="preview-container" id="previewContainer">
+                    <!-- Image Preview -->
+                    <img class="preview-image" id="previewImage" src="" alt="Preview" style="display: none;">
+
+                    <!-- Video Preview -->
+                    <video class="preview-video" id="previewVideo" controls style="display: none;">
+                        Your browser does not support the video tag.
+                    </video>
+
+                    <!-- Audio Preview -->
+                    <audio class="preview-audio" id="previewAudio" controls style="display: none;">
+                        Your browser does not support the audio tag.
+                    </audio>
+
+                    <!-- PDF Preview -->
+                    <iframe class="preview-pdf" id="previewPdf" style="display: none;"></iframe>
+
+                    <!-- Document/Other Files Preview -->
+                    <div class="preview-document" id="previewDocument" style="display: none;">
+                        <i class="fas fa-file-alt preview-doc-icon"></i>
+                        <p>Preview not available for this file type</p>
+                        <button class="modern-btn" id="previewDocDownloadBtn">
+                            <i class="fas fa-download"></i>
+                            Download to View
+                        </button>
+                    </div>
+                </div>
+
+                <button class="preview-nav-btn next" id="previewNextBtn">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+
+            <div class="preview-modal-footer">
+                <span id="previewCounter">1 / 10</span>
+            </div>
         </div>
     </div>
 
@@ -604,6 +658,35 @@
             $('#removeAllBtn').off('click').on('click', showRemoveAllModal);
         }
 
+        document.addEventListener("paste", function(event) {
+            let items = (event.clipboardData || event.originalEvent.clipboardData).items;
+
+            for (let index in items) {
+                let item = items[index];
+
+                // If clipboard contains image
+                if (item.kind === 'file' && item.type.startsWith('image/')) {
+                    let file = item.getAsFile();
+
+                    // Auto-switch to File Upload tab
+
+                    switchTab('file');
+                    // Set file into input for preview/upload
+                    const fileInput = document.getElementById("fileInput");
+
+                    // Create DataTransfer to assign file programmatically
+                    let dt = new DataTransfer();
+                    dt.items.add(file);
+                    fileInput.files = dt.files;
+
+                    // Trigger your preview/upload function
+                    handleFileUpload(dt.files);
+
+                    showToast("success", "Image Detected", "Pasted image added to upload.");
+                }
+            }
+        });
+
         function setupEmailModal() {
             $('#emailModalClose').off('click').on('click', hideEmailModal);
             $('#emailModal').off('click').on('click', function(e) {
@@ -678,6 +761,11 @@
                     showToast('success', 'Upload Complete!', `${file.name} uploaded successfully`);
                     fetchMedia();
                     loadIpInfo();
+                    gtag('event', 'file_upload', {
+                        'file_name': file.name,
+                        'file_size': file.size,
+                        'file_type': file.type
+                    });
                 },
                 error: function(xhr) {
                     showProgress(false);
@@ -705,13 +793,16 @@
             grid.empty();
             selectedFiles.clear();
 
+            // Store all files for preview navigation
+            allFiles = Object.values(files);
+
             if (!files || Object.keys(files).length === 0) {
                 grid.addClass('empty').html(`
-                    <div class="empty-state">
-                        <i class="fas fa-folder-open" style="font-size: 3rem; color: var(--text-secondary); margin-bottom: 1rem;"></i>
-                        <p>No files uploaded yet. Start by dragging files above!</p>
-                    </div>
-                `);
+            <div class="empty-state">
+                <i class="fas fa-folder-open" style="font-size: 3rem; color: var(--text-secondary); margin-bottom: 1rem;"></i>
+                <p>No files uploaded yet. Start by dragging files above!</p>
+            </div>
+        `);
                 controls.hide();
                 return;
             }
@@ -720,7 +811,6 @@
             controls.show();
 
             Object.values(files).forEach(file => {
-                // Check if file URL is accessible
                 if (!file.original_url || !file.preview_url) {
                     console.warn('File missing URLs:', file);
                     return;
@@ -824,33 +914,38 @@
 
             deleteNext();
         }
+        let allFiles = [];
+        let currentPreviewIndex = 0;
 
         function createFileItem(file) {
             const isImage = file.mime_type.startsWith('image/');
+            const isVideo = file.mime_type.startsWith('video/');
 
             const item = $(`
-                <div class="column is-12 file-item" data-uuid="${file.uuid}">
-                    <input type="checkbox" class="file-checkbox">
-                    <div class="file-preview">
-                        ${isImage ?
-                            `<img src="${file.original_url}" alt="${file.name}">` :
-                            `<i class="fas fa-file file-icon"></i>`
-                        }
-                    </div>
-                    <div class="file-info">
-                        <div class="file-name" title="${file.name}">${file.name}</div>
-                        <div class="file-size">${file.size}</div>
-                    </div>
-                    <div class="file-actions">
-                        <button class="action-btn download" title="Download">
-                            <span class="icon"><i class="fas fa-download"></i></span>
-                        </button>
-                        <button class="action-btn delete" title="Delete">
-                            <span class="icon"><i class="fas fa-trash"></i></span>
-                        </button>
-                    </div>
-                </div>
-            `);
+        <div class="column is-12 file-item" data-uuid="${file.uuid}">
+            <input type="checkbox" class="file-checkbox">
+            <div class="file-preview preview-trigger" data-uuid="${file.uuid}">
+                ${isImage ?
+                    `<img src="${file.original_url}" alt="${file.name}">` :
+                    isVideo ?
+                    `<video src="${file.original_url}"><i class="fas fa-play-circle file-icon"></i></video>` :
+                    `<i class="fas fa-file file-icon"></i>`
+                }
+            </div>
+            <div class="file-info">
+                <div class="file-name" title="${file.name}">${file.name}</div>
+                <div class="file-size">${file.size}</div>
+            </div>
+            <div class="file-actions">
+                <button class="action-btn download" title="Download">
+                    <span class="icon"><i class="fas fa-download"></i></span>
+                </button>
+                <button class="action-btn delete" title="Delete">
+                    <span class="icon"><i class="fas fa-trash"></i></span>
+                </button>
+            </div>
+        </div>
+    `);
 
             // Checkbox selection
             item.find('.file-checkbox').change(function() {
@@ -865,24 +960,120 @@
                 updateSelectionUI();
             });
 
-            // Click to preview images
-            if (isImage) {
-                item.find('.file-preview').off('click').on('click', function() {
-                    showFullscreen(file.original_url);
-                });
-            }
+            // Preview click handler
+            item.find('.preview-trigger').off('click').on('click', function() {
+                const uuid = $(this).data('uuid');
+                openPreviewModal(uuid);
+            });
 
             // Download button
-            item.find('.download').off('click').on('click', function() {
+            item.find('.download').off('click').on('click', function(e) {
+                e.stopPropagation();
                 downloadSingleFile(file);
             });
 
             // Delete button
-            item.find('.delete').off('click').on('click', function() {
+            item.find('.delete').off('click').on('click', function(e) {
+                e.stopPropagation();
                 deleteFile(file.uuid);
             });
 
             return item;
+        }
+
+        // Preview Modal Functions
+        function openPreviewModal(uuid) {
+            const index = allFiles.findIndex(f => f.uuid === uuid);
+            if (index === -1) return;
+
+            currentPreviewIndex = index;
+            showPreview(currentPreviewIndex);
+            $('#previewModal').addClass('show');
+        }
+
+        function showPreview(index) {
+            if (index < 0 || index >= allFiles.length) return;
+
+            const file = allFiles[index];
+            currentPreviewIndex = index;
+
+            // Update header info
+            $('#previewFileName').text(file.name);
+            $('#previewFileSize').text(file.size);
+            $('#previewCounter').text(`${index + 1} / ${allFiles.length}`);
+
+            // Hide all preview elements
+            $('#previewImage, #previewVideo, #previewAudio, #previewPdf, #previewDocument').hide();
+
+            // Show appropriate preview based on file type
+            const mimeType = file.mime_type.toLowerCase();
+
+            if (mimeType.startsWith('image/')) {
+                $('#previewImage').attr('src', file.original_url).show();
+            } else if (mimeType.startsWith('video/')) {
+                const video = $('#previewVideo')[0];
+                video.src = file.original_url;
+                video.load();
+                $('#previewVideo').show();
+            } else if (mimeType.startsWith('audio/')) {
+                const audio = $('#previewAudio')[0];
+                audio.src = file.original_url;
+                audio.load();
+                $('#previewAudio').show();
+            } else if (mimeType === 'application/pdf') {
+                $('#previewPdf').attr('src', file.original_url).show();
+            } else {
+                // For other file types, show download option
+                const icon = getFileIcon(mimeType);
+                $('#previewDocument').find('i').attr('class', `fas ${icon} preview-doc-icon`).end().show();
+            }
+
+            // Update navigation buttons
+            $('#previewPrevBtn').prop('disabled', index === 0);
+            $('#previewNextBtn').prop('disabled', index === allFiles.length - 1);
+        }
+
+        function getFileIcon(mimeType) {
+            if (mimeType.includes('pdf')) return 'fa-file-pdf';
+            if (mimeType.includes('word') || mimeType.includes('document')) return 'fa-file-word';
+            if (mimeType.includes('excel') || mimeType.includes('spreadsheet')) return 'fa-file-excel';
+            if (mimeType.includes('zip') || mimeType.includes('rar')) return 'fa-file-archive';
+            if (mimeType.includes('text')) return 'fa-file-alt';
+            return 'fa-file';
+        }
+
+        function closePreviewModal() {
+            $('#previewModal').removeClass('show');
+
+            // Stop any playing media
+            const video = $('#previewVideo')[0];
+            const audio = $('#previewAudio')[0];
+            if (video) {
+                video.pause();
+                video.src = '';
+            }
+            if (audio) {
+                audio.pause();
+                audio.src = '';
+            }
+        }
+
+        function showNextPreview() {
+            if (currentPreviewIndex < allFiles.length - 1) {
+                showPreview(currentPreviewIndex + 1);
+            }
+        }
+
+        function showPrevPreview() {
+            if (currentPreviewIndex > 0) {
+                showPreview(currentPreviewIndex - 1);
+            }
+        }
+
+        function downloadCurrentPreview() {
+            if (currentPreviewIndex >= 0 && currentPreviewIndex < allFiles.length) {
+                downloadSingleFile(allFiles[currentPreviewIndex]);
+            }
         }
 
         function updateSelectionUI() {
@@ -1068,5 +1259,34 @@
                 element.hide();
             }, 5000);
         }
+
+        $(document).ready(function() {
+            // Close modal
+            $('#previewCloseBtn').click(function(e) {
+
+                closePreviewModal();
+
+            });
+
+            // Navigation
+            $('#previewNextBtn').click(showNextPreview);
+            $('#previewPrevBtn').click(showPrevPreview);
+
+            // Download
+            $('#previewDownloadBtn, #previewDocDownloadBtn').click(downloadCurrentPreview);
+
+            // Keyboard navigation
+            $(document).keydown(function(e) {
+                if ($('#previewModal').hasClass('show')) {
+                    if (e.key === 'Escape') {
+                        closePreviewModal();
+                    } else if (e.key === 'ArrowRight') {
+                        showNextPreview();
+                    } else if (e.key === 'ArrowLeft') {
+                        showPrevPreview();
+                    }
+                }
+            });
+        });
     </script>
 @endsection
