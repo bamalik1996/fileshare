@@ -72,10 +72,23 @@
             <i class="fas fa-weight-hanging"></i>
             <strong>Max Size:</strong> <span id="maxFileSize">25 MB</span>
         </div>
-        <div class="info-item">
-            <i class="fas fa-clock"></i>
-            <strong>Auto-delete:</strong> 24 hours
+        <div class="info-item expiry-countdown" id="expiryCountdown" style="display: none;">
+            <i class="fas fa-hourglass-half"></i>
+            <strong>Expires in:</strong>
+            <span id="countdownTimer" class="countdown-badge">--:--:--</span>
         </div>
+        <div class="info-item last-activity" id="lastActivity" style="display: none;">
+            <i class="fas fa-clock"></i>
+            <strong>Last sync:</strong>
+            <span id="lastActivityTime">Just now</span>
+        </div>
+        <button class="modern-btn secondary qr-btn" id="showQRBtn">
+            <i class="fas fa-qrcode"></i>
+            Quick Connect
+        </button>
+        <button class="icon-btn sound-toggle" id="soundToggle" title="Toggle notification sound">
+            <i class="fas fa-volume-up" id="soundIcon"></i>
+        </button>
     </div>
 
     <!-- Modern Tabs -->
@@ -102,6 +115,10 @@
                 <div class="textarea-footer">
                     <div class="char-counter" id="charCounter">0 / 500,000 characters</div>
                     <div class="button-group">
+                        <button class="modern-btn clipboard-sync-btn" id="clipboardSyncBtn" title="Paste from Clipboard">
+                            <i class="fas fa-clipboard"></i>
+                            <span>Paste Clipboard</span>
+                        </button>
                         <button class="modern-btn danger" id="clearBtn" style="display: none;">
                             <i class="fas fa-trash"></i>
                             Clear
@@ -244,6 +261,17 @@
                     <!-- PDF Preview -->
                     <iframe class="preview-pdf" id="previewPdf" style="display: none;"></iframe>
 
+                    <!-- Text/Code Preview -->
+                    <div class="preview-text" id="previewText" style="display: none;">
+                        <div class="preview-text-header">
+                            <span class="preview-language" id="previewLanguage">Text</span>
+                            <button class="preview-copy-btn" id="previewCopyCodeBtn" title="Copy to clipboard">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="preview-code"><code id="previewCodeContent"></code></pre>
+                    </div>
+
                     <!-- Document/Other Files Preview -->
                     <div class="preview-document" id="previewDocument" style="display: none;">
                         <i class="fas fa-file-alt preview-doc-icon"></i>
@@ -341,6 +369,32 @@
             </div>
         </div>
     </div>
+
+    <!-- QR Code Modal -->
+    <div class="modal-overlay" id="qrModal">
+        <div class="modal-content qr-modal">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <i class="fas fa-qrcode"></i>
+                    Quick Connect
+                </div>
+                <button class="modal-close" id="qrModalClose">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="qr-container">
+                <div id="qrcode"></div>
+                <p class="qr-instructions">
+                    <strong>Scan this QR code</strong> with your phone camera to instantly open AirToShare and access your
+                    shared content!
+                </p>
+                <button class="modern-btn" id="copyUrlBtn">
+                    <i class="fas fa-link"></i>
+                    <span id="copyUrlText">Copy Link</span>
+                </button>
+            </div>
+        </div>
+    </div>
     <script>
         $(document).ready(function() {
             initializeApp();
@@ -353,6 +407,12 @@
             fetchText();
             fetchMedia();
             setupEventListeners();
+
+            // Restore saved active tab from localStorage
+            const savedTab = localStorage.getItem('airtoshare-active-tab');
+            if (savedTab && (savedTab === 'text' || savedTab === 'file')) {
+                switchTab(savedTab);
+            }
         }
 
         function setupEventListeners() {
@@ -367,6 +427,9 @@
             $('#saveBtn').off('click.save').on('click.save', handleSaveText);
             $('#clearBtn').off('click').on('click', handleClearText);
 
+            // Clipboard sync
+            setupClipboardSync();
+
             // File upload events
             setupFileUpload();
 
@@ -375,6 +438,350 @@
 
             // Email modal events
             setupEmailModal();
+
+            // QR Code Modal events
+            setupQRModal();
+
+            // Sound notifications
+            setupSoundNotifications();
+
+            // Auto-refresh for real-time sync
+            setupAutoRefresh();
+        }
+
+        // QR Code Modal Functions
+        function setupQRModal() {
+            $('#showQRBtn').off('click').on('click', function() {
+                $('#qrModal').addClass('show');
+                generateQRCode();
+            });
+
+            $('#qrModalClose').off('click').on('click', function() {
+                $('#qrModal').removeClass('show');
+            });
+
+            $('#qrModal').off('click').on('click', function(e) {
+                if (e.target === this) {
+                    $(this).removeClass('show');
+                }
+            });
+
+            // Copy URL button
+            $('#copyUrlBtn').off('click').on('click', function() {
+                const url = window.location.href;
+                navigator.clipboard.writeText(url).then(() => {
+                    const btn = $(this);
+                    btn.find('#copyUrlText').text('Copied!');
+                    btn.addClass('success');
+                    showToast('success', 'Link Copied!', 'Share this link with others on the same network');
+                    setTimeout(() => {
+                        btn.find('#copyUrlText').text('Copy Link');
+                        btn.removeClass('success');
+                    }, 2000);
+                });
+            });
+        }
+
+        function generateQRCode() {
+            const qrcodeDiv = document.getElementById('qrcode');
+            qrcodeDiv.innerHTML = '';
+
+            if (typeof QRCode !== 'undefined') {
+                new QRCode(qrcodeDiv, {
+                    text: window.location.href,
+                    width: 200,
+                    height: 200,
+                    colorDark: '#0ea5e9',
+                    colorLight: '#ffffff',
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+            } else {
+                qrcodeDiv.innerHTML = '<p style="color: var(--text-secondary);">QR Code loading...</p>';
+            }
+        }
+
+        // Clipboard Sync Functions
+        function setupClipboardSync() {
+            $('#clipboardSyncBtn').off('click').on('click', async function() {
+                const btn = $(this);
+                const originalHtml = btn.html();
+
+                try {
+                    // Check if clipboard API is available
+                    if (!navigator.clipboard || !navigator.clipboard.readText) {
+                        showToast('warning', 'Not Supported', 'Clipboard access not available in this browser');
+                        return;
+                    }
+
+                    // Show loading state
+                    btn.html('<i class="fas fa-spinner fa-spin"></i> <span>Reading...</span>');
+                    btn.prop('disabled', true);
+
+                    // Read clipboard content
+                    const clipboardText = await navigator.clipboard.readText();
+
+                    if (!clipboardText || clipboardText.trim().length === 0) {
+                        showToast('info', 'Empty Clipboard', 'No text content in clipboard');
+                        btn.html(originalHtml);
+                        btn.prop('disabled', false);
+                        return;
+                    }
+
+                    // Get current text and append or replace
+                    const currentText = $('#textInput').val();
+                    const newText = currentText ? currentText + '\n\n' + clipboardText : clipboardText;
+
+                    $('#textInput').val(newText);
+                    handleTextInput(); // Update character counter and detect links
+
+                    // Auto-save the pasted content
+                    btn.html('<i class="fas fa-check"></i> <span>Pasted!</span>');
+                    showToast('success', 'Clipboard Synced!',
+                        `Added ${clipboardText.length} characters from clipboard`);
+
+                    // Auto-save after small delay
+                    setTimeout(() => {
+                        handleSaveText();
+                    }, 500);
+
+                    // Reset button after delay
+                    setTimeout(() => {
+                        btn.html(originalHtml);
+                        btn.prop('disabled', false);
+                    }, 2000);
+
+                } catch (err) {
+                    console.error('Clipboard read failed:', err);
+
+                    if (err.name === 'NotAllowedError') {
+                        showToast('warning', 'Permission Denied',
+                            'Please allow clipboard access when prompted');
+                    } else {
+                        showToast('error', 'Clipboard Error', 'Could not read clipboard content');
+                    }
+
+                    btn.html(originalHtml);
+                    btn.prop('disabled', false);
+                }
+            });
+        }
+
+        // Sound Notification System
+        let soundEnabled = localStorage.getItem('airtoshare-sound') !== 'false';
+        let notificationSound = null;
+        let previousFileCount = 0;
+        let previousTextHash = '';
+
+        function setupSoundNotifications() {
+            // Create notification sound using Web Audio API
+            try {
+                const audioContext = new(window.AudioContext || window.webkitAudioContext)();
+                notificationSound = {
+                    play: function() {
+                        if (!soundEnabled) return;
+
+                        const oscillator = audioContext.createOscillator();
+                        const gainNode = audioContext.createGain();
+
+                        oscillator.connect(gainNode);
+                        gainNode.connect(audioContext.destination);
+
+                        oscillator.frequency.value = 800;
+                        oscillator.type = 'sine';
+
+                        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+
+                        oscillator.start(audioContext.currentTime);
+                        oscillator.stop(audioContext.currentTime + 0.3);
+                    }
+                };
+            } catch (e) {
+                console.log('Web Audio not supported');
+            }
+
+            // Update sound icon based on saved preference
+            updateSoundIcon();
+
+            // Toggle sound on click
+            $('#soundToggle').off('click').on('click', function() {
+                soundEnabled = !soundEnabled;
+                localStorage.setItem('airtoshare-sound', soundEnabled);
+                updateSoundIcon();
+                showToast('info', soundEnabled ? 'Sound On' : 'Sound Off',
+                    soundEnabled ? 'You will hear alerts for new content' : 'Notification sounds disabled');
+            });
+        }
+
+        function updateSoundIcon() {
+            const icon = $('#soundIcon');
+            icon.removeClass('fa-volume-up fa-volume-mute');
+            icon.addClass(soundEnabled ? 'fa-volume-up' : 'fa-volume-mute');
+            $('#soundToggle').toggleClass('muted', !soundEnabled);
+        }
+
+        function playNotificationSound() {
+            if (notificationSound && soundEnabled) {
+                notificationSound.play();
+            }
+        }
+
+        // Auto-refresh for real-time sync
+        let autoRefreshInterval = null;
+        let lastActivityTime = new Date();
+
+        // Track self-uploads to avoid notifying the sender
+        let pendingSelfUpload = false;
+        let pendingSelfText = false;
+
+        function markSelfUpload() {
+            pendingSelfUpload = true;
+            // Reset after 15 seconds (enough time for polling to catch up)
+            setTimeout(() => {
+                pendingSelfUpload = false;
+            }, 15000);
+        }
+
+        function markSelfTextSave() {
+            pendingSelfText = true;
+            setTimeout(() => {
+                pendingSelfText = false;
+            }, 15000);
+        }
+
+        function setupAutoRefresh() {
+            // Initial state
+            updateLastActivityDisplay();
+
+            // Start polling every 10 seconds for new content
+            autoRefreshInterval = setInterval(checkForUpdates, 10000);
+        }
+
+        function checkForUpdates() {
+            // Check for new files
+            $.ajax({
+                url: '/api/v1/media/ip-info',
+                method: 'GET',
+                success: function(data) {
+                    const currentFileCount = parseInt(data.files_count) || 0;
+
+                    // If file count changed and increased, and NOT from self-upload
+                    if (currentFileCount > previousFileCount && previousFileCount > 0 && !pendingSelfUpload) {
+                        const newFiles = currentFileCount - previousFileCount;
+                        showToast('info', 'New Files!', `${newFiles} new file(s) received from another device`);
+                        playNotificationSound();
+                        updateLastActivity();
+                        fetchMedia(); // Refresh file list
+                    } else if (currentFileCount !== previousFileCount) {
+                        // Self upload or file removed - just refresh without notification
+                        fetchMedia();
+                        updateLastActivity();
+                    }
+
+                    previousFileCount = currentFileCount;
+                }
+            });
+
+            // Check for text changes
+            $.ajax({
+                url: '{{ route('share.get.text') }}',
+                method: 'GET',
+                success: function(data) {
+                    if (data.status === 'success' && data.text) {
+                        const currentHash = hashCode(data.text);
+
+                        // Only notify if changed and NOT from self
+                        if (previousTextHash && currentHash !== previousTextHash && !pendingSelfText) {
+                            showToast('info', 'Text Updated!', 'Shared text updated from another device');
+                            playNotificationSound();
+                            updateLastActivity();
+                            $('#textInput').val(data.text);
+                            handleTextInput();
+                        }
+
+                        previousTextHash = currentHash;
+                    }
+                }
+            });
+        }
+
+        function hashCode(str) {
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) {
+                const char = str.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash;
+            }
+            return hash;
+        }
+
+        function updateLastActivity() {
+            lastActivityTime = new Date();
+            updateLastActivityDisplay();
+        }
+
+        function updateLastActivityDisplay() {
+            $('#lastActivity').show();
+
+            const updateDisplay = () => {
+                const now = new Date();
+                const diff = Math.floor((now - lastActivityTime) / 1000);
+
+                let text;
+                if (diff < 5) text = 'Just now';
+                else if (diff < 60) text = `${diff}s ago`;
+                else if (diff < 3600) text = `${Math.floor(diff / 60)}m ago`;
+                else text = `${Math.floor(diff / 3600)}h ago`;
+
+                $('#lastActivityTime').text(text);
+            };
+
+            updateDisplay();
+            setInterval(updateDisplay, 10000); // Update every 10 seconds
+        }
+
+        // Expiry Countdown Timer
+        let expiryTime = null;
+        let countdownInterval = null;
+
+        function startCountdown(expiresAt) {
+            if (!expiresAt) return;
+
+            expiryTime = new Date(expiresAt).getTime();
+            $('#expiryCountdown').show();
+
+            if (countdownInterval) clearInterval(countdownInterval);
+            countdownInterval = setInterval(updateCountdown, 1000);
+            updateCountdown();
+        }
+
+        function updateCountdown() {
+            if (!expiryTime) return;
+
+            const now = new Date().getTime();
+            const distance = expiryTime - now;
+
+            if (distance < 0) {
+                $('#countdownTimer').text('Expired');
+                $('#expiryCountdown').addClass('expired');
+                clearInterval(countdownInterval);
+                return;
+            }
+
+            const hours = Math.floor(distance / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            const timeStr =
+                `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            $('#countdownTimer').text(timeStr);
+
+            // Visual warning when time is low (less than 1 hour)
+            if (hours < 1) {
+                $('#expiryCountdown').addClass('warning');
+            } else {
+                $('#expiryCountdown').removeClass('warning');
+            }
         }
 
         function switchTab(tabName) {
@@ -383,6 +790,9 @@
 
             $('.tab-content').removeClass('active');
             $(`#${tabName}-tab`).addClass('active');
+
+            // Save active tab to localStorage for persistence
+            localStorage.setItem('airtoshare-active-tab', tabName);
         }
 
         function loadIpInfo() {
@@ -394,6 +804,11 @@
                     $('#fileCount').text(data.files_count);
                     $('#maxFiles').text(data.max_files);
                     $('#maxFileSize').text(data.max_file_size);
+
+                    // Start countdown timer if there are files
+                    if (data.expires_at && data.files_count > 0) {
+                        startCountdown(data.expires_at);
+                    }
                 },
                 error: function() {
                     console.error('Failed to load IP info');
@@ -511,6 +926,9 @@
 
             setButtonLoading(true);
 
+            // Mark self-save to prevent notification on this browser
+            markSelfTextSave();
+
             $.ajax({
                 url: '{{ route('share.store.text') }}',
                 method: 'POST',
@@ -625,10 +1043,12 @@
                 e.stopPropagation();
                 $(this).removeClass('dragover');
                 const files = e.originalEvent.dataTransfer.files;
+                markSelfUpload(); // Mark self-upload to prevent notification
                 handleFileUpload(files);
             });
 
             fileInput.off('change').on('change', function() {
+                markSelfUpload(); // Mark self-upload to prevent notification
                 handleFileUpload(this.files);
             });
         }
@@ -680,6 +1100,7 @@
                     fileInput.files = dt.files;
 
                     // Trigger your preview/upload function
+                    markSelfUpload(); // Mark self-upload to prevent notification
                     handleFileUpload(dt.files);
 
                     showToast("success", "Image Detected", "Pasted image added to upload.");
@@ -1003,25 +1424,33 @@
             $('#previewCounter').text(`${index + 1} / ${allFiles.length}`);
 
             // Hide all preview elements
-            $('#previewImage, #previewVideo, #previewAudio, #previewPdf, #previewDocument').hide();
+            $('#previewImage, #previewVideo, #previewAudio, #previewPdf, #previewText, #previewDocument').hide();
+
+            // Stop any playing media
+            const video = $('#previewVideo')[0];
+            const audio = $('#previewAudio')[0];
+            if (video) video.pause();
+            if (audio) audio.pause();
 
             // Show appropriate preview based on file type
             const mimeType = file.mime_type.toLowerCase();
+            const fileName = file.name.toLowerCase();
 
             if (mimeType.startsWith('image/')) {
                 $('#previewImage').attr('src', file.original_url).show();
             } else if (mimeType.startsWith('video/')) {
-                const video = $('#previewVideo')[0];
                 video.src = file.original_url;
                 video.load();
                 $('#previewVideo').show();
             } else if (mimeType.startsWith('audio/')) {
-                const audio = $('#previewAudio')[0];
                 audio.src = file.original_url;
                 audio.load();
                 $('#previewAudio').show();
             } else if (mimeType === 'application/pdf') {
                 $('#previewPdf').attr('src', file.original_url).show();
+            } else if (isTextFile(mimeType, fileName)) {
+                // Load and display text/code files
+                loadTextPreview(file);
             } else {
                 // For other file types, show download option
                 const icon = getFileIcon(mimeType);
@@ -1032,6 +1461,88 @@
             $('#previewPrevBtn').prop('disabled', index === 0);
             $('#previewNextBtn').prop('disabled', index === allFiles.length - 1);
         }
+
+        // Check if file is a text/code file
+        function isTextFile(mimeType, fileName) {
+            const textMimes = ['text/', 'application/json', 'application/javascript', 'application/xml',
+                'application/x-httpd-php'
+            ];
+            const codeExtensions = ['.js', '.ts', '.jsx', '.tsx', '.py', '.php', '.html', '.css', '.scss', '.sass',
+                '.json', '.xml', '.yaml', '.yml', '.md', '.txt', '.log', '.sql', '.sh', '.bash',
+                '.c', '.cpp', '.h', '.java', '.rb', '.go', '.rs', '.swift', '.kt', '.vue', '.svelte'
+            ];
+
+            if (textMimes.some(m => mimeType.includes(m))) return true;
+            return codeExtensions.some(ext => fileName.endsWith(ext));
+        }
+
+        // Get language from file extension
+        function getLanguageFromFile(fileName) {
+            const ext = fileName.substring(fileName.lastIndexOf('.')).toLowerCase();
+            const langMap = {
+                '.js': 'JavaScript',
+                '.ts': 'TypeScript',
+                '.jsx': 'React JSX',
+                '.tsx': 'React TSX',
+                '.py': 'Python',
+                '.php': 'PHP',
+                '.html': 'HTML',
+                '.css': 'CSS',
+                '.scss': 'SCSS',
+                '.json': 'JSON',
+                '.xml': 'XML',
+                '.yaml': 'YAML',
+                '.yml': 'YAML',
+                '.md': 'Markdown',
+                '.txt': 'Text',
+                '.log': 'Log',
+                '.sql': 'SQL',
+                '.sh': 'Shell',
+                '.bash': 'Bash',
+                '.c': 'C',
+                '.cpp': 'C++',
+                '.h': 'C Header',
+                '.java': 'Java',
+                '.rb': 'Ruby',
+                '.go': 'Go',
+                '.rs': 'Rust',
+                '.swift': 'Swift',
+                '.kt': 'Kotlin',
+                '.vue': 'Vue',
+                '.svelte': 'Svelte',
+                '.env': 'Environment'
+            };
+            return langMap[ext] || 'Text';
+        }
+
+        // Load text file content for preview
+        function loadTextPreview(file) {
+            $('#previewText').show();
+            $('#previewCodeContent').text('Loading...');
+            $('#previewLanguage').text(getLanguageFromFile(file.name));
+
+            fetch(file.original_url)
+                .then(response => response.text())
+                .then(text => {
+                    // Limit preview to first 10000 characters
+                    const truncated = text.length > 10000 ? text.substring(0, 10000) + '\n\n... (truncated)' : text;
+                    $('#previewCodeContent').text(truncated);
+                })
+                .catch(err => {
+                    $('#previewCodeContent').text('Failed to load file content');
+                });
+        }
+
+        // Setup copy code button
+        $(document).on('click', '#previewCopyCodeBtn', function() {
+            const code = $('#previewCodeContent').text();
+            navigator.clipboard.writeText(code).then(() => {
+                const btn = $(this);
+                btn.html('<i class="fas fa-check"></i>');
+                showToast('success', 'Copied!', 'Code copied to clipboard');
+                setTimeout(() => btn.html('<i class="fas fa-copy"></i>'), 2000);
+            });
+        });
 
         function getFileIcon(mimeType) {
             if (mimeType.includes('pdf')) return 'fa-file-pdf';

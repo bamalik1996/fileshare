@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'AirForShare - Instant File Sharing Across Devices')</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
-<meta name="theme-color" content="#1A73E8">
+    <meta name="theme-color" content="#1A73E8">
 
     <!-- SEO Meta Tags -->
     <meta name="description" content="@yield('description', 'AirToShare - Share files and text instantly across devices on the same network. Simple, fast, and secure file sharing without accounts or external servers.')">
@@ -118,6 +118,8 @@
     <!-- Bulma CSS -->
     <link rel="stylesheet" href="{{ asset('assets/css/bulma.min.css') }}">
     <script src="{{ asset('assets/js/jquery.min.js') }}"></script>
+    <!-- QR Code Library -->
+    <script src="{{ asset('assets/js/qrcode.min.js') }}"></script>
 
 
 
@@ -183,17 +185,20 @@
     </script>
 
 
-     <!-- Google Analytics (Add your tracking ID) -->
+    <!-- Google Analytics (Add your tracking ID) -->
     @if (config('app.env') === 'production')
         <!-- Global site tag (gtag.js) - Google Analytics -->
-       <!-- Google tag (gtag.js) -->
+        <!-- Google tag (gtag.js) -->
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-0228GR7HD3"></script>
         <script>
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
+            window.dataLayer = window.dataLayer || [];
 
-          gtag('config', 'G-0228GR7HD3');
+            function gtag() {
+                dataLayer.push(arguments);
+            }
+            gtag('js', new Date());
+
+            gtag('config', 'G-0228GR7HD3');
         </script>
 
         <!-- Facebook Pixel (Add your pixel ID) -->
@@ -387,6 +392,89 @@
             }
         }
     </style>
+
+    <!-- Dark Mode Toggle Button -->
+    <button class="theme-toggle" id="themeToggle" title="Toggle Dark Mode">
+        <i class="fas fa-moon" id="themeIcon"></i>
+    </button>
+
+    <!-- PWA Install Banner -->
+    <div class="pwa-install-banner" id="pwaInstallBanner">
+        <div class="pwa-install-content">
+            <i class="fas fa-mobile-alt"></i>
+            <div class="pwa-install-text">
+                <strong>Install AirToShare</strong>
+                <span>Add to home screen for quick access</span>
+            </div>
+        </div>
+        <div class="pwa-install-actions">
+            <button id="pwaInstallBtn" class="modern-btn">Install</button>
+            <button id="pwaDismissBtn" class="pwa-dismiss-btn">&times;</button>
+        </div>
+    </div>
+
+    <script>
+        // Dark Mode Toggle
+        (function() {
+            const themeToggle = document.getElementById('themeToggle');
+            const themeIcon = document.getElementById('themeIcon');
+            const savedTheme = localStorage.getItem('airtoshare-theme') || 'light';
+
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            updateThemeIcon();
+
+            themeToggle.addEventListener('click', () => {
+                const current = document.documentElement.getAttribute('data-theme');
+                const newTheme = current === 'dark' ? 'light' : 'dark';
+                document.documentElement.setAttribute('data-theme', newTheme);
+                localStorage.setItem('airtoshare-theme', newTheme);
+                updateThemeIcon();
+            });
+
+            function updateThemeIcon() {
+                const theme = document.documentElement.getAttribute('data-theme');
+                themeIcon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+            }
+        })();
+
+        // PWA Install Prompt
+        let deferredPrompt;
+        const pwaInstallBanner = document.getElementById('pwaInstallBanner');
+        const pwaInstallBtn = document.getElementById('pwaInstallBtn');
+        const pwaDismissBtn = document.getElementById('pwaDismissBtn');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+
+            if (!localStorage.getItem('pwaInstallDismissed')) {
+                pwaInstallBanner.classList.add('show');
+            }
+        });
+
+        if (pwaInstallBtn) {
+            pwaInstallBtn.addEventListener('click', async () => {
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                    const {
+                        outcome
+                    } = await deferredPrompt.userChoice;
+                    if (outcome === 'accepted') {
+                        showToast('success', 'Installed!', 'AirToShare added to your home screen');
+                    }
+                    deferredPrompt = null;
+                    pwaInstallBanner.classList.remove('show');
+                }
+            });
+        }
+
+        if (pwaDismissBtn) {
+            pwaDismissBtn.addEventListener('click', () => {
+                localStorage.setItem('pwaInstallDismissed', 'true');
+                pwaInstallBanner.classList.remove('show');
+            });
+        }
+    </script>
 </body>
 
 </html>
