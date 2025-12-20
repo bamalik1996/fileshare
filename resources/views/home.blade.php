@@ -1970,10 +1970,12 @@
             $('#fullscreenOverlay').addClass('is-active');
         }
 
-        $('#fullscreenClose, #fullscreenOverlay').click(function(e) {
-            if (e.target === this) {
-                $('#fullscreenOverlay').removeClass('is-active');
-            }
+        document.addEventListener('DOMContentLoaded', function() {
+            $('#fullscreenClose, #fullscreenOverlay').click(function(e) {
+                if (e.target === this) {
+                    $('#fullscreenOverlay').removeClass('is-active');
+                }
+            });
         });
 
         function showMessage(elementId, message) {
