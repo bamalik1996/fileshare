@@ -28,7 +28,7 @@ class ShareController extends Controller
     public function saveText(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'text' => 'required|string|max:500000'
+            'text' => 'nullable|string|max:500000'
         ]);
 
         if ($validator->fails()) {
