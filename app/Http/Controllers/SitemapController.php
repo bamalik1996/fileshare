@@ -2,14 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Response;
-
 class SitemapController extends Controller
 {
     public function index()
     {
         // Force production URL as requested
         $baseUrl = 'https://airtoshare.app';
+
         $blogs = BlogController::getBlogs();
 
         $content = '<?xml version="1.0" encoding="UTF-8"?>';
@@ -18,8 +17,8 @@ class SitemapController extends Controller
         // 1. Homepage
         $content .= '<!--  Homepage  -->';
         $content .= '<url>';
-        $content .= '<loc>' . $baseUrl . '</loc>';
-        $content .= '<lastmod>' . date('Y-m-d') . '</lastmod>';
+        $content .= '<loc>'.$baseUrl.'</loc>';
+        $content .= '<lastmod>'.date('Y-m-d').'</lastmod>';
         $content .= '<changefreq>daily</changefreq>';
         $content .= '<priority>1.0</priority>';
         $content .= '</url>';
@@ -34,21 +33,21 @@ class SitemapController extends Controller
         ];
 
         foreach ($pages as $path => $meta) {
-            $content .= '<!--  ' . ucwords(str_replace('-', ' ', $path)) . '  -->';
+            $content .= '<!--  '.ucwords(str_replace('-', ' ', $path)).'  -->';
             $content .= '<url>';
-            $content .= '<loc>' . $baseUrl . '/' . $path . '</loc>';
-            $content .= '<lastmod>' . date('Y-m-d') . '</lastmod>';
-            $content .= '<changefreq>' . $meta['freq'] . '</changefreq>';
-            $content .= '<priority>' . $meta['priority'] . '</priority>';
+            $content .= '<loc>'.$baseUrl.'/'.$path.'</loc>';
+            $content .= '<lastmod>'.date('Y-m-d').'</lastmod>';
+            $content .= '<changefreq>'.$meta['freq'].'</changefreq>';
+            $content .= '<priority>'.$meta['priority'].'</priority>';
             $content .= '</url>';
         }
 
         // 3. Blog Posts
         foreach ($blogs as $blog) {
-            $content .= '<!--  Blog: ' . htmlspecialchars($blog['title']) . '  -->';
+            $content .= '<!--  Blog: '.htmlspecialchars($blog['title']).'  -->';
             $content .= '<url>';
-            $content .= '<loc>' . $baseUrl . '/blog/' . $blog['slug'] . '</loc>';
-            $content .= '<lastmod>' . date('Y-m-d', strtotime($blog['date'])) . '</lastmod>';
+            $content .= '<loc>'.$baseUrl.'/blog/'.$blog['slug'].'</loc>';
+            $content .= '<lastmod>'.date('Y-m-d', strtotime($blog['date'])).'</lastmod>';
             $content .= '<changefreq>monthly</changefreq>';
             $content .= '<priority>0.7</priority>';
             $content .= '</url>';
