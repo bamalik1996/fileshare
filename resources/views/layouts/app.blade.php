@@ -56,7 +56,8 @@
     <meta name="twitter:image" content="@yield('twitter_image', url('/logo.svg'))">
     <meta name="twitter:site" content="@AirToShare">
     <meta name="twitter:creator" content="@AirToShare">
-    <link href="/assets/css/custom.css" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="{{ asset('assets/css/custom.min.css') }}" rel="stylesheet" />
 
     <!-- Schema.org JSON-LD -->
     @yield('schema')
@@ -114,7 +115,12 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="{{ asset('assets/font-awesome/css/all.min.css') }}">
+    <!-- Font Awesome (Deferred) -->
+    <link rel="preload" href="{{ asset('assets/font-awesome/css/all.min.css') }}" as="style"
+        onload="this.onload=null;this.rel='stylesheet'">
+    <noscript>
+        <link rel="stylesheet" href="{{ asset('assets/font-awesome/css/all.min.css') }}">
+    </noscript>
     <!-- Bulma CSS -->
     <link rel="stylesheet" href="{{ asset('assets/css/bulma.min.css') }}">
     <script src="{{ asset('assets/js/jquery.min.js') }}" defer></script>
