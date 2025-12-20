@@ -1747,13 +1747,15 @@
         }
 
         // Setup copy code button
-        $(document).on('click', '#previewCopyCodeBtn', function() {
-            const code = $('#previewCodeContent').text();
-            navigator.clipboard.writeText(code).then(() => {
-                const btn = $(this);
-                btn.html('<i class="fas fa-check"></i>');
-                showToast('success', 'Copied!', 'Code copied to clipboard');
-                setTimeout(() => btn.html('<i class="fas fa-copy"></i>'), 2000);
+        document.addEventListener('DOMContentLoaded', function() {
+            $(document).on('click', '#previewCopyCodeBtn', function() {
+                const code = $('#previewCodeContent').text();
+                navigator.clipboard.writeText(code).then(() => {
+                    const btn = $(this);
+                    btn.html('<i class="fas fa-check"></i>');
+                    showToast('success', 'Copied!', 'Code copied to clipboard');
+                    setTimeout(() => btn.html('<i class="fas fa-copy"></i>'), 2000);
+                });
             });
         });
 
