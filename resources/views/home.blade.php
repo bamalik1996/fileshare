@@ -1,9 +1,8 @@
 @extends('layouts.app')
 
 @section('title', 'AirToShare – Instant, Secure File Sharing Across Devices')
-@section('description',
-    'Peer‑to‑peer sharing of files & text across devices on your local Wi‑Fi—no cloud, no login.
-    Fast, secure, and private network transfers.')
+@section('description', 'Experience instant, secure peer-to-peer file and text sharing across all your devices on the
+    same local Wi-Fi network. No cloud uploads, no logins required, and completely free. Fast, private, and simple.')
 
 @section('keywords',
     'file sharing, instant sharing, local network, Wi-Fi sharing, cross-device, secure sharing,
