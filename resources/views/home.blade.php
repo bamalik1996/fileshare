@@ -1984,7 +1984,7 @@
             }, 5000);
         }
 
-        $(document).ready(function() {
+        document.addEventListener('DOMContentLoaded', function() {
             // Close modal
             $('#previewCloseBtn').click(function(e) {
 

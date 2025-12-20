@@ -161,7 +161,7 @@
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 
     <script>
-        $(document).ready(function() {
+        document.addEventListener('DOMContentLoaded', function() {
 
             setupFeedbackForm();
         });

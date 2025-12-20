@@ -1,11 +1,13 @@
 @extends('layouts.app')
 
 @section('title', 'FAQ - Frequently Asked Questions | AirToShare Help Center')
-@section('description', 'Find answers to common questions about AirToShare file sharing. Learn about security, file limits, compatibility, and troubleshooting tips.')
-@section('keywords', 'AirToShare FAQ, file sharing help, troubleshooting, file sharing questions, local network sharing help')
+@section('description', 'Find answers to common questions about AirToShare file sharing. Learn about security, file
+    limits, compatibility, and troubleshooting tips.')
+@section('keywords', 'AirToShare FAQ, file sharing help, troubleshooting, file sharing questions, local network sharing
+    help')
 
 @section('schema')
-<script type="application/ld+json">
+    <script type="application/ld+json">
 {
   "@@context": "https://schema.org",
   "@@type": "FAQPage",
@@ -116,7 +118,9 @@
                     <i class="fas fa-chevron-down faq-icon"></i>
                 </button>
                 <div class="faq-answer">
-                    <p>Yes, AirToShare is completely safe to use. Your files never leave your local Wi-Fi network and are not uploaded to any external servers. All sharing happens directly between devices on the same network.</p>
+                    <p>Yes, AirToShare is completely safe to use. Your files never leave your local Wi-Fi network and are
+                        not uploaded to any external servers. All sharing happens directly between devices on the same
+                        network.</p>
                     <p>Key security features:</p>
                     <ul>
                         <li>Files stay on your local network only</li>
@@ -133,7 +137,9 @@
                     <i class="fas fa-chevron-down faq-icon"></i>
                 </button>
                 <div class="faq-answer">
-                    <p>Files are associated with your specific IP address. Only devices using the same IP address can access the shared content. However, if multiple devices share the same public IP (common in home networks), they may be able to access each other's content.</p>
+                    <p>Files are associated with your specific IP address. Only devices using the same IP address can access
+                        the shared content. However, if multiple devices share the same public IP (common in home networks),
+                        they may be able to access each other's content.</p>
                     <p>For maximum privacy, use AirToShare on trusted networks only.</p>
                 </div>
             </div>
@@ -160,7 +166,9 @@
                     <i class="fas fa-chevron-down faq-icon"></i>
                 </button>
                 <div class="faq-answer">
-                    <p>No, we don't collect any personal information. AirToShare doesn't require accounts, emails, or any personal details. We only temporarily store your IP address to associate files with your session, and this is automatically deleted when content expires.</p>
+                    <p>No, we don't collect any personal information. AirToShare doesn't require accounts, emails, or any
+                        personal details. We only temporarily store your IP address to associate files with your session,
+                        and this is automatically deleted when content expires.</p>
                 </div>
             </div>
 
@@ -188,7 +196,8 @@
                     <i class="fas fa-chevron-down faq-icon"></i>
                 </button>
                 <div class="faq-answer">
-                    <p>You can share up to 20 files per session, with each file being up to 10MB in size. This limit helps ensure optimal performance for all users on the network.</p>
+                    <p>You can share up to 20 files per session, with each file being up to 10MB in size. This limit helps
+                        ensure optimal performance for all users on the network.</p>
                     <p>If you need to share more files, you can:</p>
                     <ul>
                         <li>Create a ZIP archive of multiple files</li>
@@ -204,7 +213,8 @@
                     <i class="fas fa-chevron-down faq-icon"></i>
                 </button>
                 <div class="faq-answer">
-                    <p>Yes! You can select multiple files using the checkboxes and download them as a ZIP archive. This feature makes it easy to download several files in one go.</p>
+                    <p>Yes! You can select multiple files using the checkboxes and download them as a ZIP archive. This
+                        feature makes it easy to download several files in one go.</p>
                     <p>To download multiple files:</p>
                     <ul>
                         <li>Check the boxes next to files you want</li>
@@ -220,8 +230,10 @@
                     <i class="fas fa-chevron-down faq-icon"></i>
                 </button>
                 <div class="faq-answer">
-                    <p>Yes, you can email files directly from AirToShare. Select the files you want to send, click the "Email" button, and fill in the recipient's email address along with a custom message.</p>
-                    <p>The files will be sent as email attachments, making it easy to share with people not on your network.</p>
+                    <p>Yes, you can email files directly from AirToShare. Select the files you want to send, click the
+                        "Email" button, and fill in the recipient's email address along with a custom message.</p>
+                    <p>The files will be sent as email attachments, making it easy to share with people not on your network.
+                    </p>
                 </div>
             </div>
 
@@ -231,7 +243,8 @@
                     <i class="fas fa-chevron-down faq-icon"></i>
                 </button>
                 <div class="faq-answer">
-                    <p>No account is required! AirToShare works instantly without any registration. Just connect to the same Wi-Fi network and start sharing. This makes it perfect for quick, hassle-free file sharing.</p>
+                    <p>No account is required! AirToShare works instantly without any registration. Just connect to the same
+                        Wi-Fi network and start sharing. This makes it perfect for quick, hassle-free file sharing.</p>
                 </div>
             </div>
 
@@ -241,7 +254,8 @@
                     <i class="fas fa-chevron-down faq-icon"></i>
                 </button>
                 <div class="faq-answer">
-                    <p>Absolutely! AirToShare has a dedicated text sharing feature. You can paste up to 50,000 characters of text, and it will automatically detect and make URLs clickable.</p>
+                    <p>Absolutely! AirToShare has a dedicated text sharing feature. You can paste up to 50,000 characters of
+                        text, and it will automatically detect and make URLs clickable.</p>
                     <p>Text features include:</p>
                     <ul>
                         <li>Character counter</li>
@@ -326,7 +340,8 @@
                     <i class="fas fa-chevron-down faq-icon"></i>
                 </button>
                 <div class="faq-answer">
-                    <p>While AirToShare works on mobile data, it's designed for local Wi-Fi networks. Using mobile data means:</p>
+                    <p>While AirToShare works on mobile data, it's designed for local Wi-Fi networks. Using mobile data
+                        means:</p>
                     <ul>
                         <li>Files are only accessible from that specific device</li>
                         <li>No cross-device sharing capability</li>
@@ -353,7 +368,7 @@
     </div>
 
     <script>
-        $(document).ready(function() {
+        document.addEventListener('DOMContentLoaded', function() {
             setupFAQ();
         });
 
