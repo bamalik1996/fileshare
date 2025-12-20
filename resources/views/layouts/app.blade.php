@@ -68,7 +68,7 @@
       "@@type": "Organization",
       "name": "AirToShare",
       "url": "{{ url('/') }}",
-      "logo": "{{ url('/favicon.ico') }}",
+      "logo": "{{ url('/logo.svg') }}",
       "description": "Instant file sharing across devices on the same network",
       "sameAs": [
         "https://web.facebook.com/airtoshare/",
@@ -265,6 +265,10 @@
                         <i class="fas fa-question-circle" style="margin-right: 0.5rem;"></i>
                         FAQ
                     </a>
+                    <a class="navbar-item" href="{{ route('blog.index') }}">
+                        <i class="fas fa-newspaper" style="margin-right: 0.5rem;"></i>
+                        Blog
+                    </a>
                     <a class="navbar-item" href="{{ url('/feedback') }}">
                         <i class="fas fa-comment" style="margin-right: 0.5rem;"></i>
                         Feedback
@@ -309,6 +313,7 @@
                         <a href="{{ url('/') }}">Home</a>
                         <a href="{{ url('/how-it-works') }}">How It Works</a>
                         <a href="{{ url('/faq') }}">FAQ</a>
+                        <a href="{{ route('blog.index') }}">Blog</a>
                         <a href="{{ url('/feedback') }}">Contact</a>
                         <a href="{{ url('/coming-soon') }}">Coming Soon</a>
                         <a href="{{ url('/sitemap.xml') }}">Sitemap</a>

@@ -18,7 +18,8 @@
   "description": "Instant file sharing across devices on the same network",
   "url": "{{ url('/') }}",
   "applicationCategory": "UtilitiesApplication",
-  "operatingSystem": "Web Browser",
+  "operatingSystem": "All",
+  "image": "{{ url('/logo.svg') }}",
   "offers": {
     "@@type": "Offer",
     "price": "0",
@@ -60,6 +61,15 @@
 
     <!-- IP Info Panel -->
     <div class="info-panel">
+        <div class="info-item device-nickname-container">
+            <i class="fas fa-laptop"></i>
+            <span class="device-nickname" id="deviceNickname" title="Click to edit">My Device</span>
+            <input type="text" class="nickname-input" id="nicknameInput" placeholder="Enter device name"
+                style="display: none;">
+            <button class="nickname-edit-btn" id="editNicknameBtn" title="Edit name">
+                <i class="fas fa-pencil-alt"></i>
+            </button>
+        </div>
         <div class="info-item">
             <i class="fas fa-network-wired"></i>
             <strong>IP:</strong> <span id="userIp">Loading...</span>
@@ -230,6 +240,9 @@
                     <span id="previewFileSize">File Size</span>
                 </div>
                 <div class="preview-modal-actions">
+                    <button class="preview-action-btn share-btn" id="previewShareBtn" title="Share Link">
+                        <i class="fas fa-share-alt"></i>
+                    </button>
                     <button class="preview-action-btn" id="previewDownloadBtn" title="Download">
                         <i class="fas fa-download"></i>
                     </button>
@@ -370,6 +383,49 @@
         </div>
     </div>
 
+    <!-- Share Link Modal -->
+    <div class="modal-overlay" id="shareModal">
+        <div class="modal-content share-modal">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <i class="fas fa-share-alt"></i>
+                    <span>Share File</span>
+                </div>
+                <button class="modal-close-btn" id="shareModalClose">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="share-modal-body">
+                <div class="share-file-name" id="shareFileName">file.jpg</div>
+
+                <div class="share-option one-time-option">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="oneTimeToggle">
+                        <span class="toggle-slider"></span>
+                    </label>
+                    <div class="share-option-info">
+                        <strong>One-Time Download</strong>
+                        <small>File will be deleted after first download</small>
+                    </div>
+                    <i class="fas fa-lock one-time-badge" style="display: none;" id="oneTimeBadge"></i>
+                </div>
+
+                <div class="share-link-container">
+                    <input type="text" class="share-link-input" id="shareLinkInput" readonly>
+                    <button class="modern-btn copy-share-btn" id="copyShareLink">
+                        <i class="fas fa-copy"></i>
+                        <span>Copy</span>
+                    </button>
+                </div>
+
+                <div class="share-link-note" id="oneTimeNote" style="display: none;">
+                    <i class="fas fa-info-circle"></i>
+                    This link will expire after a single download
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- QR Code Modal -->
     <div class="modal-overlay" id="qrModal">
         <div class="modal-content qr-modal">
@@ -447,6 +503,12 @@
 
             // Auto-refresh for real-time sync
             setupAutoRefresh();
+
+            // Device nickname
+            setupDeviceNickname();
+
+            // Share link modal
+            setupShareModal();
         }
 
         // QR Code Modal Functions
@@ -480,6 +542,157 @@
                     }, 2000);
                 });
             });
+        }
+
+        // Device Nickname Functions
+        function setupDeviceNickname() {
+            // Load saved nickname from localStorage
+            const savedNickname = localStorage.getItem('airtoshare-device-nickname');
+            if (savedNickname) {
+                $('#deviceNickname').text(savedNickname);
+            }
+
+            // Edit button click
+            $('#editNicknameBtn').off('click').on('click', function() {
+                toggleNicknameEdit(true);
+            });
+
+            // Click on nickname to edit
+            $('#deviceNickname').off('click').on('click', function() {
+                toggleNicknameEdit(true);
+            });
+
+            // Save on Enter, cancel on Escape
+            $('#nicknameInput').off('keydown').on('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    saveNickname();
+                } else if (e.key === 'Escape') {
+                    toggleNicknameEdit(false);
+                }
+            });
+
+            // Save on blur (click outside)
+            $('#nicknameInput').off('blur').on('blur', function() {
+                setTimeout(saveNickname, 100);
+            });
+        }
+
+        function toggleNicknameEdit(editing) {
+            const nicknameSpan = $('#deviceNickname');
+            const nicknameInput = $('#nicknameInput');
+            const editBtn = $('#editNicknameBtn');
+
+            if (editing) {
+                nicknameSpan.hide();
+                editBtn.hide();
+                nicknameInput.val(nicknameSpan.text()).show().focus().select();
+            } else {
+                nicknameInput.hide();
+                nicknameSpan.show();
+                editBtn.show();
+            }
+        }
+
+        function saveNickname() {
+            const nicknameInput = $('#nicknameInput');
+            const nicknameSpan = $('#deviceNickname');
+            const newNickname = nicknameInput.val().trim();
+
+            if (newNickname && newNickname.length > 0 && newNickname.length <= 30) {
+                nicknameSpan.text(newNickname);
+                localStorage.setItem('airtoshare-device-nickname', newNickname);
+                showToast('success', 'Device Renamed!', `This device is now "${newNickname}"`);
+            }
+
+            toggleNicknameEdit(false);
+        }
+
+        // Share Modal Functions
+        let currentShareFile = null;
+        let oneTimeLinks = JSON.parse(localStorage.getItem('airtoshare-onetime-links') || '{}');
+
+        function setupShareModal() {
+            // Close modal
+            $('#shareModalClose').off('click').on('click', function() {
+                $('#shareModal').removeClass('show');
+            });
+
+            // Click outside to close
+            $('#shareModal').off('click').on('click', function(e) {
+                if (e.target === this) {
+                    $(this).removeClass('show');
+                }
+            });
+
+            // Preview share button click
+            $('#previewShareBtn').off('click').on('click', function() {
+                if (allFiles.length > 0 && currentPreviewIndex >= 0) {
+                    currentShareFile = allFiles[currentPreviewIndex];
+                    openShareModal(currentShareFile);
+                }
+            });
+
+            // One-time toggle change
+            $('#oneTimeToggle').off('change').on('change', function() {
+                const isOneTime = $(this).is(':checked');
+                updateShareLink(isOneTime);
+                $('#oneTimeNote').toggle(isOneTime);
+                $('#oneTimeBadge').toggle(isOneTime);
+            });
+
+            // Copy share link
+            $('#copyShareLink').off('click').on('click', function() {
+                const link = $('#shareLinkInput').val();
+                navigator.clipboard.writeText(link).then(() => {
+                    const btn = $(this);
+                    btn.find('span').text('Copied!');
+                    btn.addClass('success');
+                    showToast('success', 'Link Copied!', 'Share link copied to clipboard');
+                    setTimeout(() => {
+                        btn.find('span').text('Copy');
+                        btn.removeClass('success');
+                    }, 2000);
+                });
+            });
+        }
+
+        function openShareModal(file) {
+            $('#shareFileName').text(file.name);
+            $('#oneTimeToggle').prop('checked', false);
+            $('#oneTimeNote').hide();
+            $('#oneTimeBadge').hide();
+            updateShareLink(false);
+            $('#shareModal').addClass('show');
+        }
+
+        function updateShareLink(isOneTime) {
+            if (!currentShareFile) return;
+
+            let shareUrl = currentShareFile.original_url;
+
+            if (isOneTime) {
+                // Generate unique one-time token
+                const token = generateToken();
+                const uuid = currentShareFile.uuid;
+
+                // Store one-time link info
+                oneTimeLinks[token] = {
+                    uuid: uuid,
+                    fileName: currentShareFile.name,
+                    createdAt: new Date().toISOString(),
+                    used: false
+                };
+                localStorage.setItem('airtoshare-onetime-links', JSON.stringify(oneTimeLinks));
+
+                // Create one-time link with token parameter
+                shareUrl = `${window.location.origin}/download/${uuid}?onetime=${token}`;
+            }
+
+            $('#shareLinkInput').val(shareUrl);
+        }
+
+        function generateToken() {
+            return 'ot_' + Math.random().toString(36).substring(2, 15) + Date.now().toString(36);
         }
 
         function generateQRCode() {

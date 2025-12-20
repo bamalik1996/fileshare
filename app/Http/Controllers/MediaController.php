@@ -350,4 +350,67 @@ class MediaController extends Controller
 
         return response()->download($zipPath, $zipFileName)->deleteFileAfterSend(true);
     }
+
+    /**
+     * Download a single file by UUID with one-time download support
+     */
+    public function download(Request $request, $uuid)
+    {
+        // Find media by UUID using Spatie's Media model
+        $media = \Spatie\MediaLibrary\MediaCollections\Models\Media::where('uuid', $uuid)->first();
+
+        if (!$media) {
+            return response()->view('errors.404', [], 404);
+        }
+
+        $filePath = $media->getPath();
+
+        if (!file_exists($filePath)) {
+            Log::warning("Download requested but file not found: {$filePath}");
+            return response()->view('errors.404', [], 404);
+        }
+
+        // Check if this is a one-time download
+        $oneTimeToken = $request->query('onetime');
+        $isOneTime = !empty($oneTimeToken);
+
+        // Log the download
+        Log::info("File downloaded: {$media->name}", [
+            'uuid' => $uuid,
+            'one_time' => $isOneTime,
+            'token' => $oneTimeToken
+        ]);
+
+        // Get file info before potential deletion
+        $fileName = $media->file_name;
+        $mimeType = $media->mime_type;
+
+        if ($isOneTime) {
+            // For one-time downloads, delete the media after sending
+            // We need to copy the file temporarily first
+            $tempPath = storage_path('app/temp/' . $fileName);
+            
+            // Ensure temp directory exists
+            if (!is_dir(storage_path('app/temp'))) {
+                mkdir(storage_path('app/temp'), 0755, true);
+            }
+            
+            copy($filePath, $tempPath);
+            
+            // Delete the original media
+            $media->delete();
+            
+            Log::info("One-time download: File deleted after download", ['uuid' => $uuid]);
+            
+            // Return the temp file and delete after send
+            return response()->download($tempPath, $fileName, [
+                'Content-Type' => $mimeType
+            ])->deleteFileAfterSend(true);
+        }
+
+        // Regular download - just serve the file
+        return response()->download($filePath, $fileName, [
+            'Content-Type' => $mimeType
+        ]);
+    }
 }
