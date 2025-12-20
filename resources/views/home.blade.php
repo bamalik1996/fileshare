@@ -1,7 +1,8 @@
 @extends('layouts.app')
 
 @section('title', 'AirToShare – Instant, Secure File Sharing Across Devices')
-@section('description', 'Experience instant, secure peer-to-peer file and text sharing across all your devices on the
+@section('description',
+    'Experience instant, secure peer-to-peer file and text sharing across all your devices on the
     same local Wi-Fi network. No cloud uploads, no logins required, and completely free. Fast, private, and simple.')
 
 @section('keywords',
@@ -451,7 +452,7 @@
         </div>
     </div>
     <script>
-        $(document).ready(function() {
+        document.addEventListener('DOMContentLoaded', function() {
             initializeApp();
         });
 
