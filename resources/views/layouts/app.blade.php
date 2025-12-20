@@ -36,8 +36,8 @@
     <link rel="sitemap" type="application/xml" title="Sitemap" href="{{ url('/sitemap.xml') }}">
 
     <!-- Open Graph Meta Tags -->
-    <meta property="og:title" content="@yield('og_title', 'AirToShare - Instant File Sharing')">
-    <meta property="og:description" content="@yield('og_description', 'Share files and text instantly across devices on the same network. Simple, fast, and secure.')">
+    <meta property="og:title" content="@yield('og_title', \Illuminate\Support\Facades\View::getSection('title', 'AirToShare - Instant File Sharing'))">
+    <meta property="og:description" content="@yield('og_description', \Illuminate\Support\Facades\View::getSection('description', 'Share files and text instantly across devices on the same network. Simple, fast, and secure.'))">
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ url()->current() }}">
     <meta property="og:site_name" content="AirToShare">
@@ -51,8 +51,8 @@
 
     <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="@yield('twitter_title', 'AirToShare - Instant File Sharing')">
-    <meta name="twitter:description" content="@yield('twitter_description', 'Share files and text instantly across devices on the same network.')">
+    <meta name="twitter:title" content="@yield('twitter_title', \Illuminate\Support\Facades\View::getSection('title', 'AirToShare - Instant File Sharing'))">
+    <meta name="twitter:description" content="@yield('twitter_description', \Illuminate\Support\Facades\View::getSection('description', 'Share files and text instantly across devices on the same network.'))">
     <meta name="twitter:image" content="@yield('twitter_image', url('/logo.svg'))">
     <meta name="twitter:site" content="@AirToShare">
     <meta name="twitter:creator" content="@AirToShare">
