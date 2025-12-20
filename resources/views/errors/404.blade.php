@@ -1,11 +1,12 @@
 @extends('layouts.app')
 
 @section('title', '404 - Page Not Found | AirToShare')
-@section('description', 'The page you are looking for could not be found. Return to AirToShare homepage to continue sharing files instantly across your devices.')
+@section('description', 'The page you are looking for could not be found. Return to AirToShare homepage to continue
+    sharing files instantly across your devices.')
 @section('keywords', 'AirToShare 404, page not found, file sharing, error page')
 
 @section('schema')
-<script type="application/ld+json">
+    <script type="application/ld+json">
 {
   "@@context": "https://schema.org",
   "@@type": "WebPage",
@@ -59,12 +60,7 @@
             <!-- Search Box -->
             <div class="search-box">
                 <i class="fas fa-search search-icon"></i>
-                <input
-                    type="text"
-                    class="search-input"
-                    placeholder="Search for what you need..."
-                    id="searchInput"
-                >
+                <input type="text" class="search-input" placeholder="Search for what you need..." id="searchInput">
             </div>
 
             <!-- Action Buttons -->
@@ -142,7 +138,7 @@
     </div>
 
     <script>
-        $(document).ready(function() {
+        document.addEventListener('DOMContentLoaded', function() {
             setupSearch();
         });
 
@@ -153,18 +149,19 @@
 
                     // Simple search logic
                     if (query.includes('share') || query.includes('upload') || query.includes('file')) {
-                        window.location.href = '{{ url("/") }}';
+                        window.location.href = '{{ url('/') }}';
                     } else if (query.includes('how') || query.includes('work') || query.includes('guide')) {
-                        window.location.href = '{{ url("/how-it-works") }}';
+                        window.location.href = '{{ url('/how-it-works') }}';
                     } else if (query.includes('faq') || query.includes('question') || query.includes('help')) {
-                        window.location.href = '{{ url("/faq") }}';
-                    } else if (query.includes('contact') || query.includes('support') || query.includes('feedback')) {
-                        window.location.href = '{{ url("/feedback") }}';
+                        window.location.href = '{{ url('/faq') }}';
+                    } else if (query.includes('contact') || query.includes('support') || query.includes(
+                        'feedback')) {
+                        window.location.href = '{{ url('/feedback') }}';
                     } else if (query.includes('new') || query.includes('feature') || query.includes('coming')) {
-                        window.location.href = '{{ url("/coming-soon") }}';
+                        window.location.href = '{{ url('/coming-soon') }}';
                     } else if (query) {
                         // Default to home page for any other search
-                        window.location.href = '{{ url("/") }}';
+                        window.location.href = '{{ url('/') }}';
                     }
                 }
             });
