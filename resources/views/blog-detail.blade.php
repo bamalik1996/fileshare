@@ -4,6 +4,9 @@
 @section('description', $blog['excerpt'])
 @section('keywords', 'AirToShare, ' . $blog['category'] . ', file sharing, ' . $blog['title'])
 
+@section('og_image', url($blog['image']))
+@section('twitter_image', url($blog['image']))
+
 @section('schema')
     <script type="application/ld+json">
 {
