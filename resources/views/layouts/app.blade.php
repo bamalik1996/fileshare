@@ -117,9 +117,9 @@
     <link rel="stylesheet" href="{{ asset('assets/font-awesome/css/all.min.css') }}">
     <!-- Bulma CSS -->
     <link rel="stylesheet" href="{{ asset('assets/css/bulma.min.css') }}">
-    <script src="{{ asset('assets/js/jquery.min.js') }}"></script>
+    <script src="{{ asset('assets/js/jquery.min.js') }}" defer></script>
     <!-- QR Code Library -->
-    <script src="{{ asset('assets/js/qrcode.min.js') }}"></script>
+    <script src="{{ asset('assets/js/qrcode.min.js') }}" defer></script>
 
 
 
@@ -225,7 +225,8 @@
             fbq('track', 'PageView');
         </script>
         <noscript><img height="1" width="1" style="display:none"
-                src="https://www.facebook.com/tr?id=FACEBOOK_PIXEL_ID&ev=PageView&noscript=1" /></noscript>
+                src="https://www.facebook.com/tr?id=FACEBOOK_PIXEL_ID&ev=PageView&noscript=1"
+                alt="" /></noscript>
     @endif
 </head>
 
