@@ -42,7 +42,7 @@
     <meta property="og:url" content="{{ url()->current() }}">
     <meta property="og:site_name" content="AirToShare">
     <meta property="og:locale" content="en_US">
-    <meta property="og:image" content="{{ url('/logo.svg') }}">
+    <meta property="og:image" content="@yield('og_image', url('/logo.svg'))">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta property="og:image:alt" content="AirToShare - Instant File Sharing">
@@ -53,7 +53,7 @@
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="@yield('twitter_title', 'AirToShare - Instant File Sharing')">
     <meta name="twitter:description" content="@yield('twitter_description', 'Share files and text instantly across devices on the same network.')">
-    <meta name="twitter:image" content="{{ url('/logo.svg') }}">
+    <meta name="twitter:image" content="@yield('twitter_image', url('/logo.svg'))">
     <meta name="twitter:site" content="@AirToShare">
     <meta name="twitter:creator" content="@AirToShare">
     <link href="/assets/css/custom.css" rel="stylesheet" />
