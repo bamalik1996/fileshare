@@ -294,9 +294,9 @@
     </nav>
 
     <!-- Main Content -->
-    <div class="modern-container">
+    <main class="modern-container">
         @yield('content')
-    </div>
+    </main>
 
     <!-- Modern Footer -->
     <footer class="modern-footer">

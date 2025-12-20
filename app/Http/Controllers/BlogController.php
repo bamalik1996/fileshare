@@ -9,7 +9,10 @@ class BlogController extends Controller
     /**
      * Static blog data - no database needed
      */
-    private function getBlogs()
+    /**
+     * Static blog data - no database needed
+     */
+    public static function getBlogs()
     {
         return [
             [
