@@ -4,8 +4,6 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ShareController;
 use Illuminate\Support\Facades\Route;
 
-
-
 Route::controller(HomeController::class)->group(function () {
     Route::get('/', 'index');
     Route::get('/how-it-works', 'howItWorks');
@@ -58,10 +56,10 @@ Route::prefix('api/v1')->group(function () {
 // One-time download route
 Route::get('/download/{uuid}', [\App\Http\Controllers\MediaController::class, 'download'])->name('media.download.file');
 
-// SEO Routes
-Route::get('/sitemap.xml', function () {
-    $sitemap = view('sitemap')->render();
-    return response($sitemap, 200, [
-        'Content-Type' => 'application/xml'
-    ]);
-})->name('sitemap');
+// // SEO Routes
+// Route::get('/sitemap.xml', function () {
+//     $sitemap = view('sitemap')->render();
+//     return response($sitemap, 200, [
+//         'Content-Type' => 'application/xml'
+//     ]);
+// })->name('sitemap');
