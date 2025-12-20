@@ -1,11 +1,15 @@
 @extends('layouts.app')
 
 @section('title', 'Coming Soon - Exciting New Features | AirToShare')
-@section('description', 'Exciting new features are coming to AirToShare! Dark mode, clipboard sync, real-time collaboration, and more advanced file sharing capabilities.')
-@section('keywords', 'AirToShare updates, new features, dark mode, clipboard sync, file sharing improvements, coming soon')
+@section('description',
+    'Exciting new features are coming to AirToShare! Dark mode, clipboard sync, real-time
+    collaboration, and more advanced file sharing capabilities.')
+@section('keywords',
+    'AirToShare updates, new features, dark mode, clipboard sync, file sharing improvements, coming
+    soon')
 
 @section('schema')
-<script type="application/ld+json">
+    <script type="application/ld+json">
 {
   "@@context": "https://schema.org",
   "@@type": "WebPage",
@@ -52,86 +56,6 @@
             </h2>
 
             <div class="features-grid">
-                <!-- Dark Mode -->
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-moon"></i>
-                    </div>
-                    <h3 class="feature-title">Dark Mode</h3>
-                    <p class="feature-description">
-                        Toggle between light and dark themes for a comfortable viewing experience in any lighting condition.
-                        Your eyes will thank you during those late-night file sharing sessions!
-                    </p>
-                    <div class="feature-status">
-                        <div class="status-dot"></div>
-                        In Development
-                    </div>
-                </div>
-
-                <!-- Clipboard Sync -->
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-sync-alt"></i>
-                    </div>
-                    <h3 class="feature-title">Clipboard Sync</h3>
-                    <p class="feature-description">
-                        Automatically sync clipboard content between devices on the same network.
-                        Copy on one device, paste on another - seamless productivity across all your devices!
-                    </p>
-                    <div class="feature-status">
-                        <div class="status-dot"></div>
-                        Coming Soon
-                    </div>
-                </div>
-
-                <!-- Real-time Collaboration -->
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-users"></i>
-                    </div>
-                    <h3 class="feature-title">Real-time Collaboration</h3>
-                    <p class="feature-description">
-                        See who's online and collaborate in real-time. Share files instantly with multiple users
-                        and get live notifications when someone joins or shares content.
-                    </p>
-                    <div class="feature-status">
-                        <div class="status-dot"></div>
-                        Planning Phase
-                    </div>
-                </div>
-
-                <!-- Advanced File Preview -->
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-eye"></i>
-                    </div>
-                    <h3 class="feature-title">Advanced File Preview</h3>
-                    <p class="feature-description">
-                        Preview more file types including videos, audio files, and documents without downloading.
-                        Built-in media player and document viewer for instant access.
-                    </p>
-                    <div class="feature-status">
-                        <div class="status-dot"></div>
-                        In Development
-                    </div>
-                </div>
-
-                <!-- QR Code Sharing -->
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-qrcode"></i>
-                    </div>
-                    <h3 class="feature-title">QR Code Sharing</h3>
-                    <p class="feature-description">
-                        Generate QR codes for instant access to your shared content.
-                        Perfect for quickly connecting new devices or sharing with guests.
-                    </p>
-                    <div class="feature-status">
-                        <div class="status-dot"></div>
-                        Coming Soon
-                    </div>
-                </div>
-
                 <!-- File Organization -->
                 <div class="feature-card">
                     <div class="feature-icon">
@@ -147,6 +71,86 @@
                         Planning Phase
                     </div>
                 </div>
+
+                <!-- Password Protected Files -->
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3 class="feature-title">Password Protected Files</h3>
+                    <p class="feature-description">
+                        Add an extra layer of security by setting passwords for sensitive files.
+                        Only users with the correct password can download protected files.
+                    </p>
+                    <div class="feature-status">
+                        <div class="status-dot"></div>
+                        Coming Soon
+                    </div>
+                </div>
+
+                <!-- File Drag Reordering -->
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-arrows-alt"></i>
+                    </div>
+                    <h3 class="feature-title">Drag & Drop Reordering</h3>
+                    <p class="feature-description">
+                        Reorder your uploaded files by simply dragging and dropping them.
+                        Organize your files exactly how you want them displayed.
+                    </p>
+                    <div class="feature-status">
+                        <div class="status-dot"></div>
+                        In Development
+                    </div>
+                </div>
+
+                <!-- Multi-User Rooms -->
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3 class="feature-title">Multi-User Sharing Rooms</h3>
+                    <p class="feature-description">
+                        Create private sharing rooms with unique links. Multiple users can upload
+                        and download files in the same room. Perfect for team collaboration!
+                    </p>
+                    <div class="feature-status">
+                        <div class="status-dot"></div>
+                        Planning Phase
+                    </div>
+                </div>
+
+                <!-- File Expiry Customization -->
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <h3 class="feature-title">Custom Expiry Times</h3>
+                    <p class="feature-description">
+                        Choose how long your files stay available - from 1 hour to 7 days.
+                        Set different expiry times for different files based on your needs.
+                    </p>
+                    <div class="feature-status">
+                        <div class="status-dot"></div>
+                        Coming Soon
+                    </div>
+                </div>
+
+                <!-- Download Limits -->
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-download"></i>
+                    </div>
+                    <h3 class="feature-title">Download Limits</h3>
+                    <p class="feature-description">
+                        Set a maximum number of downloads for your shared files.
+                        Once the limit is reached, the file automatically becomes unavailable.
+                    </p>
+                    <div class="feature-status">
+                        <div class="status-dot"></div>
+                        In Development
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -158,12 +162,24 @@
         </h2>
 
         <div class="timeline">
+            <div class="timeline-item completed">
+                <div class="timeline-content">
+                    <div class="timeline-date">✅ Completed</div>
+                    <div class="timeline-title">Dark Mode, QR Code & Real-time Sync</div>
+                    <div class="timeline-desc">
+                        Dark mode toggle, QR code sharing, clipboard sync, device nicknames, one-time downloads, and live
+                        notifications - all shipped!
+                    </div>
+                </div>
+                <div class="timeline-dot"></div>
+            </div>
+
             <div class="timeline-item">
                 <div class="timeline-content">
                     <div class="timeline-date">Q1 2025</div>
-                    <div class="timeline-title">Dark Mode & UI Enhancements</div>
+                    <div class="timeline-title">Security & Access Control</div>
                     <div class="timeline-desc">
-                        Complete dark mode implementation with smooth transitions and improved accessibility features.
+                        Password protected files, download limits, and custom expiry times for maximum control.
                     </div>
                 </div>
                 <div class="timeline-dot"></div>
@@ -172,9 +188,9 @@
             <div class="timeline-item">
                 <div class="timeline-content">
                     <div class="timeline-date">Q2 2025</div>
-                    <div class="timeline-title">Clipboard Sync & QR Codes</div>
+                    <div class="timeline-title">File Management & UX</div>
                     <div class="timeline-desc">
-                        Real-time clipboard synchronization and QR code generation for instant device connections.
+                        Drag & drop reordering, smart file organization with categories, and improved search functionality.
                     </div>
                 </div>
                 <div class="timeline-dot"></div>
@@ -183,20 +199,10 @@
             <div class="timeline-item">
                 <div class="timeline-content">
                     <div class="timeline-date">Q3 2025</div>
-                    <div class="timeline-title">Advanced Previews & Collaboration</div>
+                    <div class="timeline-title">Multi-User Collaboration</div>
                     <div class="timeline-desc">
-                        Enhanced file preview capabilities and real-time collaboration features for team productivity.
-                    </div>
-                </div>
-                <div class="timeline-dot"></div>
-            </div>
-
-            <div class="timeline-item">
-                <div class="timeline-content">
-                    <div class="timeline-date">Q4 2025</div>
-                    <div class="timeline-title">Smart Organization & AI Features</div>
-                    <div class="timeline-desc">
-                        AI-powered file organization, smart search, and intelligent content recommendations.
+                        Private sharing rooms with unique links, team collaboration features, and real-time presence
+                        indicators.
                     </div>
                 </div>
                 <div class="timeline-dot"></div>
@@ -236,7 +242,8 @@
             Stay Updated
         </h2>
         <p class="newsletter-text">
-            Be the first to know when new AirToShare features launch! Get exclusive early access and updates delivered to your inbox.
+            Be the first to know when new AirToShare features launch! Get exclusive early access and updates delivered to
+            your inbox.
         </p>
         <form class="newsletter-form" id="newsletterForm">
             <input type="email" class="newsletter-input" placeholder="Enter your email address" required>

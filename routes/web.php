@@ -15,6 +15,12 @@ Route::controller(HomeController::class)->group(function () {
     Route::get('/smart-file-organization', 'smartFileOrganization');
 });
 
+// Blog Routes
+Route::controller(\App\Http\Controllers\BlogController::class)->group(function () {
+    Route::get('/blog', 'index')->name('blog.index');
+    Route::get('/blog/{slug}', 'show')->name('blog.show');
+});
+
 Route::prefix('api/v1')->group(function () {
     // 📜 Text Sharing Routes
     Route::controller(ShareController::class)->middleware('throttle:save-text')->group(function () {
@@ -47,6 +53,9 @@ Route::prefix('api/v1')->group(function () {
         Route::post('/submit-feedback', 'store')->name('feedback.store');
     });
 });
+
+// One-time download route
+Route::get('/download/{uuid}', [\App\Http\Controllers\MediaController::class, 'download'])->name('media.download.file');
 
 // SEO Routes
 Route::get('/sitemap.xml', function () {
