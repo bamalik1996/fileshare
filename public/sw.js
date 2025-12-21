@@ -42,6 +42,11 @@ self.addEventListener('fetch', (event) => {
         return;
     }
 
+    // Ignore non-GET requests
+    if (event.request.method !== 'GET') {
+        return;
+    }
+
     event.respondWith(
         caches.match(event.request).then((cachedResponse) => {
             const fetchPromise = fetch(event.request).then((networkResponse) => {
@@ -53,6 +58,9 @@ self.addEventListener('fetch', (event) => {
                     });
                 }
                 return networkResponse;
+            }).catch((error) => {
+                // Network request failed, return nothing or offline fallback
+                console.error('Fetch failed:', error);
             });
 
             // Return cached response immediately if available, otherwise wait for network
