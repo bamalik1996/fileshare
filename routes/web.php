@@ -10,7 +10,7 @@ Route::controller(HomeController::class)->group(function () {
     Route::get('/faq', 'faq');
     Route::get('/feedback', 'feedback');
     Route::get('/coming-soon', 'comingSoon');
-    Route::get('/smart-file-organization', 'smartFileOrganization');
+    // Route::get('/smart-file-organization', 'smartFileOrganization');
     Route::get('/sitemap.xml', [\App\Http\Controllers\SitemapController::class, 'index']);
 });
 

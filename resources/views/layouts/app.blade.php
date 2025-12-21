@@ -16,7 +16,7 @@
 
     <meta name="author" content="AirToShare">
     <meta name="robots" content="index, follow">
-    <link rel="canonical" href="{{ url()->current() }}">
+    <link rel="canonical" href="{{ str_replace('http://', 'https://', url()->current()) }}">
 
     <!-- Additional SEO Meta Tags -->
     <meta name="language" content="English">

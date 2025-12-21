@@ -29,6 +29,7 @@ class SitemapController extends Controller
             'faq' => ['priority' => '0.7', 'freq' => 'weekly'],
             'feedback' => ['priority' => '0.6', 'freq' => 'monthly'],
             'blog' => ['priority' => '0.9', 'freq' => 'daily'],
+            //'smart-file-organization' => ['priority' => '0.8', 'freq' => 'monthly'],
             'coming-soon' => ['priority' => '0.5', 'freq' => 'monthly'],
         ];
 
@@ -56,7 +57,7 @@ class SitemapController extends Controller
         $content .= '</urlset>';
 
         return response($content, 200)
-            ->header('Content-Type', 'text/xml')
-            ->header('X-Robots-Tag', 'noindex');
+            ->header('Content-Type', 'text/xml');
+    }
     }
 }
