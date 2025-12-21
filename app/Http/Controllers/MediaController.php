@@ -249,19 +249,43 @@ class MediaController extends Controller
     public function getIpInfo(Request $request)
     {
         $ip = $request->ip();
-        $sharedText = MediaFile::where('ip_address', $ip)->first();
+        
+        $mediaFile = MediaFile::where('ip_address', $ip)->first();
+        $sharedText = \App\Models\SharedText::where('ip_address', $ip)->first();
+
+        $expiresAt = null;
+        $lastAccessed = null;
+        $hasContent = false;
+
+        // Check MediaFile expiration
+        if ($mediaFile) {
+            $expiresAt = $mediaFile->expires_at;
+            $lastAccessed = $mediaFile->last_accessed;
+            $hasContent = true;
+        }
+
+        // Check SharedText expiration and take the latest one
+        if ($sharedText) {
+            $hasContent = true;
+            if (!$expiresAt || ($sharedText->expires_at && $sharedText->expires_at->gt($expiresAt))) {
+                $expiresAt = $sharedText->expires_at;
+            }
+            if (!$lastAccessed || ($sharedText->last_accessed && $sharedText->last_accessed->gt($lastAccessed))) {
+                $lastAccessed = $sharedText->last_accessed;
+            }
+        }
 
         $info = [
             'ip' => $ip,
-            'has_content' => $sharedText ? true : false,
-            'files_count' => $sharedText ? $sharedText->getMedia('shared_files')->count() : 0,
+            'has_content' => $hasContent,
+            'files_count' => $mediaFile ? $mediaFile->getMedia('shared_files')->count() : 0,
             'max_files' => self::MAX_FILES_PER_IP,
             'max_file_size' => $this->formatFileSize(self::MAX_FILE_SIZE)
         ];
 
-        if ($sharedText) {
-            $info['expires_at'] = $sharedText->expires_at;
-            $info['last_accessed'] = $sharedText->last_accessed;
+        if ($expiresAt) {
+            $info['expires_at'] = $expiresAt;
+            $info['last_accessed'] = $lastAccessed;
         }
 
         return response()->json($info);

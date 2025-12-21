@@ -843,6 +843,15 @@
         let autoRefreshInterval = null;
         let lastActivityTime = new Date();
 
+        // Handle visibility change to resume/pause updates efficiently
+        document.addEventListener("visibilitychange", () => {
+            if (!document.hidden) {
+                // When tab becomes visible, we don't immediately fetch to avoid "flash".
+                // We just ensure the interval is running (which it is, but paused effectively by the check).
+                // Optionally, we could reset the timer to space out the next check.
+            }
+        });
+
         // Track self-uploads to avoid notifying the sender
         let pendingSelfUpload = false;
         let pendingSelfText = false;
@@ -867,7 +876,11 @@
             updateLastActivityDisplay();
 
             // Start polling every 10 seconds for new content
-            autoRefreshInterval = setInterval(checkForUpdates, 10000);
+            autoRefreshInterval = setInterval(() => {
+                if (!document.hidden) {
+                    checkForUpdates();
+                }
+            }, 10000);
         }
 
         function checkForUpdates() {
@@ -1155,6 +1168,7 @@
                 success: function(data) {
                     setButtonLoading(false);
                     showToast('success', 'Saved!', 'Text saved successfully and synced across devices');
+                    loadIpInfo(); // Refresh timer and expiry info
 
                     if (text.trim().length > 0) {
                         updateSaveButton('copy');
