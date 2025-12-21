@@ -56,6 +56,7 @@ class SitemapController extends Controller
         $content .= '</urlset>';
 
         return response($content, 200)
-            ->header('Content-Type', 'text/xml');
+            ->header('Content-Type', 'text/xml')
+            ->header('X-Robots-Tag', 'noindex');
     }
 }
