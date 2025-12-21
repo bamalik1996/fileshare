@@ -456,11 +456,14 @@
         const pwaDismissBtn = document.getElementById('pwaDismissBtn');
 
         window.addEventListener('beforeinstallprompt', (e) => {
+            console.log('beforeinstallprompt Event fired');
             e.preventDefault();
             deferredPrompt = e;
 
             if (!localStorage.getItem('pwaInstallDismissed')) {
                 pwaInstallBanner.classList.add('show');
+            } else {
+                console.log('PWA banner suppressed: previously dismissed by user');
             }
         });
 
@@ -468,12 +471,19 @@
             pwaInstallBtn.addEventListener('click', async () => {
                 if (deferredPrompt) {
                     deferredPrompt.prompt();
+
                     const {
                         outcome
                     } = await deferredPrompt.userChoice;
+                    console.log('User choice outcome:', outcome);
+
                     if (outcome === 'accepted') {
+                        console.log('User added to home screen');
                         showToast('success', 'Installed!', 'AirToShare added to your home screen');
+                    } else {
+                        console.log('User cancelled home screen install');
                     }
+
                     deferredPrompt = null;
                     pwaInstallBanner.classList.remove('show');
                 }

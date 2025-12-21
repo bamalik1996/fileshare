@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-
 class BlogController extends Controller
 {
     /**
@@ -20,7 +18,7 @@ class BlogController extends Controller
                 'title' => 'Introducing AirToShare: The Future of File Sharing',
                 'excerpt' => 'Experience the fastest, most secure way to share files between devices. No cloud uploads, just instant peer-to-peer transfer for your essential files.',
                 'image' => '/assets/images/blog/airtoshare-app.png',
-                'date' => 'December 21, 2024',
+                'date' => 'March 21, 2025',
                 'author' => 'AirToShare Team',
                 'category' => 'Announcement',
                 'read_time' => '5 min read',
@@ -50,14 +48,14 @@ class BlogController extends Controller
                     <p>This is just the beginning. We have an exciting roadmap ahead with features like folders, rooms, and more. Thank you for joining us on this journey!</p>
 
                     <p>Start sharing today at <a href="/">airtoshare.app</a></p>
-                '
+                ',
             ],
             [
                 'slug' => 'dark-mode-now-available',
                 'title' => 'AirToShare Now Supports Dark Mode!',
                 'excerpt' => 'Give your eyes a break with our new dark mode feature. Toggle between light and dark themes for comfortable viewing in any lighting condition.',
                 'image' => '/assets/images/blog/dark-mode.png',
-                'date' => 'December 20, 2024',
+                'date' => 'January 20, 2025',
                 'author' => 'AirToShare Team',
                 'category' => 'Feature Update',
                 'read_time' => '3 min read',
@@ -93,14 +91,14 @@ class BlogController extends Controller
                     </ul>
 
                     <p>We\'ve used a beautiful blue-purple gradient that looks stunning in both modes. Try it out and let us know what you think!</p>
-                '
+                ',
             ],
             [
                 'slug' => 'quick-connect-qr-codes',
                 'title' => 'Quick Connect with QR Codes',
                 'excerpt' => 'Connect devices instantly by scanning a QR code. No typing URLs, no hassle – just scan and share across all your devices.',
                 'image' => '/assets/images/blog/qr-code.png',
-                'date' => 'December 19, 2024',
+                'date' => 'January 19, 2025',
                 'author' => 'AirToShare Team',
                 'category' => 'Feature Update',
                 'read_time' => '2 min read',
@@ -128,14 +126,14 @@ class BlogController extends Controller
                     <p>Don\'t have a camera handy? No problem! The QR modal also includes a <strong>"Copy Link"</strong> button so you can share the URL via messaging apps or email.</p>
 
                     <p>This feature is designed for maximum convenience. Whether you\'re in a meeting, at home, or on the go – connecting is now effortless!</p>
-                '
+                ',
             ],
             [
                 'slug' => 'one-time-download-links',
                 'title' => 'Secure One-Time Download Links',
                 'excerpt' => 'Share files with maximum security. One-time links automatically delete the file after the first download – perfect for sensitive documents.',
                 'image' => '/assets/images/blog/one-time.png',
-                'date' => 'December 18, 2024',
+                'date' => 'January 18, 2025',
                 'author' => 'AirToShare Team',
                 'category' => 'Security',
                 'read_time' => '4 min read',
@@ -172,14 +170,14 @@ class BlogController extends Controller
                     </ul>
 
                     <p>With one-time links, you have complete control over your shared content. Share with confidence!</p>
-                '
+                ',
             ],
             [
                 'slug' => 'device-nicknames-personalization',
                 'title' => 'Personalize Your Devices with Nicknames',
                 'excerpt' => 'Give your devices friendly names for easier identification. Say goodbye to confusing IP addresses and hello to "My Laptop" or "Office PC".',
                 'image' => '/assets/images/blog/device-names.png',
-                'date' => 'December 17, 2024',
+                'date' => 'January 17, 2025',
                 'author' => 'AirToShare Team',
                 'category' => 'UX Update',
                 'read_time' => '2 min read',
@@ -210,8 +208,8 @@ class BlogController extends Controller
                     <p>Your nickname is saved locally, so every time you open AirToShare on that device, it will remember your custom name. No sign-up or account needed!</p>
 
                     <p>This small feature makes a big difference when you\'re managing multiple devices. Give it a try and make AirToShare truly yours!</p>
-                '
-            ]
+                ',
+            ],
         ];
     }
 
@@ -221,6 +219,7 @@ class BlogController extends Controller
     public function index()
     {
         $blogs = $this->getBlogs();
+
         return view('blogs', compact('blogs'));
     }
 
@@ -232,12 +231,12 @@ class BlogController extends Controller
         $blogs = $this->getBlogs();
         $blog = collect($blogs)->firstWhere('slug', $slug);
 
-        if (!$blog) {
+        if (! $blog) {
             abort(404);
         }
 
         // Get related posts (exclude current)
-        $relatedBlogs = collect($blogs)->filter(function($item) use ($slug) {
+        $relatedBlogs = collect($blogs)->filter(function ($item) use ($slug) {
             return $item['slug'] !== $slug;
         })->take(2)->values()->all();
 
