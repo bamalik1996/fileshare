@@ -211,7 +211,7 @@
                 },
                 success: function(response) {
 
-                    gtag('event', 'feedback_submitted', {
+                    safeGtag('event', 'feedback_submitted', {
                         'event_category': 'Feedback',
                         'event_label': 'Feedback Form',
                         'value': 1

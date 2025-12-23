@@ -752,6 +752,10 @@
                     showToast('success', 'Clipboard Synced!',
                         `Added ${clipboardText.length} characters from clipboard`);
 
+                    safeGtag('event', 'paste_clipboard', {
+                        'clipboard_length': clipboardText.length
+                    });
+
                     // Auto-save after small delay
                     setTimeout(() => {
                         handleSaveText();
@@ -1170,6 +1174,10 @@
                     showToast('success', 'Saved!', 'Text saved successfully and synced across devices');
                     loadIpInfo(); // Refresh timer and expiry info
 
+                    safeGtag('event', 'save_text', {
+                        'text_length': text.length
+                    });
+
                     if (text.trim().length > 0) {
                         updateSaveButton('copy');
                     }
@@ -1189,6 +1197,10 @@
 
                 navigator.clipboard.writeText(text).then(() => {
                     showToast('success', 'Success!', 'Text copied to clipboard successfully');
+
+                    safeGtag('event', 'copy_text', {
+                        'text_length': text.length
+                    });
 
                     // Visual feedback
                     const btn = $('#saveBtn');
@@ -1409,7 +1421,7 @@
                     showToast('success', 'Upload Complete!', `${file.name} uploaded successfully`);
                     fetchMedia();
                     loadIpInfo();
-                    gtag('event', 'file_upload', {
+                    safeGtag('event', 'file_upload', {
                         'file_name': file.name,
                         'file_size': file.size,
                         'file_type': file.type
