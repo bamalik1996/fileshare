@@ -4204,3 +4204,27 @@
         justify-content: center;
     }
 }
+/* Force Scrollbar */
+html {
+    overflow-y: scroll !important;
+}
+
+@media screen and (min-width: 1024px) {
+    /* Custom Scrollbar for Desktop */
+    ::-webkit-scrollbar {
+        width: 10px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: var(--bg-secondary);
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: var(--primary-light);
+        border-radius: 5px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: var(--primary-color);
+    }
+}

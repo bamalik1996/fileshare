@@ -1,70 +1,72 @@
-const CACHE_NAME = 'airtoshare-v1';
-const ASSETS_TO_CACHE = [
-    '/',
-    '/site.webmanifest',
-    '/logo.svg',
-    '/icon.svg',
-    '/assets/css/bulma.min.css',
-    '/assets/css/custom.min.css',
-    '/assets/font-awesome/css/all.min.css',
-    '/assets/js/jquery.min.js',
-    '/assets/js/qrcode.min.js'
-];
+/* ===============================
+   Airtoshare Service Worker
+   Optimized for Performance
+   =============================== */
 
-// Install Service Worker
-self.addEventListener('install', (event) => {
+const CACHE_NAME = "airtoshare-v2";
+
+// Cache ONLY minimal PWA / HTML assets
+const CORE_ASSETS = ["/", "/site.webmanifest", "/logo.svg", "/icon.svg"];
+
+/* ---------- INSTALL ---------- */
+self.addEventListener("install", (event) => {
+    self.skipWaiting();
+
     event.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
-            return cache.addAll(ASSETS_TO_CACHE);
+            return cache.addAll(CORE_ASSETS);
         })
     );
 });
 
-// Activate Service Worker
-self.addEventListener('activate', (event) => {
+/* ---------- ACTIVATE ---------- */
+self.addEventListener("activate", (event) => {
     event.waitUntil(
-        caches.keys().then((cacheNames) => {
-            return Promise.all(
-                cacheNames.map((cache) => {
-                    if (cache !== CACHE_NAME) {
-                        return caches.delete(cache);
-                    }
-                })
-            );
-        })
+        caches
+            .keys()
+            .then((keys) =>
+                Promise.all(
+                    keys.map((key) => {
+                        if (key !== CACHE_NAME) {
+                            return caches.delete(key);
+                        }
+                    })
+                )
+            )
+            .then(() => self.clients.claim())
     );
 });
 
-// Fetch Strategy: Stale-While-Revalidate
-self.addEventListener('fetch', (event) => {
-    // Skip cross-origin requests
-    if (!event.request.url.startsWith(self.location.origin)) {
+/* ---------- FETCH ---------- */
+self.addEventListener("fetch", (event) => {
+    const req = event.request;
+    const url = new URL(req.url);
+
+    // Ignore cross-origin
+    if (url.origin !== self.location.origin) return;
+
+    // Ignore non-GET
+    if (req.method !== "GET") return;
+
+    // 🔥 IGNORE STATIC FILES (let browser + nginx handle them)
+    if (
+        url.pathname.startsWith("/assets/") ||
+        url.pathname.endsWith(".css") ||
+        url.pathname.endsWith(".js") ||
+        url.pathname.endsWith(".woff2") ||
+        url.pathname.endsWith(".woff") ||
+        url.pathname.endsWith(".ttf") ||
+        url.pathname.endsWith(".png") ||
+        url.pathname.endsWith(".jpg") ||
+        url.pathname.endsWith(".jpeg") ||
+        url.pathname.endsWith(".svg") ||
+        url.pathname.endsWith(".gif")
+    ) {
         return;
     }
 
-    // Ignore non-GET requests
-    if (event.request.method !== 'GET') {
-        return;
+    // ✅ Handle ONLY HTML navigation requests
+    if (req.mode === "navigate") {
+        event.respondWith(fetch(req).catch(() => caches.match("/")));
     }
-
-    event.respondWith(
-        caches.match(event.request).then((cachedResponse) => {
-            const fetchPromise = fetch(event.request).then((networkResponse) => {
-                // Update cache if successful response AND request is GET
-                if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic' && event.request.method === 'GET') {
-                    const responseToCache = networkResponse.clone();
-                    caches.open(CACHE_NAME).then((cache) => {
-                        cache.put(event.request, responseToCache);
-                    });
-                }
-                return networkResponse;
-            }).catch((error) => {
-                // Network request failed, return nothing or offline fallback
-                console.error('Fetch failed:', error);
-            });
-
-            // Return cached response immediately if available, otherwise wait for network
-            return cachedResponse || fetchPromise;
-        })
-    );
 });
