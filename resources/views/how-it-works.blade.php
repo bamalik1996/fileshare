@@ -5,7 +5,8 @@
     'Learn how to use AirToShare for instant file sharing across devices. Step-by-step guide for
     sharing files and text on the same Wi-Fi network securely.')
 @section('keywords',
-    'file sharing app, transfer files via Wi-Fi, local network transfer, cross-device file share, private file sharing')
+    'file sharing app, transfer files via Wi-Fi, local network transfer, cross-device file share,
+    private file sharing')
 
 @section('schema')
     <script type="application/ld+json">
@@ -131,8 +132,8 @@
                     </div>
                     <div class="feature-title">100% Secure & Private</div>
                     <div class="feature-text">
-                        Your files never leave your local network. No external servers, no data mining,
-                        no privacy concerns. Everything stays within your Wi-Fi network.
+                        Your files never leave your local network. No external servers for files, no personal data mining,
+                        respecting your privacy. Everything stays within your Wi-Fi network.
                     </div>
                 </div>
 
@@ -216,7 +217,7 @@
                     </div>
                     <div>
                         <strong>No Account Required</strong><br>
-                        No personal information collected
+                        Minimal usage data collected for improvement
                     </div>
                 </div>
 
@@ -235,8 +236,7 @@
                         <i class="fas fa-eye-slash"></i>
                     </div>
                     <div>
-                        <strong>No Tracking</strong><br>
-                        No analytics or user tracking
+                        We collect minimal, anonymous data to improve your experience.
                     </div>
                 </div>
             </div>

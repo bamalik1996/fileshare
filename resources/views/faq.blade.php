@@ -1,9 +1,11 @@
 @extends('layouts.app')
 
 @section('title', 'FAQ - Frequently Asked Questions | AirToShare Help Center')
-@section('description', 'Find answers to common questions about AirToShare file sharing. Learn about security, file
+@section('description',
+    'Find answers to common questions about AirToShare file sharing. Learn about security, file
     limits, compatibility, and troubleshooting tips.')
-@section('keywords', 'AirToShare FAQ, file sharing help, troubleshooting, file sharing questions, local network sharing
+@section('keywords',
+    'AirToShare FAQ, file sharing help, troubleshooting, file sharing questions, local network sharing
     help')
 
 @section('schema')
@@ -126,7 +128,7 @@
                         <li>Files stay on your local network only</li>
                         <li>No external server uploads</li>
                         <li>Automatic content expiration</li>
-                        <li>No personal data collection</li>
+                        <li>Minimal, anonymous usage analytics</li>
                     </ul>
                 </div>
             </div>
@@ -166,9 +168,11 @@
                     <i class="fas fa-chevron-down faq-icon"></i>
                 </button>
                 <div class="faq-answer">
-                    <p>No, we don't collect any personal information. AirToShare doesn't require accounts, emails, or any
-                        personal details. We only temporarily store your IP address to associate files with your session,
-                        and this is automatically deleted when content expires.</p>
+                    <p>We collect minimal, anonymous usage data to help us improve the application (like detecting errors or
+                        counting shared files). We do not collect personal identifiers, file contents, or track you across
+                        other websites. AirToShare doesn't require accounts, emails, or any personal details to use.</p>
+                    <p>We only temporarily store your IP address to associate files with your session, and this is
+                        automatically deleted when content expires.</p>
                 </div>
             </div>
 

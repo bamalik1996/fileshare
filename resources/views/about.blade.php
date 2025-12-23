@@ -298,13 +298,13 @@
                             <i class="fas fa-trash-alt"></i>
                         </div>
                         <div class="feature-title">Auto-Cleanup</div>
-                            <strong>Privacy Focused</strong><br>
-                            Minimal analytics, no personal data collection
-                        </div>
+                        <strong>Privacy Focused</strong><br>
+                        Minimal analytics usage for service improvement
                     </div>
                 </div>
             </div>
         </div>
+    </div>
     </div>
 
     <div class="cta-section">
