@@ -4595,3 +4595,59 @@ body {
 [data-theme="dark"] .faq-item:hover {
     background: var(--bg-gradient-light);
 }
+
+/* ===============================================
+   Utility Classes (Replace Inline Styles)
+   =============================================== */
+
+/* Hidden State - For JS Toggled Elements */
+.hidden {
+    display: none !important;
+}
+
+/* Hero Logo Icon */
+.hero-logo {
+    width: 50px;
+    vertical-align: middle;
+}
+
+/* Empty State Icon */
+.empty-state-icon {
+    font-size: 3rem;
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+}
+
+/* Modal Body Container */
+.modal-body {
+    padding: 1rem 0;
+}
+
+/* Modal Title with Error/Danger Color */
+.modal-title-danger {
+    color: var(--error-color);
+}
+
+/* Modal Text Styles */
+.modal-text-primary {
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+}
+
+.modal-text-secondary {
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+}
+
+/* Modal Actions Container */
+.modal-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+}
+
+/* QR Loading Text */
+.qr-loading-text {
+    color: var(--text-secondary);
+}

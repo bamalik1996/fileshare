@@ -206,6 +206,15 @@
 
             gtag('config', 'G-0228GR7HD3');
         </script>
+
+
+<!-- Privacy-friendly analytics by Plausible -->
+<script async src="https://plausible.io/js/pa-8cdA0Luu4zuIH4mrkaAlK.js"></script>
+<script>
+  window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
+  plausible.init()
+</script>
+
     @endif
 
     <script>

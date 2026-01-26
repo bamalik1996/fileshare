@@ -48,9 +48,7 @@
     <!-- Hero Section -->
     <div class="hero-section">
         <h1 class="hero-title">
-            <img src="/icon.svg" style="
-    width: 50px;
-" alt="Air to share logo" />
+            <img src="/icon.svg" class="hero-logo" alt="Air to share logo" />
             AirToShare
         </h1>
         <p class="hero-subtitle">
@@ -64,8 +62,7 @@
         <div class="info-item device-nickname-container">
             <i class="fas fa-laptop"></i>
             <span class="device-nickname" id="deviceNickname" title="Click to edit">My Device</span>
-            <input type="text" class="nickname-input" id="nicknameInput" placeholder="Enter device name"
-                style="display: none;">
+            <input type="text" class="nickname-input hidden" id="nicknameInput" placeholder="Enter device name">
             <button class="nickname-edit-btn" id="editNicknameBtn" title="Edit name">
                 <i class="fas fa-pencil-alt"></i>
             </button>
@@ -82,12 +79,12 @@
             <i class="fas fa-weight-hanging"></i>
             <strong>Max Size:</strong> <span id="maxFileSize">25 MB</span>
         </div>
-        <div class="info-item expiry-countdown" id="expiryCountdown" style="display: none;">
+        <div class="info-item expiry-countdown hidden" id="expiryCountdown">
             <i class="fas fa-hourglass-half"></i>
             <strong>Expires in:</strong>
             <span id="countdownTimer" class="countdown-badge">--:--:--</span>
         </div>
-        <div class="info-item last-activity" id="lastActivity" style="display: none;">
+        <div class="info-item last-activity hidden" id="lastActivity">
             <i class="fas fa-clock"></i>
             <strong>Last sync:</strong>
             <span id="lastActivityTime">Just now</span>
@@ -129,19 +126,19 @@
                             <i class="fas fa-clipboard"></i>
                             <span>Paste Clipboard</span>
                         </button>
-                        <button class="modern-btn danger" id="clearBtn" style="display: none;">
+                        <button class="modern-btn danger hidden" id="clearBtn">
                             <i class="fas fa-trash"></i>
                             Clear
                         </button>
                         <button class="modern-btn" id="saveBtn">
                             {{-- <i class="fas fa-save"></i> --}}
                             <span id="saveBtnText">Save</span>
-                            <div class="loading-spinner" id="saveLoader" style="display: none;"></div>
+                            <div class="loading-spinner hidden" id="saveLoader"></div>
                         </button>
                     </div>
                 </div>
 
-                <div class="links-container" id="linksContainer" style="display: none;">
+                <div class="links-container hidden" id="linksContainer">
                     <strong><i class="fas fa-link"></i> Detected Links:</strong>
                     <div id="linksList"></div>
                 </div>
@@ -177,7 +174,7 @@
   application/zip,
   video/*,
   audio/*"
-                        style="display: none;">
+                        class="hidden">
 
                     <div class="progress-container" id="progressContainer">
                         <div class="progress-bar">
@@ -197,7 +194,7 @@
                 </div>
                 <br />
                 <!-- File Controls -->
-                <div class="file-controls" id="fileControls" style="display: none;">
+                <div class="file-controls hidden" id="fileControls">
                     <div class="selection-info">
                         <button class="select-all-btn" id="selectAllBtn">
                             <i class="fas fa-check-square"></i>
@@ -214,7 +211,7 @@
                             <i class="fas fa-envelope"></i>
                             Email
                         </button> --}}
-                        <button class="modern-btn danger" id="removeAllBtn" style="display: none;">
+                        <button class="modern-btn danger hidden" id="removeAllBtn">
                             <i class="fas fa-trash-alt"></i>
                             Remove All Files
                         </button>
@@ -222,8 +219,7 @@
                 </div>
                 <div class="file-grid" id="fileGrid">
                     <div class="empty-state">
-                        <i class="fas fa-folder-open"
-                            style="font-size: 3rem; color: var(--text-secondary); margin-bottom: 1rem;"></i>
+                        <i class="fas fa-folder-open empty-state-icon"></i>
                         <p>No files uploaded yet. Start by dragging files above!</p>
                     </div>
                 </div>
@@ -259,23 +255,23 @@
 
                 <div class="preview-container" id="previewContainer">
                     <!-- Image Preview -->
-                    <img class="preview-image" id="previewImage" src="" alt="Preview" style="display: none;">
+                    <img class="preview-image hidden" id="previewImage" src="" alt="Preview">
 
                     <!-- Video Preview -->
-                    <video class="preview-video" id="previewVideo" controls style="display: none;">
+                    <video class="preview-video hidden" id="previewVideo" controls>
                         Your browser does not support the video tag.
                     </video>
 
                     <!-- Audio Preview -->
-                    <audio class="preview-audio" id="previewAudio" controls style="display: none;">
+                    <audio class="preview-audio hidden" id="previewAudio" controls>
                         Your browser does not support the audio tag.
                     </audio>
 
                     <!-- PDF Preview -->
-                    <iframe class="preview-pdf" id="previewPdf" style="display: none;"></iframe>
+                    <iframe class="preview-pdf hidden" id="previewPdf"></iframe>
 
                     <!-- Text/Code Preview -->
-                    <div class="preview-text" id="previewText" style="display: none;">
+                    <div class="preview-text hidden" id="previewText">
                         <div class="preview-text-header">
                             <span class="preview-language" id="previewLanguage">Text</span>
                             <button class="preview-copy-btn" id="previewCopyCodeBtn" title="Copy to clipboard">
@@ -286,7 +282,7 @@
                     </div>
 
                     <!-- Document/Other Files Preview -->
-                    <div class="preview-document" id="previewDocument" style="display: none;">
+                    <div class="preview-document hidden" id="previewDocument">
                         <i class="fas fa-file-alt preview-doc-icon"></i>
                         <p>Preview not available for this file type</p>
                         <button class="modern-btn" id="previewDocDownloadBtn">
@@ -337,7 +333,7 @@
                     <button type="submit" class="modern-btn" id="sendEmailBtn">
                         <i class="fas fa-paper-plane"></i>
                         <span id="sendEmailText">Send Email</span>
-                        <div class="loading-spinner" id="emailLoader" style="display: none;"></div>
+                        <div class="loading-spinner hidden" id="emailLoader"></div>
                     </button>
                     <button class="download-btn danger-btn" id="removeAllBtn">
                         <i class="fas fa-trash-alt"></i>
@@ -352,7 +348,7 @@
     <div class="modal-overlay" id="removeAllModal">
         <div class="modal-content">
             <div class="modal-header">
-                <div class="modal-title" style="color: var(--error-color);">
+                <div class="modal-title modal-title-danger">
                     <i class="fas fa-exclamation-triangle"></i>
                     Remove All Files
                 </div>
@@ -360,15 +356,15 @@
                     <i class="fas fa-times"></i>
                 </button>
             </div>
-            <div style="padding: 1rem 0;">
-                <p style="color: var(--text-primary); font-size: 1.1rem; margin-bottom: 1rem;">
+            <div class="modal-body">
+                <p class="modal-text-primary">
                     <strong>Are you sure you want to remove all files?</strong>
                 </p>
-                <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                <p class="modal-text-secondary">
                     This action will permanently delete all <span id="totalFilesCount">0</span> files from your session.
                     This cannot be undone.
                 </p>
-                <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                <div class="modal-actions">
                     <button class="modern-btn secondary" id="cancelRemoveAll">
                         <i class="fas fa-times"></i>
                         Cancel
@@ -376,7 +372,7 @@
                     <button class="modern-btn danger" id="confirmRemoveAll">
                         <i class="fas fa-trash-alt"></i>
                         <span id="removeAllText">Remove All Files</span>
-                        <div class="loading-spinner" id="removeAllLoader" style="display: none;"></div>
+                        <div class="loading-spinner hidden" id="removeAllLoader"></div>
                     </button>
                 </div>
             </div>
@@ -407,7 +403,7 @@
                         <strong>One-Time Download</strong>
                         <small>File will be deleted after first download</small>
                     </div>
-                    <i class="fas fa-lock one-time-badge" style="display: none;" id="oneTimeBadge"></i>
+                    <i class="fas fa-lock one-time-badge hidden" id="oneTimeBadge"></i>
                 </div>
 
                 <div class="share-link-container">
@@ -418,7 +414,7 @@
                     </button>
                 </div>
 
-                <div class="share-link-note" id="oneTimeNote" style="display: none;">
+                <div class="share-link-note hidden" id="oneTimeNote">
                     <i class="fas fa-info-circle"></i>
                     This link will expire after a single download
                 </div>
@@ -894,7 +890,7 @@
                     correctLevel: QRCode.CorrectLevel.H
                 });
             } else {
-                qrcodeDiv.innerHTML = '<p style="color: var(--text-secondary);">QR Code loading...</p>';
+                qrcodeDiv.innerHTML = '<p class=\"qr-loading-text\">QR Code loading...</p>';
             }
         }
 
@@ -1644,7 +1640,7 @@
             if (!files || Object.keys(files).length === 0) {
                 grid.addClass('empty').html(`
             <div class="empty-state">
-                <i class="fas fa-folder-open" style="font-size: 3rem; color: var(--text-secondary); margin-bottom: 1rem;"></i>
+                <i class="fas fa-folder-open empty-state-icon"></i>
                 <p>No files uploaded yet. Start by dragging files above!</p>
             </div>
         `);
