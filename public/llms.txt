@@ -1,0 +1,43 @@
+# Air To Share
+
+> Instant file and text sharing between devices on the same network - no registration required.
+
+Air To Share is a simple, fast, and private way to share files and text between your devices. Works on any device with a web browser - phones, tablets, laptops, or desktops.
+
+## Features
+
+- **Instant File Sharing**: Upload and share files across devices instantly
+- **Text Sharing**: Share text snippets and notes between devices
+- **QR Code Access**: Scan QR code to quickly access shared content on mobile
+- **No Registration**: Start sharing immediately without creating an account
+- **Privacy First**: Files are stored temporarily and auto-deleted
+- **Cross-Platform**: Works on any device with a modern web browser
+- **One-Time Downloads**: Option for secure one-time file downloads
+
+## Pages
+
+- [Home](https://airtoshare.app/): Main file and text sharing interface
+- [How It Works](https://airtoshare.app/how-it-works): Step-by-step guide on using Air To Share
+- [FAQ](https://airtoshare.app/faq): Frequently asked questions
+- [Feedback](https://airtoshare.app/feedback): Submit feedback and suggestions
+- [Blog](https://airtoshare.app/blog): Tips, updates, and articles about file sharing
+
+## Technology Stack
+
+- **Backend**: Laravel (PHP)
+- **Frontend**: Blade Templates, JavaScript
+- **Storage**: Local file system with auto-cleanup
+- **Features**: Progressive Web App (PWA) support
+
+## How It Works
+
+1. Open Air To Share on your devices
+2. Devices on the same network are automatically connected via IP
+3. Upload files or enter text to share
+4. Access shared content on any connected device
+5. Scan QR code for quick mobile access
+6. Files are automatically cleaned up after expiry
+
+## Contact
+
+Website: https://airtoshare.app
