@@ -59,5 +59,4 @@ class SitemapController extends Controller
         return response($content, 200)
             ->header('Content-Type', 'text/xml');
     }
-    }
 }
