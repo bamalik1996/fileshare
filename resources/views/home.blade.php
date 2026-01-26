@@ -451,6 +451,143 @@
             </div>
         </div>
     </div>
+
+    <!-- SEO Content Sections -->
+    <div class="seo-content">
+        
+        <!-- What is AirToShare Section -->
+        <section class="seo-section" id="what-is-airtoshare">
+            <div class="seo-section-inner">
+                <h2 class="seo-heading">
+                    <i class="fas fa-info-circle"></i>
+                    What is AirToShare?
+                </h2>
+                <div class="seo-text">
+                    <p>
+                        <strong>AirToShare</strong> is a free, instant file and text sharing platform designed to make transferring content between your devices effortless. Whether you're moving photos from your phone to your laptop, sharing documents with a colleague sitting next to you, or quickly copying text between devices, AirToShare provides the fastest and simplest solution without requiring any account registration, app installation, or cloud uploads.
+                    </p>
+                    <p>
+                        Built with privacy at its core, AirToShare operates on your local network, meaning your files never leave your Wi-Fi environment. This approach ensures lightning-fast transfers while keeping your sensitive data secure. Simply open AirToShare on any device with a web browser, and you're ready to share instantly. No complicated setup, no waiting for uploads to complete – just seamless, peer-to-peer sharing that works the way it should.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- How It Works Section -->
+        <section class="seo-section" id="how-it-works-section">
+            <div class="seo-section-inner">
+                <h2 class="seo-heading">
+                    <i class="fas fa-cogs"></i>
+                    How AirToShare Works
+                </h2>
+                <div class="seo-steps">
+                    <div class="seo-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h3>Open on Any Device</h3>
+                            <p>Visit AirToShare on your phone, tablet, laptop, or desktop. No downloads or installations required – it works directly in your web browser on any platform including Windows, macOS, Linux, iOS, and Android.</p>
+                        </div>
+                    </div>
+                    <div class="seo-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h3>Connect via Same Network</h3>
+                            <p>Devices on the same Wi-Fi network are automatically connected using your IP address. Use the QR code feature to quickly open AirToShare on your mobile device without typing any URL.</p>
+                        </div>
+                    </div>
+                    <div class="seo-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h3>Share Instantly</h3>
+                            <p>Drag and drop files or paste text, and your content is immediately available on all connected devices. Download files individually or as a ZIP archive. It's that simple – no accounts, no cloud uploads, no waiting.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Use Cases Section -->
+        <section class="seo-section" id="use-cases">
+            <div class="seo-section-inner">
+                <h2 class="seo-heading">
+                    <i class="fas fa-users"></i>
+                    Who Uses AirToShare?
+                </h2>
+                <div class="use-cases-grid">
+                    <div class="use-case-card">
+                        <div class="use-case-icon">
+                            <i class="fas fa-code"></i>
+                        </div>
+                        <h3>Developers & Designers</h3>
+                        <p>Quickly share code snippets, design files, screenshots, and assets between your development machine and testing devices. Perfect for responsive testing and rapid prototyping workflows.</p>
+                    </div>
+                    <div class="use-case-card">
+                        <div class="use-case-icon">
+                            <i class="fas fa-building"></i>
+                        </div>
+                        <h3>Office Teams</h3>
+                        <p>Share documents, presentations, and meeting notes with colleagues instantly during meetings. No need to email files or use complicated file sharing systems – just share and go.</p>
+                    </div>
+                    <div class="use-case-card">
+                        <div class="use-case-icon">
+                            <i class="fas fa-home"></i>
+                        </div>
+                        <h3>Home Users</h3>
+                        <p>Transfer photos from your phone to your computer, share recipes with family members, or move files between your personal devices without any cables or Bluetooth pairing hassles.</p>
+                    </div>
+                    <div class="use-case-card">
+                        <div class="use-case-icon">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <h3>Students & Educators</h3>
+                        <p>Share study materials, assignments, research papers, and lecture notes between devices during study sessions or classroom activities. Perfect for collaborative learning environments.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Security & Privacy Section -->
+        <section class="seo-section" id="security-privacy">
+            <div class="seo-section-inner">
+                <h2 class="seo-heading">
+                    <i class="fas fa-shield-alt"></i>
+                    Security & Privacy
+                </h2>
+                <div class="security-features">
+                    <div class="security-item">
+                        <i class="fas fa-network-wired"></i>
+                        <div>
+                            <h3>Local Network Only</h3>
+                            <p>Your files stay within your local Wi-Fi network and are never uploaded to external cloud servers. This provides both faster transfer speeds and enhanced privacy protection.</p>
+                        </div>
+                    </div>
+                    <div class="security-item">
+                        <i class="fas fa-clock"></i>
+                        <div>
+                            <h3>Automatic Expiration</h3>
+                            <p>All shared files are automatically deleted after a set period, ensuring your data doesn't linger on servers. You're always in control of your content lifecycle.</p>
+                        </div>
+                    </div>
+                    <div class="security-item">
+                        <i class="fas fa-lock"></i>
+                        <div>
+                            <h3>One-Time Downloads</h3>
+                            <p>Enable one-time download links for sensitive files. Once downloaded, the link becomes invalid, providing an extra layer of security for confidential documents.</p>
+                        </div>
+                    </div>
+                    <div class="security-item">
+                        <i class="fas fa-user-shield"></i>
+                        <div>
+                            <h3>No Account Required</h3>
+                            <p>We don't collect personal information or require account registration. Your privacy is protected by design – no tracking, no data harvesting, no strings attached.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             initializeApp();
@@ -463,12 +600,60 @@
             fetchText();
             fetchMedia();
             setupEventListeners();
+            setupFaqAccordion();
 
             // Restore saved active tab from localStorage
             const savedTab = localStorage.getItem('airtoshare-active-tab');
             if (savedTab && (savedTab === 'text' || savedTab === 'file')) {
                 switchTab(savedTab);
             }
+        }
+
+        // FAQ Accordion Functionality
+        function setupFaqAccordion() {
+            const faqItems = document.querySelectorAll('.faq-item');
+            
+            faqItems.forEach(item => {
+                const question = item.querySelector('.faq-question');
+                const answer = item.querySelector('.faq-answer');
+                
+                // Initially hide all answers
+                answer.style.maxHeight = '0';
+                answer.style.overflow = 'hidden';
+                answer.style.transition = 'max-height 0.3s ease, padding 0.3s ease';
+                answer.style.paddingTop = '0';
+                answer.style.paddingBottom = '0';
+                
+                question.style.cursor = 'pointer';
+                
+                question.addEventListener('click', function() {
+                    const isOpen = item.classList.contains('active');
+                    
+                    // Close all other items
+                    faqItems.forEach(otherItem => {
+                        if (otherItem !== item) {
+                            otherItem.classList.remove('active');
+                            const otherAnswer = otherItem.querySelector('.faq-answer');
+                            otherAnswer.style.maxHeight = '0';
+                            otherAnswer.style.paddingTop = '0';
+                            otherAnswer.style.paddingBottom = '0';
+                        }
+                    });
+                    
+                    // Toggle current item
+                    if (isOpen) {
+                        item.classList.remove('active');
+                        answer.style.maxHeight = '0';
+                        answer.style.paddingTop = '0';
+                        answer.style.paddingBottom = '0';
+                    } else {
+                        item.classList.add('active');
+                        answer.style.maxHeight = answer.scrollHeight + 20 + 'px';
+                        answer.style.paddingTop = '0.5rem';
+                        answer.style.paddingBottom = '0';
+                    }
+                });
+            });
         }
 
         function setupEventListeners() {
