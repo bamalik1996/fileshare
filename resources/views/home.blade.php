@@ -6,8 +6,7 @@
     same local Wi-Fi network. No cloud uploads, no logins required, and completely free. Fast, private, and simple.')
 
 @section('keywords',
-    'file sharing, instant sharing, local network, Wi-Fi sharing, cross-device, secure sharing,
-    peer-to-peer, no account required')
+    'file sharing, instant sharing, share text online, share text online free, text share online, online text share, share text file online, online share text, how to share large text files online, how to share text online')
 
 @section('schema')
     <script type="application/ld+json">
@@ -460,7 +459,7 @@
                 </h2>
                 <div class="seo-text">
                     <p>
-                        <strong>AirToShare</strong> is a free, instant file and text sharing platform designed to make transferring content between your devices effortless. Whether you're moving photos from your phone to your laptop, sharing documents with a colleague sitting next to you, or quickly copying text between devices, AirToShare provides the fastest and simplest solution without requiring any account registration, app installation, or cloud uploads.
+                        <strong>AirToShare</strong> is a free, instant file and text sharing platform designed to make transferring content between your devices effortless. If you want to <strong>share text online free</strong> or need a quick <strong>online text share</strong> tool, we've got you covered. Whether you're moving photos from your phone to your laptop, sharing documents with a colleague, or looking to <strong>share text file online</strong> securely, AirToShare provides the fastest and simplest solution. Learn <strong>how to share large text files online</strong>, understand how to <strong>text share online</strong> seamlessly, or simply <strong>share text online</strong> between devices without requiring any account registration, app installation, or cloud uploads.
                     </p>
                     <p>
                         Built with privacy at its core, AirToShare operates on your local network, meaning your files never leave your Wi-Fi environment. This approach ensures lightning-fast transfers while keeping your sensitive data secure. Simply open AirToShare on any device with a web browser, and you're ready to share instantly. No complicated setup, no waiting for uploads to complete – just seamless, peer-to-peer sharing that works the way it should.
