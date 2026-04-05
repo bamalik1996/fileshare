@@ -5,8 +5,7 @@
     'Find answers to common questions about AirToShare file sharing. Learn about security, file
     limits, compatibility, and troubleshooting tips.')
 @section('keywords',
-    'AirToShare FAQ, file sharing help, troubleshooting, file sharing questions, local network sharing
-    help')
+    'AirToShare FAQ, file sharing help, share text online, share text online free, text share online, online text share, share text file online, online share text, how to share large text files online, how to share text online')
 
 @section('schema')
     <script type="application/ld+json">
@@ -52,6 +51,30 @@
       "acceptedAnswer": {
         "@@type": "Answer",
         "text": "No account is required! AirToShare works instantly without any registration. Just connect to the same Wi-Fi network and start sharing."
+      }
+    },
+    {
+      "@@type": "Question",
+      "name": "How to share text online free?",
+      "acceptedAnswer": {
+        "@@type": "Answer",
+        "text": "You can easily share text online free with AirToShare. Simply paste your text into the text sharing tool and a secure session will be created instantly without any registration."
+      }
+    },
+    {
+      "@@type": "Question",
+      "name": "How to share large text files online?",
+      "acceptedAnswer": {
+        "@@type": "Answer",
+        "text": "When you need to know how to share large text files online, AirToShare offers a simple solution. You can upload and share text file online up to 10MB per file securely between devices."
+      }
+    },
+    {
+      "@@type": "Question",
+      "name": "What is the best method to share text online?",
+      "acceptedAnswer": {
+        "@@type": "Answer",
+        "text": "To quickly online share text, use our text sharing feature. It's the fastest way to online text share between your devices. Just paste the text and it's securely shared."
       }
     }
   ]
@@ -270,6 +293,36 @@
                 </div>
             </div>
 
+            <div class="faq-item" data-category="usage">
+                <button class="faq-question">
+                    <span>How do I share text online free?</span>
+                    <i class="fas fa-chevron-down faq-icon"></i>
+                </button>
+                <div class="faq-answer">
+                    <p>You can seamlessly <strong>share text online free</strong> with AirToShare. Simply paste your text into our dedicated text sharing tab to <strong>share text online</strong> across your local network without any hidden fees or registration requirements. It's an instant and secure solution.</p>
+                </div>
+            </div>
+
+            <div class="faq-item" data-category="usage">
+                <button class="faq-question">
+                    <span>How to share large text files online?</span>
+                    <i class="fas fa-chevron-down faq-icon"></i>
+                </button>
+                <div class="faq-answer">
+                    <p>If you are wondering <strong>how to share large text files online</strong>, AirToShare makes it incredibly easy. You can securely <strong>share text file online</strong> with file sizes up to 10MB per file directly between devices. Whether it's code snippets, log files, or extensive notes, simply upload them to our platform.</p>
+                </div>
+            </div>
+
+            <div class="faq-item" data-category="usage">
+                <button class="faq-question">
+                    <span>What is the best way for online text share?</span>
+                    <i class="fas fa-chevron-down faq-icon"></i>
+                </button>
+                <div class="faq-answer">
+                    <p>For a quick <strong>online text share</strong>, AirToShare provides an instant text sharing feature. It's the most efficient way to <strong>text share online</strong> and <strong>online share text</strong> between your phone, tablet, and computer. Just copy the text, paste it into our tool, and it will be available instantly to all connected devices.</p>
+                </div>
+            </div>
+            
             <!-- Technical Issues Questions -->
             <div class="faq-item" data-category="technical">
                 <button class="faq-question">
