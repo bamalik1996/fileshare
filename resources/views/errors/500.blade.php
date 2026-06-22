@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('title', '500 - Server Error | AirToShare')
+@section('robots', 'noindex, nofollow')
 @section('description', 'Internal server error on AirToShare. Our team has been notified and is working to fix this issue.')
 @section('keywords', 'AirToShare 500, server error, technical issue, file sharing')
 

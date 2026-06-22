@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'Feedback & Support - AirToShare | Contact Us')
+@section('breadcrumb_label', 'Feedback')
 @section('description',
     'Send feedback, report bugs, or request features for AirToShare. Our support team is here to
     help improve your file sharing experience.')
@@ -29,262 +30,283 @@
 
 @section('content')
 
+<div class="feedback-page">
 
-    <div class="feedback-hero">
-        <h1 class="feedback-title">
-            <i class="fas fa-comment-dots"></i>
-            Share Your Feedback
-        </h1>
-        <p class="feedback-subtitle">
-            Help us improve AirToShare! Your feedback is valuable and helps us create a better experience for everyone.
+    <header class="feedback-page-hero">
+        <span class="feedback-page-badge"><i class="fas fa-comment-dots" aria-hidden="true"></i> Contact us</span>
+        <h1 class="feedback-page-title">Share your feedback</h1>
+        <p class="feedback-page-lead">
+            Report a bug, suggest a feature, or tell us what we can improve.
+            Every message helps make AirToShare better.
         </p>
-    </div>
+    </header>
 
-    <div class="modern-card">
-        <div class="feedback-form">
-            <div class="success-message" id="successMessage">
-                <i class="fas fa-check-circle" style="font-size: 1.5rem; margin-bottom: 0.5rem;"></i>
-                <div>Thank you for your feedback! We appreciate your input and will review it carefully.</div>
+    <div class="feedback-page-card">
+        <div class="feedback-page-alert feedback-page-alert--success" id="successMessage" role="status" aria-live="polite" hidden>
+            <i class="fas fa-check-circle" aria-hidden="true"></i>
+            <span id="successMessageText">Thank you for your feedback! We appreciate your input and will review it carefully.</span>
+        </div>
+
+        <div class="feedback-page-alert feedback-page-alert--error" id="errorMessage" role="alert" aria-live="assertive" hidden>
+            <i class="fas fa-exclamation-circle" aria-hidden="true"></i>
+            <span id="errorMessageText">Please fill in all required fields before submitting.</span>
+        </div>
+
+        <form id="feedbackForm" class="feedback-page-form" novalidate>
+            <div class="feedback-page-field">
+                <span class="form-label" id="feedbackTypeLabel">What type of feedback do you have?</span>
+                <div class="feedback-page-types" role="radiogroup" aria-labelledby="feedbackTypeLabel">
+                    <button type="button" class="feedback-page-type" data-type="bug" role="radio" aria-checked="false">
+                        <span class="feedback-page-type-icon"><i class="fas fa-bug" aria-hidden="true"></i></span>
+                        <span class="feedback-page-type-title">Bug report</span>
+                        <span class="feedback-page-type-desc">Something isn't working</span>
+                    </button>
+                    <button type="button" class="feedback-page-type" data-type="feature" role="radio" aria-checked="false">
+                        <span class="feedback-page-type-icon"><i class="fas fa-lightbulb" aria-hidden="true"></i></span>
+                        <span class="feedback-page-type-title">Feature request</span>
+                        <span class="feedback-page-type-desc">Suggest something new</span>
+                    </button>
+                    <button type="button" class="feedback-page-type" data-type="improvement" role="radio" aria-checked="false">
+                        <span class="feedback-page-type-icon"><i class="fas fa-chart-line" aria-hidden="true"></i></span>
+                        <span class="feedback-page-type-title">Improvement</span>
+                        <span class="feedback-page-type-desc">Make existing features better</span>
+                    </button>
+                    <button type="button" class="feedback-page-type" data-type="general" role="radio" aria-checked="false">
+                        <span class="feedback-page-type-icon"><i class="fas fa-comment" aria-hidden="true"></i></span>
+                        <span class="feedback-page-type-title">General</span>
+                        <span class="feedback-page-type-desc">Other feedback</span>
+                    </button>
+                </div>
+                <input type="hidden" id="feedbackType" name="type" value="">
+                <p class="feedback-page-hint" id="feedbackTypeHint">Select a category to continue</p>
             </div>
 
-            <div class="error-message" id="errorMessage">
-                <i class="fas fa-exclamation-circle" style="font-size: 1.5rem; margin-bottom: 0.5rem;"></i>
-                <div>Please fill in all required fields before submitting.</div>
+            <div class="feedback-page-field">
+                <label for="email" class="form-label">
+                    Email address <span class="feedback-page-required" aria-hidden="true">*</span>
+                </label>
+                <input type="email" id="email" name="email" class="form-input feedback-page-input"
+                    placeholder="you@example.com"
+                    value="{{ auth('account')->check() ? auth('account')->user()->email : '' }}"
+                    autocomplete="email" required>
             </div>
 
-            <form id="feedbackForm">
-                <div class="form-group">
-                    <label class="form-label">What type of feedback do you have?</label>
-                    <div class="feedback-types">
-                        <div class="feedback-type" data-type="bug">
-                            <div class="feedback-type-icon">
-                                <i class="fas fa-bug"></i>
-                            </div>
-                            <div class="feedback-type-title">Bug Report</div>
-                            <div class="feedback-type-desc">Something isn't working</div>
-                        </div>
-                        <div class="feedback-type" data-type="feature">
-                            <div class="feedback-type-icon">
-                                <i class="fas fa-lightbulb"></i>
-                            </div>
-                            <div class="feedback-type-title">Feature Request</div>
-                            <div class="feedback-type-desc">Suggest new features</div>
-                        </div>
-                        <div class="feedback-type" data-type="improvement">
-                            <div class="feedback-type-icon">
-                                <i class="fas fa-chart-line"></i>
-                            </div>
-                            <div class="feedback-type-title">Improvement</div>
-                            <div class="feedback-type-desc">Make existing features better</div>
-                        </div>
-                        <div class="feedback-type" data-type="general">
-                            <div class="feedback-type-icon">
-                                <i class="fas fa-comment"></i>
-                            </div>
-                            <div class="feedback-type-title">General</div>
-                            <div class="feedback-type-desc">Other feedback</div>
-                        </div>
-                    </div>
-                    <input type="hidden" id="feedbackType" name="type" required>
-                </div>
+            <div class="feedback-page-field">
+                <label for="subject" class="form-label">
+                    Subject <span class="feedback-page-required" aria-hidden="true">*</span>
+                </label>
+                <input type="text" id="subject" name="subject" class="form-input feedback-page-input"
+                    placeholder="Brief summary of your feedback" maxlength="200" required>
+            </div>
 
-                <div class="form-group">
-                    <label for="email" class="form-label">
-                        Email Address <span style="color: var(--error-color);">*</span>
-                    </label>
-                    <input type="email" id="email" name="email" class="form-input"
-                        placeholder="your.email@example.com" required>
-                </div>
+            <div class="feedback-page-field">
+                <label for="message" class="form-label">
+                    Message <span class="feedback-page-required" aria-hidden="true">*</span>
+                </label>
+                <textarea id="message" name="message" class="form-textarea feedback-page-textarea"
+                    placeholder="Tell us more. For bugs, include steps to reproduce, browser/device, and what you expected to happen."
+                    rows="6" required></textarea>
+            </div>
 
-                <div class="form-group">
-                    <label for="subject" class="form-label">
-                        Subject <span style="color: var(--error-color);">*</span>
-                    </label>
-                    <input type="text" id="subject" name="subject" class="form-input"
-                        placeholder="Brief description of your feedback" required>
-                </div>
+            <div class="feedback-page-field feedback-page-captcha">
+                <div class="g-recaptcha" data-sitekey="{{ config('app.recpatcha.RECAPTCHA_SITE_KEY') }}"></div>
+                @if ($errors->has('g-recaptcha-response'))
+                    <p class="feedback-page-field-error">{{ $errors->first('g-recaptcha-response') }}</p>
+                @endif
+            </div>
 
-                <div class="form-group">
-                    <label for="message" class="form-label">
-                        Message <span style="color: var(--error-color);">*</span>
-                    </label>
-                    <textarea id="message" name="message" class="form-textarea"
-                        placeholder="Please provide detailed feedback. For bug reports, include steps to reproduce the issue." required></textarea>
-                </div>
-                <div class="form-group">
-
-                    {{-- Google reCAPTCHA Widget --}}
-                    <div class="g-recaptcha mb-2" data-sitekey="{{ config('app.recpatcha.RECAPTCHA_SITE_KEY') }}"></div>
-
-                    {{-- Show error --}}
-                    @if ($errors->has('g-recaptcha-response'))
-                        <div class="text-danger">{{ $errors->first('g-recaptcha-response') }}</div>
-                    @endif
-                </div>
-
-                <button type="submit" class="form-button" id="submitBtn">
-                    <i class="fas fa-paper-plane"></i>
-                    <span id="submitText">Send Feedback</span>
-                    <div class="loading-spinner" id="submitLoader" style="display: none;"></div>
-                </button>
-            </form>
-        </div>
+            <button type="submit" class="modern-btn feedback-page-submit" id="submitBtn">
+                <i class="fas fa-paper-plane" id="submitIcon" aria-hidden="true"></i>
+                <span id="submitText">Send feedback</span>
+                <span class="loading-spinner feedback-page-spinner" id="submitLoader" hidden aria-hidden="true"></span>
+            </button>
+        </form>
     </div>
 
-    <div class="contact-info">
-        <h3 class="contact-title">
-            <i class="fas fa-envelope"></i>
-            Other Ways to Reach Us
-        </h3>
-        <p class="contact-text">
-            Prefer a different way to get in touch? We're here to help through multiple channels.
-        </p>
-        <div class="contact-methods">
-            <a href="mailto:support@airtoshare.com" class="contact-method">
-                <i class="fas fa-envelope"></i>
-                support@airtoshare.com
+    <section class="feedback-page-aside" aria-labelledby="feedback-aside-heading">
+        <h2 class="feedback-page-aside-heading" id="feedback-aside-heading">
+            <i class="fas fa-life-ring" aria-hidden="true"></i>
+            Other ways to reach us
+        </h2>
+        <div class="feedback-page-channels">
+            <a href="mailto:support@airtoshare.com" class="feedback-page-channel">
+                <span class="feedback-page-channel-icon"><i class="fas fa-envelope" aria-hidden="true"></i></span>
+                <span class="feedback-page-channel-label">support@airtoshare.com</span>
             </a>
-            <a href="https://web.facebook.com/airtoshare/" target="_blank" class="contact-method">
-                <i class="fab fa-facebook-f"></i>
-                Facebook Page
+            <a href="https://web.facebook.com/airtoshare/" target="_blank" rel="noopener noreferrer" class="feedback-page-channel">
+                <span class="feedback-page-channel-icon"><i class="fab fa-facebook-f" aria-hidden="true"></i></span>
+                <span class="feedback-page-channel-label">Facebook</span>
             </a>
-            <a href="https://github.com/airtoshare" target="_blank" class="contact-method">
-                <i class="fab fa-github"></i>
-                GitHub Issues
+            <a href="https://github.com/airtoshare" target="_blank" rel="noopener noreferrer" class="feedback-page-channel">
+                <span class="feedback-page-channel-icon"><i class="fab fa-github" aria-hidden="true"></i></span>
+                <span class="feedback-page-channel-label">GitHub</span>
             </a>
-            <a href="https://x.com/airtoshare" target="_blank" class="contact-method">
-                <i class="fab fa-twitter"></i>
-                @AirToShare
+            <a href="https://x.com/airtoshare" target="_blank" rel="noopener noreferrer" class="feedback-page-channel">
+                <span class="feedback-page-channel-icon"><i class="fab fa-twitter" aria-hidden="true"></i></span>
+                <span class="feedback-page-channel-label">@AirToShare</span>
             </a>
         </div>
+    </section>
+
+    <div class="feedback-page-footer-note">
+        <p>Looking for quick answers? Check the <a href="{{ url('/faq') }}">FAQ</a> first — many common questions are already covered there.</p>
     </div>
-    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
+</div>
 
-            setupFeedbackForm();
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
+<script>
+(function () {
+    'use strict';
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var typeButtons = document.querySelectorAll('.feedback-page-type');
+        var typeInput = document.getElementById('feedbackType');
+        var typeHint = document.getElementById('feedbackTypeHint');
+        var form = document.getElementById('feedbackForm');
+
+        typeButtons.forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                typeButtons.forEach(function (b) {
+                    b.classList.remove('is-selected');
+                    b.setAttribute('aria-checked', 'false');
+                });
+                btn.classList.add('is-selected');
+                btn.setAttribute('aria-checked', 'true');
+                typeInput.value = btn.getAttribute('data-type') || '';
+                if (typeHint) {
+                    typeHint.textContent = 'Selected: ' + btn.querySelector('.feedback-page-type-title').textContent;
+                }
+            });
         });
 
-        function setupFeedbackForm() {
-            // Feedback type selection
-            $('.feedback-type').click(function() {
-                $('.feedback-type').removeClass('selected');
-                $(this).addClass('selected');
-                $('#feedbackType').val($(this).data('type'));
-            });
-
-            // Form submission
-            $('#feedbackForm').submit(function(e) {
-                e.preventDefault();
+        if (form) {
+            form.addEventListener('submit', function (event) {
+                event.preventDefault();
                 submitFeedback();
             });
         }
+    });
 
-        function submitFeedback() {
-            const form = $('#feedbackForm');
-            const submitBtn = $('#submitBtn');
-            const submitText = $('#submitText');
-            const submitLoader = $('#submitLoader');
+    function submitFeedback() {
+        var form = document.getElementById('feedbackForm');
+        var submitBtn = document.getElementById('submitBtn');
+        var submitText = document.getElementById('submitText');
+        var submitIcon = document.getElementById('submitIcon');
+        var submitLoader = document.getElementById('submitLoader');
 
-            // Validate form
-            if (!validateForm()) {
-                showMessage('error', 'Please fill in all required fields.');
-                return;
-            }
+        if (!validateForm()) {
+            showMessage('error', 'Please fill in all required fields and complete the captcha.');
+            return;
+        }
 
-            // Show loading state
-            submitBtn.prop('disabled', true);
-            submitText.hide();
-            submitLoader.show();
+        submitBtn.disabled = true;
+        submitText.hidden = true;
+        if (submitIcon) submitIcon.hidden = true;
+        submitLoader.hidden = false;
 
-            // Get form data
-            const formData = form.serialize();
+        var formData = window.jQuery ? window.jQuery(form).serialize() : new URLSearchParams(new FormData(form)).toString();
 
-            // AJAX request
-            $.ajax({
-                url: '/api/v1/submit-feedback', // 🔁 Update this to your Laravel route
-                method: 'POST',
-                data: formData,
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') // Laravel CSRF token
-                },
-                success: function(response) {
-
+        window.jQuery.ajax({
+            url: '/api/v1/submit-feedback',
+            method: 'POST',
+            data: formData,
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            success: function (response) {
+                if (typeof safeGtag === 'function') {
                     safeGtag('event', 'feedback_submitted', {
-                        'event_category': 'Feedback',
-                        'event_label': 'Feedback Form',
-                        'value': 1
+                        event_category: 'Feedback',
+                        event_label: 'Feedback Form',
+                        value: 1
                     });
-
-                    // Reset loading state
-                    submitBtn.prop('disabled', false);
-                    submitText.show();
-                    submitLoader.hide();
-
-                    // Show success message
-                    showMessage('success', response.message || 'Thank you for your feedback!');
-                    showToast('success', 'Send', response.message || 'Thank you for your feedback!');
-
-                    // Reset form
-                    form[0].reset();
-                    $('.feedback-type').removeClass('selected');
-                    $('#feedbackType').val('');
-                    grecaptcha.reset();
-
-                },
-                error: function(xhr) {
-                    // Reset loading state
-                    submitBtn.prop('disabled', false);
-                    submitText.show();
-                    submitLoader.hide();
-                    grecaptcha.reset();
-
-                    // Parse and show error
-                    const errorMsg = xhr.responseJSON?.message || 'Something went wrong. Please try again.';
-                    showMessage('error', errorMsg);
-                    showToast('error', 'Error!', errorMsg);
-
                 }
-            });
-        }
 
+                submitBtn.disabled = false;
+                submitText.hidden = false;
+                if (submitIcon) submitIcon.hidden = false;
+                submitLoader.hidden = true;
 
-        function validateForm() {
-            const email = $('#email').val().trim();
-            const subject = $('#subject').val().trim();
-            const message = $('#message').val().trim();
-            const type = $('#feedbackType').val();
+                showMessage('success', response.message || 'Thank you for your feedback!');
+                if (typeof showToast === 'function') {
+                    showToast('success', 'Sent', response.message || 'Thank you for your feedback!');
+                }
 
-            return email && subject && message && type;
-        }
+                form.reset();
+                var emailField = document.getElementById('email');
+                if (emailField && emailField.defaultValue) {
+                    emailField.value = emailField.defaultValue;
+                }
+                document.querySelectorAll('.feedback-page-type').forEach(function (btn) {
+                    btn.classList.remove('is-selected');
+                    btn.setAttribute('aria-checked', 'false');
+                });
+                document.getElementById('feedbackType').value = '';
+                var hint = document.getElementById('feedbackTypeHint');
+                if (hint) hint.textContent = 'Select a category to continue';
 
-        function showMessage(type, message) {
-            const successMsg = $('#successMessage');
-            const errorMsg = $('#errorMessage');
+                if (typeof grecaptcha !== 'undefined') {
+                    grecaptcha.reset();
+                }
+            },
+            error: function (xhr) {
+                submitBtn.disabled = false;
+                submitText.hidden = false;
+                if (submitIcon) submitIcon.hidden = false;
+                submitLoader.hidden = true;
 
-            // Hide all messages first
-            successMsg.hide();
-            errorMsg.hide();
+                if (typeof grecaptcha !== 'undefined') {
+                    grecaptcha.reset();
+                }
 
-            if (type === 'success') {
-                successMsg.find('div').last().text(message);
-                successMsg.show();
-
-                // Scroll to top to show message
-                $('html, body').animate({
-                    scrollTop: successMsg.offset().top - 100
-                }, 500);
-            } else {
-                errorMsg.find('div').last().text(message);
-                errorMsg.show();
+                var errorMsg = (xhr.responseJSON && xhr.responseJSON.message)
+                    ? xhr.responseJSON.message
+                    : 'Something went wrong. Please try again.';
+                showMessage('error', errorMsg);
+                if (typeof showToast === 'function') {
+                    showToast('error', 'Error', errorMsg);
+                }
             }
+        });
+    }
 
-            // Auto-hide after 5 seconds
-            setTimeout(() => {
-                successMsg.hide();
-                errorMsg.hide();
-            }, 5000);
+    function validateForm() {
+        var email = document.getElementById('email').value.trim();
+        var subject = document.getElementById('subject').value.trim();
+        var message = document.getElementById('message').value.trim();
+        var type = document.getElementById('feedbackType').value;
+        var captchaOk = typeof grecaptcha !== 'undefined'
+            && grecaptcha.getResponse().length > 0;
+
+        return email && subject && message && type && captchaOk;
+    }
+
+    function showMessage(type, message) {
+        var successMsg = document.getElementById('successMessage');
+        var errorMsg = document.getElementById('errorMessage');
+        var successText = document.getElementById('successMessageText');
+        var errorText = document.getElementById('errorMessageText');
+
+        successMsg.hidden = true;
+        errorMsg.hidden = true;
+
+        if (type === 'success') {
+            successText.textContent = message;
+            successMsg.hidden = false;
+            successMsg.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        } else {
+            errorText.textContent = message;
+            errorMsg.hidden = false;
         }
-    </script>
+
+        window.setTimeout(function () {
+            successMsg.hidden = true;
+            errorMsg.hidden = true;
+        }, 6000);
+    }
+})();
+</script>
+
 @endsection

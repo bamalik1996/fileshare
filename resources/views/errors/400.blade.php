@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('title', '400 - Bad Request | AirToShare')
+@section('robots', 'noindex, nofollow')
 @section('description', 'Bad request error on AirToShare. Please check your request and try again.')
 @section('keywords', 'AirToShare 400, bad request, error page, file sharing')
 

@@ -1,43 +1,78 @@
-# Air To Share
+# AirToShare
 
-> Instant file and text sharing between devices on the same network - no registration required.
+> Instant file and text sharing across devices — on the same Wi‑Fi, via share link, or in a collaborative Room. No install required; optional free accounts unlock higher limits and My Shares.
 
-Air To Share is a simple, fast, and private way to share files and text between your devices. Works on any device with a web browser - phones, tablets, laptops, or desktops.
+AirToShare is a web-based file and text sharing app. Guests can share immediately without signing up. Logged-in users get a personal dashboard, favourites, longer expiry options, and public gallery links.
 
-## Features
+## Core features
 
-- **Instant File Sharing**: Upload and share files across devices instantly
-- **Text Sharing**: Share text snippets and notes between devices
-- **QR Code Access**: Scan QR code to quickly access shared content on mobile
-- **No Registration**: Start sharing immediately without creating an account
-- **Privacy First**: Files are stored temporarily and auto-deleted
-- **Cross-Platform**: Works on any device with a modern web browser
-- **One-Time Downloads**: Option for secure one-time file downloads
+- **File & text sharing**: Drag-and-drop uploads or paste text; switch between Text and Files tabs
+- **Same Wi‑Fi sync**: Devices on the local network see the same session automatically
+- **Share links**: Each share has a unique URL at `/s/{uuid}`; copy link or show QR code
+- **Rooms**: Create or join a session with a 6-character code (`/r/{CODE}`); real-time clipboard sync
+- **Password protection**: Optional bcrypt password gate on shares and rooms (rate-limited verify)
+- **End-to-end encryption (E2EE)**: Optional client-side text encryption; decryption key stays in URL fragment (`#k=...`), never sent to server
+- **Public gallery**: Account owners can enable read-only public pages at `/p/{slug}`
+- **My Shares**: Account dashboard at `/account/shares` — manage shares, favourites, expiry, public links
+- **Chunked uploads**: Large files (>5 MB) upload in resumable chunks (up to 500 MB per file)
+- **File previews**: Inline and fullscreen previews for images, PDFs, and video
+- **Real-time updates**: Live sync for uploads, text edits, and room clipboard (Laravel Reverb WebSockets)
+- **PWA & dark mode**: Installable progressive web app; theme toggle with persistence
+- **Auto expiry**: Shares clean up after expiry or inactivity; guests have shorter windows than accounts
 
-## Pages
+## Limits (typical)
 
-- [Home](https://airtoshare.app/): Main file and text sharing interface
-- [How It Works](https://airtoshare.app/how-it-works): Step-by-step guide on using Air To Share
-- [FAQ](https://airtoshare.app/faq): Frequently asked questions
-- [Feedback](https://airtoshare.app/feedback): Submit feedback and suggestions
-- [Blog](https://airtoshare.app/blog): Tips, updates, and articles about file sharing
+| Tier | Active files | Storage | Notes |
+|------|-------------|---------|-------|
+| Guest (IP) | 25 | — | Instant, no sign-up |
+| Account | 100 | 1 GB | Email verification required; up to 30-day expiry |
 
-## Technology Stack
+Standard upload: up to 25 MB per file. Chunked pipeline: up to 500 MB per file.
 
-- **Backend**: Laravel (PHP)
-- **Frontend**: Blade Templates, JavaScript
-- **Storage**: Local file system with auto-cleanup
-- **Features**: Progressive Web App (PWA) support
+## Public pages (indexable)
 
-## How It Works
+- [Home](https://airtoshare.app/): Main sharing workspace
+- [How It Works](https://airtoshare.app/how-it-works): Step-by-step guide (Wi‑Fi, share links, rooms, security)
+- [FAQ](https://airtoshare.app/faq): Help center — accounts, security, features, troubleshooting
+- [Feedback](https://airtoshare.app/feedback): Contact support, bug reports, feature requests
+- [Blog](https://airtoshare.app/blog): Feature announcements and guides
+- [Sitemap](https://airtoshare.app/sitemap.xml): XML sitemap
 
-1. Open Air To Share on your devices
-2. Devices on the same network are automatically connected via IP
-3. Upload files or enter text to share
-4. Access shared content on any connected device
-5. Scan QR code for quick mobile access
-6. Files are automatically cleaned up after expiry
+## Private / noindex routes (not for search indexing)
+
+These URLs are transactional or user-specific and are marked `noindex, nofollow`:
+
+- `/s/{uuid}` — share view
+- `/r/{code}` — room join
+- `/p/{slug}` — public gallery (when enabled; still noindex)
+- `/auth/*` — login, register, email verification
+- `/account/*` — logged-in dashboard
+- `/download/{uuid}` — direct file download
+
+## Accounts
+
+1. **Register** at `/auth/register` (email + password, 8+ characters)
+2. **Verify email** via link sent to inbox (expires in 60 minutes; resend available)
+3. **Log in** at `/auth/login` → **My Shares** at `/account/shares`
+4. Guest content uploaded before registration can be claimed when logging in on the same site URL
+
+## Technology
+
+- **Backend**: Laravel (PHP), SQLite/MySQL
+- **Frontend**: Blade templates, vanilla JavaScript modules
+- **Real-time**: Laravel Reverb + Laravel Echo (WebSockets)
+- **Storage**: Local disk with scheduled expiry cleanup
+- **API**: REST API v2 (API key auth for programmatic access)
+- **Security**: CSRF, rate limits, password gates, optional E2EE, security headers middleware
+
+## How it works (short)
+
+1. Open AirToShare in any modern browser
+2. Add files or text; optionally set password, E2EE, expiry, or create a Room
+3. Share via same Wi‑Fi auto-sync, copy `/s/…` link, QR code, or room code
+4. Content expires automatically; password-protected shares require verification first
 
 ## Contact
 
-Website: https://airtoshare.app
+- Feedback form: https://airtoshare.app/feedback
+- Website: https://airtoshare.app

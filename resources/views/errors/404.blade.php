@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('title', '404 - Page Not Found | AirToShare')
+@section('robots', 'noindex, nofollow')
 @section('description', 'The page you are looking for could not be found. Return to AirToShare homepage to continue
     sharing files instantly across your devices.')
 @section('keywords', 'AirToShare 404, page not found, file sharing, error page')

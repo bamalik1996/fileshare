@@ -14,6 +14,244 @@ class BlogController extends Controller
     {
         return [
             [
+                'slug' => 'user-accounts-and-email-verification',
+                'title' => 'User Accounts & Email Verification Are Here',
+                'excerpt' => 'Create a free account to unlock higher limits, save your shares, and verify your email with a secure one-click link.',
+                'image' => '/assets/images/blog/accounts-email-verification.png',
+                'date' => 'June 21, 2026',
+                'author' => 'AirToShare Team',
+                'category' => 'Feature Update',
+                'read_time' => '4 min read',
+                'content' => '
+                    <p>AirToShare now supports <strong>optional user accounts</strong>. You can still share instantly as a guest, but creating an account unlocks more storage, longer expiry options, and a personal dashboard.</p>
+
+                    <h2>Why create an account?</h2>
+                    <ul>
+                        <li><strong>100 files</strong> and <strong>1 GB</strong> storage (vs 50 files for guests)</li>
+                        <li><strong>My Shares</strong> dashboard to manage everything in one place</li>
+                        <li><strong>Favourites</strong> — pin up to 50 important shares</li>
+                        <li><strong>30-day expiry</strong> option for longer-lived shares</li>
+                    </ul>
+
+                    <h2>Email verification</h2>
+                    <p>When you register, we send a <strong>Verify Email Address</strong> link to your inbox. Click it to activate your account and access My Shares. The link is signed and expires after 60 minutes — use <strong>Resend verification email</strong> if you need a new one.</p>
+
+                    <h2>Getting started</h2>
+                    <ol>
+                        <li>Click <strong>Register</strong> in the header</li>
+                        <li>Enter your email and password (8+ characters)</li>
+                        <li>Open the verification email and click the link</li>
+                        <li>Visit <strong>My Shares</strong> to see content saved while logged in</li>
+                    </ol>
+
+                    <p>Already uploaded files as a guest? Log in on the same site URL — your recent guest content is linked to your account automatically.</p>
+                ',
+            ],
+            [
+                'slug' => 'my-shares-dashboard-and-favourites',
+                'title' => 'My Shares Dashboard & Favourites',
+                'excerpt' => 'Manage all your shares from one page. Star important ones as favourites and open, copy, or publish them in seconds.',
+                'image' => '/assets/images/blog/my-shares-favourites.png',
+                'date' => 'June 20, 2026',
+                'author' => 'AirToShare Team',
+                'category' => 'Feature Update',
+                'read_time' => '3 min read',
+                'content' => '
+                    <p>Logged-in users now get a dedicated <strong>My Shares</strong> page at <code>/account/shares</code> — your command centre for everything you have shared.</p>
+
+                    <h2>What you will see</h2>
+                    <ul>
+                        <li>Active share count and favourite usage (up to <strong>50</strong>)</li>
+                        <li>Each share as a card with expiry, file count, and badges (E2EE, password, public)</li>
+                        <li>Quick actions: <strong>Open share</strong>, enable/disable public gallery</li>
+                    </ul>
+
+                    <h2>Favourites</h2>
+                    <p>Click the <strong>star icon</strong> on any share card to add it to favourites. Favourited shares show a gold badge so you can find important content fast. Click the star again to remove.</p>
+
+                    <h2>Tip</h2>
+                    <p>Upload files and save text while <strong>logged in</strong> on the home page — they appear in My Shares automatically. Use the same browser URL you used to register (e.g. <code>dev.fileshare.test</code>, not a different localhost port).</p>
+                ',
+            ],
+            [
+                'slug' => 'rooms-share-with-a-code',
+                'title' => 'Rooms: Share With a 6-Character Code',
+                'excerpt' => 'Create a Room and let others join with a short code — perfect for meetings, classrooms, and quick team hand-offs.',
+                'image' => '/assets/images/blog/rooms-share-code.png',
+                'date' => 'June 19, 2026',
+                'author' => 'AirToShare Team',
+                'category' => 'Feature Update',
+                'read_time' => '3 min read',
+                'content' => '
+                    <p><strong>Rooms</strong> let multiple people access the same share session using a simple <strong>6-character code</strong> — no long URLs to dictate over a call.</p>
+
+                    <h2>Create a Room</h2>
+                    <ol>
+                        <li>Click <strong>Create Room</strong> on the home page</li>
+                        <li>Choose optional expiry and password protection</li>
+                        <li>Share the code or link (<code>/r/ABC123</code>) with others on your network</li>
+                    </ol>
+
+                    <h2>Join a Room</h2>
+                    <p>Click <strong>Join Room</strong>, enter the code (letters auto-uppercase), and press Enter. Password-protected rooms ask for the room password first.</p>
+
+                    <h2>Clipboard sync</h2>
+                    <p>Room members can sync clipboard text in real time — great for sharing snippets, links, or notes during a session.</p>
+                ',
+            ],
+            [
+                'slug' => 'realtime-sync-with-reverb',
+                'title' => 'Real-Time Sync: See Changes Instantly',
+                'excerpt' => 'Text edits, new uploads, and clipboard updates appear live across devices — powered by Laravel Reverb WebSockets.',
+                'image' => '/assets/images/blog/realtime-sync.png',
+                'date' => 'June 18, 2026',
+                'author' => 'AirToShare Team',
+                'category' => 'Feature Update',
+                'read_time' => '3 min read',
+                'content' => '
+                    <p>AirToShare now pushes updates to connected browsers in <strong>real time</strong>. When someone adds a file or edits shared text, other devices on the same share or room see it without refreshing.</p>
+
+                    <h2>What syncs live</h2>
+                    <ul>
+                        <li>New file uploads and deletions</li>
+                        <li>Shared text changes</li>
+                        <li>Room clipboard updates</li>
+                        <li>Expiry reminder notifications (browser)</li>
+                    </ul>
+
+                    <h2>Under the hood</h2>
+                    <p>We use <strong>Laravel Reverb</strong> for private WebSocket channels. Each share and room gets its own channel so updates only go to authorised viewers.</p>
+                ',
+            ],
+            [
+                'slug' => 'chunked-uploads-large-files',
+                'title' => 'Chunked Uploads for Large Files',
+                'excerpt' => 'Files over 5 MB upload in resumable chunks with integrity checks — up to 500 MB per file without timeouts.',
+                'image' => '/assets/images/blog/chunked-uploads.png',
+                'date' => 'June 17, 2026',
+                'author' => 'AirToShare Team',
+                'category' => 'Feature Update',
+                'read_time' => '4 min read',
+                'content' => '
+                    <p>Small files still upload in one request. Files <strong>larger than 5 MB</strong> automatically use our <strong>chunked upload</strong> pipeline — faster, resumable, and safer on slow connections.</p>
+
+                    <h2>How it works</h2>
+                    <ol>
+                        <li>The browser splits the file into chunks</li>
+                        <li>Each chunk is verified with <strong>SHA-256</strong></li>
+                        <li>When all chunks arrive, the server assembles the final file</li>
+                        <li>Progress and retry are handled in the upload manager</li>
+                    </ol>
+
+                    <h2>Limits</h2>
+                    <ul>
+                        <li>Up to <strong>500 MB</strong> per file via chunked upload</li>
+                        <li>Standard uploads remain up to <strong>25 MB</strong></li>
+                        <li>Account owners get higher total storage (1 GB)</li>
+                    </ul>
+                ',
+            ],
+            [
+                'slug' => 'end-to-end-encryption-e2ee',
+                'title' => 'Optional End-to-End Encryption (E2EE)',
+                'excerpt' => 'Encrypt shared text in your browser. The server never sees the key — only people with the link fragment can decrypt.',
+                'image' => '/assets/images/blog/e2ee-encryption.png',
+                'date' => 'June 16, 2026',
+                'author' => 'AirToShare Team',
+                'category' => 'Security',
+                'read_time' => '5 min read',
+                'content' => '
+                    <p>Enable <strong>End-to-End Encryption</strong> when saving text to protect content from anyone without the decryption key — including the server.</p>
+
+                    <h2>How E2EE works here</h2>
+                    <ul>
+                        <li>Your browser generates an AES-GCM key</li>
+                        <li>Text is encrypted before it is sent</li>
+                        <li>The key is placed in the URL <strong>fragment</strong> (<code>#k=...</code>) — never sent to the server</li>
+                        <li>Share the <strong>full URL including #k=</strong> with recipients</li>
+                    </ul>
+
+                    <h2>Requirements</h2>
+                    <p>E2EE needs a <strong>secure context</strong>: HTTPS or <code>http://127.0.0.1</code>. On plain HTTP hostnames (e.g. some local dev domains), the checkbox is disabled with an explanation.</p>
+
+                    <p>If decryption fails, you will see an error — wrong key, corrupted data, or an incomplete link.</p>
+                ',
+            ],
+            [
+                'slug' => 'public-gallery-links',
+                'title' => 'Public Gallery Links',
+                'excerpt' => 'Turn any share into a read-only public page with a short /p/ link — great for portfolios and client deliveries.',
+                'image' => '/assets/images/blog/public-gallery.png',
+                'date' => 'June 15, 2026',
+                'author' => 'AirToShare Team',
+                'category' => 'Feature Update',
+                'read_time' => '3 min read',
+                'content' => '
+                    <p>Account owners can enable a <strong>public gallery</strong> for any share they own. Visitors get a clean page at <code>/p/your-slug</code> without needing to join a room or know your IP.</p>
+
+                    <h2>Enable public access</h2>
+                    <ol>
+                        <li>Open <strong>My Shares</strong></li>
+                        <li>Find the share and click <strong>Enable public</strong></li>
+                        <li>Copy the public URL and share it anywhere</li>
+                    </ol>
+
+                    <h2>Disable anytime</h2>
+                    <p>Click <strong>Disable public</strong> on the share card to revoke the link immediately. Password-protected shares still require the password before content is shown.</p>
+                ',
+            ],
+            [
+                'slug' => 'password-protected-shares',
+                'title' => 'Password-Protected Shares',
+                'excerpt' => 'Add a password to any share or room so only people with the secret can view files and text.',
+                'image' => '/assets/images/blog/password-protected.png',
+                'date' => 'June 14, 2026',
+                'author' => 'AirToShare Team',
+                'category' => 'Security',
+                'read_time' => '3 min read',
+                'content' => '
+                    <p>Protect sensitive shares with an optional <strong>password</strong> (6–128 characters). The password is stored as a bcrypt hash — we never keep the plain text.</p>
+
+                    <h2>When viewers open the link</h2>
+                    <p>They see a password prompt first. Wrong passwords return a generic error (no hint whether the share exists). After five failed attempts from the same IP within 15 minutes, verification is temporarily rate-limited.</p>
+
+                    <h2>Works with</h2>
+                    <ul>
+                        <li>Share view pages (<code>/s/...</code>)</li>
+                        <li>Public gallery links (when enabled)</li>
+                        <li>Password-protected Rooms</li>
+                        <li>Real-time channels (subscription requires prior password success)</li>
+                    </ul>
+                ',
+            ],
+            [
+                'slug' => 'instant-file-previews',
+                'title' => 'Instant File Previews',
+                'excerpt' => 'Preview images, PDFs, and videos inline or fullscreen — lazy-loaded for speed with a dedicated modal viewer.',
+                'image' => '/assets/images/blog/file-previews.png',
+                'date' => 'June 13, 2026',
+                'author' => 'AirToShare Team',
+                'category' => 'UX Update',
+                'read_time' => '3 min read',
+                'content' => '
+                    <p>AirToShare now renders rich <strong>file previews</strong> without downloading first.</p>
+
+                    <h2>Inline previews</h2>
+                    <p>The preview renderer lazy-loads content when file rows scroll into view:</p>
+                    <ul>
+                        <li><strong>Images</strong> up to 25 MB</li>
+                        <li><strong>PDFs</strong> via PDF.js up to 25 MB</li>
+                        <li><strong>Videos</strong> up to 200 MB</li>
+                    </ul>
+
+                    <h2>Fullscreen modal</h2>
+                    <p>Click any file thumbnail to open the fullscreen preview modal — navigate between files, download, or share from there.</p>
+
+                    <h2>Performance</h2>
+                    <p>Previews unload after 5 seconds out of view to save memory. Failed loads show a retry button; download always remains available.</p>
+                ',
+            ],
+            [
                 'slug' => 'introducing-airtoshare',
                 'title' => 'Introducing AirToShare: The Future of File Sharing',
                 'excerpt' => 'Experience the fastest, most secure way to share files between devices. No cloud uploads, just instant peer-to-peer transfer for your essential files.',
@@ -235,10 +473,13 @@ class BlogController extends Controller
             abort(404);
         }
 
-        // Get related posts (exclude current)
-        $relatedBlogs = collect($blogs)->filter(function ($item) use ($slug) {
-            return $item['slug'] !== $slug;
-        })->take(2)->values()->all();
+        // Get related posts (same category first, exclude current)
+        $relatedBlogs = collect($blogs)
+            ->filter(fn ($item) => $item['slug'] !== $slug)
+            ->sortByDesc(fn ($item) => (int) ($item['category'] === $blog['category']))
+            ->take(3)
+            ->values()
+            ->all();
 
         return view('blog-detail', compact('blog', 'relatedBlogs'));
     }
