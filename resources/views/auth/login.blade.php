@@ -14,9 +14,8 @@
         @csrf
         <div class="form-group">
             <label class="form-label" for="email">Email address</label>
-            <input class="form-input" type="email" id="email" name="email"
-                value="{{ old('email') }}" required autofocus autocomplete="email"
-                placeholder="you@example.com">
+            <input class="form-input" type="email" id="email" name="email" value="{{ old('email') }}" required
+                autofocus autocomplete="email" placeholder="you@example.com">
         </div>
 
         <div class="form-group">
@@ -24,9 +23,10 @@
                 <label class="form-label" for="password">Password</label>
                 <a class="auth-inline-link" href="{{ route('auth.forgot') }}">Forgot password?</a>
             </div>
-            <input class="form-input" type="password" id="password" name="password"
-                required autocomplete="current-password" placeholder="Your password">
+            <input class="form-input" type="password" id="password" name="password" required
+                autocomplete="current-password" placeholder="Your password">
         </div>
+        @include('auth.partials.recaptcha')
 
         <button type="submit" class="form-button" style="width: 100%;">
             <i class="fas fa-sign-in-alt" aria-hidden="true"></i>
@@ -40,4 +40,5 @@
     </p>
 
     @include('auth.partials.shell-end')
+    @include('auth.partials.recaptcha-script')
 @endsection
