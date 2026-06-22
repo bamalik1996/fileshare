@@ -121,7 +121,7 @@
     <meta name="twitter:site" content="@AirToShare">
     <meta name="twitter:creator" content="@AirToShare">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="{{ asset('assets/css/custom.css') }}?v=18" rel="stylesheet" />
+    <link href="{{ asset('assets/css/custom.css') }}?v=19" rel="stylesheet" />
 
     <!-- Schema.org JSON-LD -->
     @yield('schema')
