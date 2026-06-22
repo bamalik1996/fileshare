@@ -19,12 +19,28 @@ class SecurityHeaders
         $response->headers->set(
             'Content-Security-Policy',
             "default-src 'self'; " .
-                "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://www.googletagmanager.com https://connect.facebook.net https://www.google.com https://www.gstatic.com; " .
-                "connect-src 'self' https://cdn.jsdelivr.net https://www.google.com https://www.google-analytics.com ws: wss:; " .
-                "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; " .
-                "font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; " .
-                "img-src 'self' data: blob: https:; " .
-                "frame-src https://www.google.com https://www.gstatic.com;"
+            "script-src 'self' 'unsafe-inline'
+                https://cdn.jsdelivr.net
+                https://www.googletagmanager.com
+                https://connect.facebook.net
+                https://www.google.com
+                https://www.gstatic.com
+                https://plausible.io; " .
+            "connect-src 'self'
+                https://cdn.jsdelivr.net
+                https://www.google.com
+                https://www.google-analytics.com
+                https://plausible.io
+                ws:
+                wss:; " .
+            "style-src 'self' 'unsafe-inline'
+                https://fonts.googleapis.com
+                https://cdnjs.cloudflare.com; " .
+            "font-src 'self'
+                https://fonts.gstatic.com
+                https://cdnjs.cloudflare.com; " .
+            "img-src 'self' data: blob: https:; " .
+            "frame-src https://www.google.com https://www.gstatic.com;"
         );
 
 
