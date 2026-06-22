@@ -3969,6 +3969,10 @@ body {
         margin-top: 0.5rem;
         justify-content: center;
     }
+
+    .site-header .navbar-burger {
+        margin-left: auto;
+    }
 }
 
 /* Device Nickname Styles */
