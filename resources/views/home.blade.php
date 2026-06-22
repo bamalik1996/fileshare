@@ -44,79 +44,188 @@
 
 @section('content')
 
-    <!-- Hero Section -->
-    <div class="hero-section">
-        <h1 class="hero-title">
-            <img src="/icon.svg" class="hero-logo" alt="Air to share logo" />
-            AirToShare
-        </h1>
-        <p class="hero-subtitle">
-            Share files and text instantly across devices on the same network.
-            Simple, fast, and secure file sharing without the hassle.
-        </p>
-    </div>
+    <div id="airtoshare-app"
+        @if (isset($share) && $share)
+            data-airtoshare-share-id="{{ $share->id }}"
+            data-airtoshare-share-uuid="{{ $share->uuid }}"
+        @endif
+        @if (isset($room) && $room)
+            data-airtoshare-room-id="{{ $room->id }}"
+            data-airtoshare-room-code="{{ $room->code }}"
+        @endif
+        @if (isset($share) && $share && $share->is_e2ee)
+            data-airtoshare-e2ee="1"
+        @endif
+        @if (isset($viewingShare) && $viewingShare)
+            data-airtoshare-viewing="1"
+        @endif
+        @if (isset($share) && $share && $share->hasPassword())
+            data-airtoshare-has-password="1"
+        @endif
+    >
 
-    <!-- IP Info Panel -->
-    <div class="info-panel">
-        <div class="info-item device-nickname-container">
-            <i class="fas fa-laptop"></i>
+    @if (session('status'))
+        <div class="message success" style="margin-bottom: 1rem;">
+            <i class="fas fa-check-circle"></i>
+            <span>{{ session('status') }}</span>
+        </div>
+    @endif
+
+    <!-- Hero -->
+    <header class="home-hero">
+        <span class="home-hero-badge"><i class="fas fa-bolt" aria-hidden="true"></i> Free · No install · Any browser</span>
+        <h1 class="home-hero-title">
+            <img src="/icon.svg" class="home-hero-logo" alt="" width="40" height="40" />
+            Share text &amp; files instantly
+        </h1>
+        <p class="home-hero-lead">Save or upload on this device, then copy your link — or scan QR — to open it anywhere.</p>
+    </header>
+
+    <div class="home-workspace">
+
+    <!-- Status chips -->
+    <div class="home-status-bar" aria-label="Session status">
+        <div class="home-chip home-chip--device device-nickname-container">
+            <i class="fas fa-laptop" aria-hidden="true"></i>
             <span class="device-nickname" id="deviceNickname" title="Click to edit">My Device</span>
-            <input type="text" class="nickname-input hidden" id="nicknameInput" placeholder="Enter device name">
-            <button class="nickname-edit-btn" id="editNicknameBtn" title="Edit name">
+            <input type="text" class="nickname-input hidden" id="nicknameInput" placeholder="Device name">
+            <button class="nickname-edit-btn" id="editNicknameBtn" type="button" title="Edit name" aria-label="Edit device name">
                 <i class="fas fa-pencil-alt"></i>
             </button>
         </div>
-        <div class="info-item">
-            <i class="fas fa-network-wired"></i>
-            <strong>IP:</strong> <span id="userIp">Loading...</span>
+        <div class="home-chip">
+            <i class="fas fa-network-wired" aria-hidden="true"></i>
+            <span class="home-chip-label">IP</span>
+            <span id="userIp">…</span>
         </div>
-        <div class="info-item">
-            <i class="fas fa-folder"></i>
-            <strong>Files:</strong> <span id="fileCount">0</span>/<span id="maxFiles">20</span>
+        <div class="home-chip">
+            <i class="fas fa-folder" aria-hidden="true"></i>
+            <span class="home-chip-label">Files</span>
+            <span><span id="fileCount">0</span>/<span id="maxFiles">20</span></span>
         </div>
-        <div class="info-item">
-            <i class="fas fa-weight-hanging"></i>
-            <strong>Max Size:</strong> <span id="maxFileSize">25 MB</span>
+        <div class="home-chip">
+            <i class="fas fa-weight-hanging" aria-hidden="true"></i>
+            <span class="home-chip-label">Max</span>
+            <span id="maxFileSize">25 MB</span>
         </div>
-        <div class="info-item expiry-countdown hidden" id="expiryCountdown">
-            <i class="fas fa-hourglass-half"></i>
-            <strong>Expires in:</strong>
+        <div class="home-chip home-chip--expiry hidden" id="expiryCountdown">
+            <i class="fas fa-hourglass-half" aria-hidden="true"></i>
+            <span class="home-chip-label">Expires</span>
             <span id="countdownTimer" class="countdown-badge">--:--:--</span>
         </div>
-        <div class="info-item last-activity hidden" id="lastActivity">
-            <i class="fas fa-clock"></i>
-            <strong>Last sync:</strong>
+        <div class="home-chip home-chip--sync hidden" id="lastActivity">
+            <i class="fas fa-clock" aria-hidden="true"></i>
+            <span class="home-chip-label">Sync</span>
             <span id="lastActivityTime">Just now</span>
         </div>
-        <button class="modern-btn secondary qr-btn" id="showQRBtn">
-            <i class="fas fa-qrcode"></i>
-            Quick Connect
-        </button>
-        <button class="icon-btn sound-toggle" id="soundToggle" title="Toggle notification sound">
-            <i class="fas fa-volume-up" id="soundIcon"></i>
+        @if (isset($room) && $room)
+            <div class="home-chip home-chip--room">
+                <i class="fas fa-users" aria-hidden="true"></i>
+                <span class="home-chip-label">Room</span>
+                <span>{{ $room->code }}</span>
+            </div>
+        @endif
+    </div>
+
+    <!-- Actions toolbar -->
+    <div class="home-toolbar" role="toolbar" aria-label="Share actions">
+        <div class="home-toolbar-group">
+            <button class="home-tool-btn home-tool-btn--primary" id="showQRBtn" type="button" title="Share link and QR code">
+                <i class="fas fa-share-nodes" aria-hidden="true"></i>
+                <span>Share link</span>
+            </button>
+        </div>
+        <span class="home-toolbar-divider" aria-hidden="true"></span>
+        <div class="home-toolbar-group">
+            <button class="home-tool-btn" id="joinRoomBtn" type="button">
+                <i class="fas fa-door-open" aria-hidden="true"></i>
+                <span>Join room</span>
+            </button>
+            <button class="home-tool-btn" id="createRoomBtn" type="button">
+                <i class="fas fa-plus-circle" aria-hidden="true"></i>
+                <span>New room</span>
+            </button>
+        </div>
+        <span class="home-toolbar-divider" aria-hidden="true"></span>
+        <div class="home-toolbar-group">
+            <button class="home-tool-btn" id="sharePasswordBtn" type="button" title="Password-protect this share">
+                <i class="fas fa-key" aria-hidden="true"></i>
+                <span id="sharePasswordBtnLabel">Password</span>
+            </button>
+            <label class="home-tool-btn home-tool-btn--toggle" id="e2eeToggleWrap"
+                title="End-to-end encryption (key in URL # only)">
+                <input type="checkbox" id="e2eeToggle" @if(isset($share) && $share && $share->is_e2ee) checked @endif>
+                <i class="fas fa-lock" aria-hidden="true"></i>
+                <span>E2EE</span>
+            </label>
+        </div>
+        <span class="home-toolbar-spacer"></span>
+        <button class="home-tool-btn home-tool-btn--icon" id="soundToggle" type="button" title="Notification sounds">
+            <i class="fas fa-volume-up" id="soundIcon" aria-hidden="true"></i>
         </button>
     </div>
 
+    <p class="e2ee-hint hidden" id="e2eeHint" role="status"></p>
+
+    {{-- Share link panel: appears once the user has saved text or uploaded files --}}
+    @php
+        $initialShareUrl = (isset($share) && $share && empty($viewingShare))
+            ? url('/s/' . $share->uuid)
+            : '';
+        $showShareLinkPanel = $initialShareUrl !== '';
+    @endphp
+    <div class="share-link-panel{{ $showShareLinkPanel ? '' : ' hidden' }}" id="shareLinkPanel" role="region"
+        aria-label="Share link">
+        <div class="share-link-panel-top">
+            <div class="share-link-panel-title">
+                <i class="fas fa-share-nodes" aria-hidden="true"></i>
+                <strong>Your share link</strong>
+                <span class="share-link-badge hidden" id="shareLinkPasswordBadge">
+                    <i class="fas fa-key" aria-hidden="true"></i> Password on
+                </span>
+            </div>
+            <p class="share-link-panel-hint" id="shareLinkPanelHint">
+                Copy this link and send it to anyone. They can open your text and files in any browser.
+            </p>
+        </div>
+        <div class="share-link-panel-row">
+            <input type="text" class="share-link-panel-input" id="sharePageLinkInput" readonly
+                value="{{ $initialShareUrl }}"
+                aria-label="Share link URL">
+            <button type="button" class="modern-btn share-link-copy-btn" id="copySharePageLinkBtn"
+                title="Copy share link">
+                <i class="fas fa-copy" aria-hidden="true"></i>
+                <span>Copy link</span>
+            </button>
+            <button type="button" class="modern-btn secondary share-link-qr-btn" id="openShareLinkQrBtn"
+                title="Show QR code for this link">
+                <i class="fas fa-qrcode" aria-hidden="true"></i>
+                <span>QR</span>
+            </button>
+        </div>
+    </div>
+
     <!-- Modern Tabs -->
-    <div class="modern-tabs">
-        <button class="modern-tab active" data-tab="text">
-            <i class="fas fa-edit"></i>
-            Text Sharing
+    <div class="home-editor">
+    <div class="modern-tabs home-tabs">
+        <button class="modern-tab active" data-tab="text" type="button">
+            <i class="fas fa-align-left" aria-hidden="true"></i>
+            Text
         </button>
-        <button class="modern-tab" data-tab="file">
-            <i class="fas fa-file-upload"></i>
-            File Sharing
+        <button class="modern-tab" data-tab="file" type="button">
+            <i class="fas fa-file-upload" aria-hidden="true"></i>
+            Files
         </button>
     </div>
 
     <!-- Tab Contents -->
-    <div class="modern-card">
+    <div class="modern-card home-editor-card">
         <!-- Text Tab -->
         <div class="tab-content active" id="text-tab">
             <div class="text-container">
-                <textarea class="modern-textarea" id="textInput"
-                    placeholder="Type or paste your text here... Links will be automatically detected and made clickable."
-                    maxlength="5000000"></textarea>
+                <textarea class="modern-textarea" id="textInput" data-airtoshare-clipboard-target
+                    placeholder="Type or paste your text here…"
+                    maxlength="500000"></textarea>
 
                 <div class="textarea-footer">
                     <div class="char-counter" id="charCounter">0 / 500,000 characters</div>
@@ -129,6 +238,38 @@
                             <i class="fas fa-trash"></i>
                             Clear
                         </button>
+                        {{--
+                            Server-rendered Copy button (task 9.2, Requirement 5.1).
+
+                            Acceptance criterion 5.1 mandates that a "Copy"
+                            button be displayed next to the text panel iff
+                            the Share contains at least one character of
+                            text. The visibility decision is therefore made
+                            on the server using the resolved $share
+                            aggregate, not in JavaScript: the button is
+                            simply absent from the DOM when the share has
+                            no text, so the markup itself is the contract.
+
+                            The element is data-attribute driven via
+                            `data-copy="#textInput"` so the clipboard
+                            module from task 9.1 handles activation,
+                            tri-strategy fallback, in-flight disabling, and
+                            the success indicator (Reqs 5.2-5.6) without
+                            any per-page JavaScript here.
+                        --}}
+                        @if (isset($share) && $share && strlen((string) ($share->text_content ?? '')) >= 1)
+                            <button
+                                class="modern-btn"
+                                type="button"
+                                id="copyTextBtn"
+                                data-copy="#textInput"
+                                title="Copy shared text to clipboard"
+                                aria-label="Copy shared text to clipboard"
+                            >
+                                <i class="fas fa-copy"></i>
+                                <span>Copy</span>
+                            </button>
+                        @endif
                         <button class="modern-btn" id="saveBtn">
                             {{-- <i class="fas fa-save"></i> --}}
                             <span id="saveBtnText">Save</span>
@@ -138,8 +279,8 @@
                 </div>
 
                 <div class="links-container hidden" id="linksContainer">
-                    <strong><i class="fas fa-link"></i> Detected Links:</strong>
-                    <div id="linksList"></div>
+                    <strong><i class="fas fa-link"></i> Detected links &amp; emails:</strong>
+                    <div id="linksList" class="detected-links-list"></div>
                 </div>
 
                 <div class="message success" id="textSuccessMessage">
@@ -156,15 +297,25 @@
         <!-- File Tab -->
         <div class="tab-content" id="file-tab">
             <div class="file-container">
-                <div class="upload-zone" id="uploadZone">
+                <div class="upload-zone" id="uploadZone"
+                    data-upload-manager
+                    data-upload-endpoint="{{ route('media.store') }}"
+                    data-upload-field="file"
+                    data-upload-max-files="50"
+                    data-upload-active-files="0"
+                    data-upload-max-size="26214400"
+                    data-chunked-start="{{ url('/api/v1/chunked-upload/start') }}"
+                    data-chunked-chunk="{{ url('/api/v1/chunked-upload/chunk') }}"
+                    data-chunked-status="{{ url('/api/v1/chunked-upload/status') }}"
+                    data-chunked-complete="{{ url('/api/v1/chunked-upload/complete') }}">
                     <i class="fas fa-cloud-upload-alt upload-icon"></i>
                     <div class="upload-text">Drag & Drop Files Here</div>
                     <div class="upload-subtext">
-                        or click to browse • Max 25MB per file • Up to 20 files
+                        or click to browse • Large files use resumable chunked upload
                         <br>
-                        <small>Supported: Images, PDF, DOC, TXT, ZIP,Videos</small>
+                        <small>Supported: Images, PDF, DOC, TXT, ZIP, Videos</small>
                     </div>
-                    <input type="file" id="fileInput" multiple
+                    <input type="file" id="fileInput" data-upload-input multiple
                         accept="image/*,
   application/pdf,
   application/msword,
@@ -225,6 +376,8 @@
             </div>
         </div>
     </div>
+    </div>{{-- .home-editor --}}
+    </div>{{-- .home-workspace --}}
 
     <!-- Fullscreen Preview -->
     <div class="preview-modal-overlay" id="previewModal">
@@ -343,6 +496,116 @@
         </div>
     </div>
 
+    <!-- Join Room Modal -->
+    <div class="modal-overlay" id="roomModal" role="dialog" aria-modal="true" aria-labelledby="roomModalTitle">
+        <div class="modal-content room-modal">
+            <div class="modal-header">
+                <div class="modal-title room-modal-title" id="roomModalTitle">
+                    <i class="fas fa-door-open" aria-hidden="true"></i>
+                    Join Room
+                </div>
+                <button class="modal-close" id="roomModalClose" type="button" aria-label="Close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="room-modal-body">
+                <p class="room-modal-subtitle">
+                    Enter the 6-character code shared with you to sync clipboard and files in a private room.
+                </p>
+                <label class="form-label" for="roomCodeInput">Room code</label>
+                <input type="text" id="roomCodeInput" class="form-input room-code-input"
+                    maxlength="6" placeholder="ABC234" autocomplete="off"
+                    inputmode="text" autocapitalize="characters" spellcheck="false"
+                    aria-describedby="roomCodeError">
+                <p class="room-code-hint">Letters A–Z and numbers 2–9 (no O, I, 0, 1)</p>
+                <label class="form-label" for="roomJoinPasswordInput">Room password <span class="form-label-optional">(optional)</span></label>
+                <input type="password" id="roomJoinPasswordInput" class="form-input"
+                    autocomplete="current-password" minlength="6" maxlength="128"
+                    placeholder="Only if the room is protected">
+                <p class="room-code-error hidden" id="roomCodeError" role="alert"></p>
+                <div class="room-modal-actions">
+                    <button type="button" class="modern-btn secondary" id="roomJoinCancel">Cancel</button>
+                    <button type="button" class="modern-btn" id="roomJoinConfirm">
+                        <i class="fas fa-sign-in-alt" aria-hidden="true"></i>
+                        Join room
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Room Modal -->
+    <div class="modal-overlay" id="createRoomModal" role="dialog" aria-modal="true" aria-labelledby="createRoomModalTitle">
+        <div class="modal-content room-modal">
+            <div class="modal-header">
+                <div class="modal-title room-modal-title" id="createRoomModalTitle">
+                    <i class="fas fa-plus-circle" aria-hidden="true"></i>
+                    Create Room
+                </div>
+                <button class="modal-close" id="createRoomModalClose" type="button" aria-label="Close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="room-modal-body">
+                <p class="room-modal-subtitle">
+                    Create a collaborative room and share the 6-character code with others.
+                </p>
+                <label class="form-label" for="createRoomExpiry">Expiry</label>
+                <select id="createRoomExpiry" class="form-input">
+                    <option value="1h">1 hour</option>
+                    <option value="6h">6 hours</option>
+                    <option value="24h" selected>24 hours</option>
+                    <option value="7d">7 days</option>
+                </select>
+                <label class="form-label" for="createRoomPassword">Room password <span class="form-label-optional">(optional)</span></label>
+                <input type="password" id="createRoomPassword" class="form-input"
+                    autocomplete="new-password" minlength="6" maxlength="128"
+                    placeholder="6–128 characters to protect the room">
+                <p class="room-code-error hidden" id="createRoomError" role="alert"></p>
+                <div class="room-modal-actions">
+                    <button type="button" class="modern-btn secondary" id="createRoomCancel">Cancel</button>
+                    <button type="button" class="modern-btn" id="createRoomConfirm">
+                        <i class="fas fa-check" aria-hidden="true"></i>
+                        Create room
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Share Password Modal -->
+    <div class="modal-overlay" id="sharePasswordModal" role="dialog" aria-modal="true" aria-labelledby="sharePasswordModalTitle">
+        <div class="modal-content room-modal">
+            <div class="modal-header">
+                <div class="modal-title room-modal-title" id="sharePasswordModalTitle">
+                    <i class="fas fa-key" aria-hidden="true"></i>
+                    Share password
+                </div>
+                <button class="modal-close" id="sharePasswordModalClose" type="button" aria-label="Close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="room-modal-body">
+                <p class="room-modal-subtitle" id="sharePasswordModalHint">
+                    Add a password so only people with the secret can open your share link.
+                </p>
+                <label class="form-label" for="sharePasswordInput">Password</label>
+                <input type="password" id="sharePasswordInput" class="form-input"
+                    autocomplete="new-password" minlength="6" maxlength="128"
+                    placeholder="6–128 characters">
+                <p class="room-code-error hidden" id="sharePasswordError" role="alert"></p>
+                <div class="room-modal-actions">
+                    <button type="button" class="modern-btn secondary hidden" id="sharePasswordClear">Remove password</button>
+                    <button type="button" class="modern-btn secondary" id="sharePasswordCancel">Cancel</button>
+                    <button type="button" class="modern-btn" id="sharePasswordSave">
+                        <i class="fas fa-save" aria-hidden="true"></i>
+                        Save
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Remove All Confirmation Modal -->
     <div class="modal-overlay" id="removeAllModal">
         <div class="modal-content">
@@ -427,27 +690,99 @@
             <div class="modal-header">
                 <div class="modal-title">
                     <i class="fas fa-qrcode"></i>
-                    Quick Connect
+                    Share link &amp; QR
                 </div>
                 <button class="modal-close" id="qrModalClose">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
             <div class="qr-container">
+                @if (isset($share) && $share)
+                    {{--
+                        Server-rendered QR slot (task 7.3, design.md > Component 1 frontend).
+
+                        Acceptance criteria:
+                          1.4 - clicking the QR offers the PNG as a download
+                                via a native anchor `download` attribute, so
+                                the click-to-download path works without JS.
+                          1.5 - if /qr/{slug} fails (HTTP 5xx or network
+                                error), the inline `error` listener replaces
+                                the slot with the share URL text and an
+                                error banner. No PNG download is offered in
+                                that branch.
+
+                        The slot also renders a generic <div id="qrcode"> for
+                        the legacy client-side QRCode.js library so the
+                        existing `generateQRCode()` flow keeps working as a
+                        belt-and-braces second copy. The two are visually
+                        equivalent; the server-rendered image is the
+                        canonical Requirement-1 surface.
+                    --}}
+                    <div class="qr-slot" data-qr-slot data-share-uuid="{{ $share->uuid }}">
+                        @php
+                            $qrShowUrl = route('qr.show', ['slug' => $share->uuid]);
+                            $qrDownloadUrl = $qrShowUrl . '?download=1';
+                            $shareUrl = $share->public_slug
+                                ? url('/p/' . $share->public_slug)
+                                : url('/s/' . $share->uuid);
+                        @endphp
+                        <a
+                            href="{{ $qrDownloadUrl }}"
+                            download="share-{{ $share->uuid }}.png"
+                            class="qr-slot-link"
+                            data-qr-download
+                            title="Download QR code as PNG"
+                            aria-label="Download QR code as PNG"
+                        >
+                            <img
+                                src="{{ $qrShowUrl }}"
+                                alt="QR code for this share. Click to download as PNG."
+                                width="200"
+                                height="200"
+                                loading="lazy"
+                                decoding="async"
+                                data-qr-image
+                                data-qr-share-url="{{ $shareUrl }}"
+                            >
+                        </a>
+                        <div
+                            class="qr-slot-fallback hidden"
+                            role="alert"
+                            aria-live="polite"
+                            data-qr-fallback
+                        >
+                            <p class="qr-slot-fallback-banner">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <strong>QR code unavailable.</strong>
+                                <span>We could not generate a QR image for this share right now. Use the link below to open it.</span>
+                            </p>
+                            <p class="qr-slot-fallback-url" data-qr-fallback-url>
+                                {{ $shareUrl }}
+                            </p>
+                        </div>
+                    </div>
+                @endif
                 <div id="qrcode"></div>
-                <p class="qr-instructions">
-                    <strong>Scan this QR code</strong> with your phone camera to instantly open AirToShare and access your
-                    shared content!
+                <p class="qr-share-url-line hidden" id="qrShareUrlLine">
+                    <code id="qrShareUrlDisplay"></code>
+                </p>
+                <p class="qr-instructions" id="qrInstructions">
+                    <strong>Scan this QR code</strong> with your phone camera to open your shared content.
                 </p>
                 <button class="modern-btn" id="copyUrlBtn">
                     <i class="fas fa-link"></i>
-                    <span id="copyUrlText">Copy Link</span>
+                    <span id="copyUrlText">Copy share link</span>
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- SEO Content Sections -->
+    <!-- SEO Content (collapsed by default — expand for details) -->
+    <details class="home-learn-more">
+        <summary class="home-learn-more-summary">
+            <i class="fas fa-book-open" aria-hidden="true"></i>
+            Learn more about AirToShare
+        </summary>
     <div class="seo-content">
         
         <!-- What is AirToShare Section -->
@@ -581,7 +916,9 @@
             </div>
         </section>
 
-    </div>
+    </div>{{-- .seo-content --}}
+    </details>{{-- .home-learn-more --}}
+    </div>{{-- #airtoshare-app --}}
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -589,18 +926,224 @@
         });
 
         let selectedFiles = new Set();
+        var shareHasPassword = @json(isset($share) && $share && $share->hasPassword());
+
+        function getShareUuid() {
+            var app = document.getElementById('airtoshare-app');
+            if (!app) return null;
+            var uuid = app.getAttribute('data-airtoshare-share-uuid');
+            return uuid && uuid.length > 0 ? uuid : null;
+        }
+
+        function setShareUuid(uuid) {
+            if (!uuid) return;
+            var app = document.getElementById('airtoshare-app');
+            if (app) app.setAttribute('data-airtoshare-share-uuid', uuid);
+        }
+
+        function getSharePageUrl() {
+            var uuid = getShareUuid();
+            if (!uuid) return null;
+            return window.location.origin + '/s/' + uuid;
+        }
+
+        function copyToClipboard(text, onSuccess) {
+            if (!text || !navigator.clipboard) {
+                showToast('error', 'Copy failed', 'Could not copy to clipboard.');
+                return;
+            }
+            navigator.clipboard.writeText(text).then(function () {
+                if (typeof onSuccess === 'function') onSuccess();
+                else showToast('success', 'Copied!', 'Link copied to clipboard.');
+            }).catch(function () {
+                showToast('error', 'Copy failed', 'Could not copy to clipboard.');
+            });
+        }
+
+        var SHARE_LINK_HINT_OPEN = 'Copy this link and send it to anyone. They can open your text and files in any browser — no password needed.';
+        var SHARE_LINK_HINT_PROTECTED = 'Send this link to others. They must enter your password first — share the password separately (WhatsApp, SMS, etc.), not in the link.';
+
+        function updateShareLinkPanel() {
+            var panel = document.getElementById('shareLinkPanel');
+            var input = document.getElementById('sharePageLinkInput');
+            if (!panel || !input) return;
+
+            var app = document.getElementById('airtoshare-app');
+            if (app && app.getAttribute('data-airtoshare-viewing') === '1') {
+                panel.classList.add('hidden');
+                return;
+            }
+
+            var url = getSharePageUrl();
+            if (!url) {
+                panel.classList.add('hidden');
+                return;
+            }
+
+            input.value = url;
+            panel.classList.remove('hidden');
+
+            var badge = document.getElementById('shareLinkPasswordBadge');
+            var hint = document.getElementById('shareLinkPanelHint');
+
+            if (shareHasPassword) {
+                if (badge) badge.classList.remove('hidden');
+                if (hint) hint.textContent = SHARE_LINK_HINT_PROTECTED;
+                if (app) app.setAttribute('data-airtoshare-has-password', '1');
+                panel.classList.add('share-link-panel--protected');
+            } else {
+                if (badge) badge.classList.add('hidden');
+                if (hint) hint.textContent = SHARE_LINK_HINT_OPEN;
+                if (app) app.removeAttribute('data-airtoshare-has-password');
+                panel.classList.remove('share-link-panel--protected');
+            }
+        }
+
+        function refreshQrModalContent() {
+            var shareUrl = getSharePageUrl();
+            var display = document.getElementById('qrShareUrlDisplay');
+            var line = document.getElementById('qrShareUrlLine');
+            var instructions = document.getElementById('qrInstructions');
+            var qrcodeDiv = document.getElementById('qrcode');
+            var uuid = getShareUuid();
+
+            if (shareUrl && display && line) {
+                display.textContent = shareUrl;
+                line.classList.remove('hidden');
+            } else if (line) {
+                line.classList.add('hidden');
+            }
+
+            if (instructions) {
+                instructions.innerHTML = shareUrl
+                    ? '<strong>Scan this QR code</strong> to open your share link on another phone or computer.'
+                    : '<strong>Scan this QR code</strong> to open AirToShare on another device on the same network.';
+            }
+
+            if (!qrcodeDiv) return;
+
+            var slot = document.querySelector('[data-qr-slot]');
+            var qrImg = document.querySelector('[data-qr-image]');
+
+            if (slot && qrImg && uuid) {
+                qrImg.src = '{{ url('/qr') }}/' + encodeURIComponent(uuid);
+                slot.classList.remove('hidden');
+                qrcodeDiv.innerHTML = '';
+                qrcodeDiv.style.display = 'none';
+                return;
+            }
+
+            qrcodeDiv.style.display = '';
+            qrcodeDiv.innerHTML = '';
+
+            if (typeof QRCode !== 'undefined') {
+                new QRCode(qrcodeDiv, {
+                    text: shareUrl || window.location.origin + '/',
+                    width: 200,
+                    height: 200,
+                    colorDark: '#0ea5e9',
+                    colorLight: '#ffffff',
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+            } else {
+                qrcodeDiv.innerHTML = '<p class="qr-loading-text">QR Code loading...</p>';
+            }
+        }
+
+        function openShareQrModal() {
+            $('#qrModal').addClass('show');
+            refreshQrModalContent();
+        }
+
+        function setupShareLinkPanel() {
+            $('#copySharePageLinkBtn').on('click', function () {
+                var url = getSharePageUrl();
+                if (!url) {
+                    showToast('info', 'No link yet', 'Save text or upload a file first to get your share link.');
+                    return;
+                }
+                var btn = $(this);
+                copyToClipboard(url, function () {
+                    btn.find('span').text('Copied!');
+                    btn.addClass('success');
+                    showToast('success', 'Link copied!', 'Send this link to open your share.');
+                    setTimeout(function () {
+                        btn.find('span').text('Copy link');
+                        btn.removeClass('success');
+                    }, 2000);
+                });
+            });
+
+            $('#openShareLinkQrBtn, #showQRBtn').on('click', function () {
+                if (!getSharePageUrl()) {
+                    showToast('info', 'No share yet', 'Save text or upload a file first — then share the link or QR code.');
+                    openShareQrModal();
+                    return;
+                }
+                openShareQrModal();
+            });
+        }
 
         function initializeApp() {
-            loadIpInfo();
-            fetchText();
-            fetchMedia();
+            var app = document.getElementById('airtoshare-app');
+            var isViewing = app && app.getAttribute('data-airtoshare-viewing') === '1';
+
+            if (isViewing) {
+                setupViewerMode();
+            } else {
+                loadIpInfo();
+                loadUploadLimits();
+                fetchText();
+                fetchMedia();
+            }
+
             setupEventListeners();
             setupFaqAccordion();
+            setupRealtimeBridge();
 
             // Restore saved active tab from localStorage
             const savedTab = localStorage.getItem('airtoshare-active-tab');
             if (savedTab && (savedTab === 'text' || savedTab === 'file')) {
                 switchTab(savedTab);
+            }
+        }
+
+        function setupViewerMode() {
+            @if (isset($viewingShare) && $viewingShare && isset($share) && $share)
+            var viewerText = @json(is_string($share->markdown_source) && $share->markdown_source !== '' ? $share->markdown_source : strip_tags((string) ($share->text_content ?? '')));
+            var viewerMedia = @json($shareMedia ?? []);
+            @else
+            var viewerText = '';
+            var viewerMedia = [];
+            @endif
+
+            $('#textInput').val(viewerText).prop('readonly', true);
+            handleTextInput();
+            if (viewerText.trim().length > 0) {
+                updateSaveButton('copy');
+            }
+            $('#saveBtn, #clearBtn, #clipboardSyncBtn').addClass('hidden');
+            $('#uploadZone').addClass('viewer-disabled').css('pointer-events', 'none').css('opacity', '0.55');
+            $('#joinRoomBtn, #createRoomBtn, #sharePasswordBtn').prop('disabled', true).css('opacity', '0.5');
+            $('#e2eeToggleWrap').css('opacity', '0.5');
+            $('#shareLinkPanel').addClass('hidden');
+
+            var filesMap = {};
+            (viewerMedia || []).forEach(function (file) {
+                filesMap[file.uuid] = {
+                    uuid: file.uuid,
+                    name: file.name,
+                    size: file.size,
+                    mime_type: file.mime_type,
+                    original_url: file.url,
+                    preview_url: file.preview_url || file.url,
+                };
+            });
+            displayFiles(filesMap);
+            $('#fileCount').text(Object.keys(filesMap).length);
+
+            if (viewerText.trim().length || Object.keys(filesMap).length) {
+                showToast('info', 'Protected share', 'You are viewing a password-protected share (read-only).');
             }
         }
 
@@ -689,15 +1232,296 @@
 
             // Share link modal
             setupShareModal();
+
+            setupRoomUi();
+            setupSharePasswordUi();
+            setupShareLinkPanel();
+            updateShareLinkPanel();
+            setupE2eeToggle();
         }
 
-        // QR Code Modal Functions
-        function setupQRModal() {
-            $('#showQRBtn').off('click').on('click', function() {
-                $('#qrModal').addClass('show');
-                generateQRCode();
+        function setupRoomUi() {
+            function openRoomModal() {
+                $('#roomModal').addClass('show');
+                $('#roomCodeError').addClass('hidden').text('');
+                $('#roomCodeInput').val('').focus();
+                $('#roomJoinPasswordInput').val('');
+            }
+
+            function closeRoomModal() {
+                $('#roomModal').removeClass('show');
+                $('#roomCodeError').addClass('hidden').text('');
+            }
+
+            function openCreateRoomModal() {
+                $('#createRoomModal').addClass('show');
+                $('#createRoomError').addClass('hidden').text('');
+                $('#createRoomPassword').val('');
+                $('#createRoomExpiry').val('24h');
+            }
+
+            function closeCreateRoomModal() {
+                $('#createRoomModal').removeClass('show');
+                $('#createRoomError').addClass('hidden').text('');
+            }
+
+            function showRoomError(msg) {
+                $('#roomCodeError').text(msg).removeClass('hidden');
+            }
+
+            function showCreateRoomError(msg) {
+                $('#createRoomError').text(msg).removeClass('hidden');
+            }
+
+            function submitRoomJoin() {
+                var code = ($('#roomCodeInput').val() || '').trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
+                var roomPassword = ($('#roomJoinPasswordInput').val() || '').trim();
+                $('#roomCodeInput').val(code);
+                if (code.length !== 6) {
+                    showRoomError('Room codes are exactly 6 letters or numbers.');
+                    showToast('error', 'Invalid code', 'Room codes are 6 characters.');
+                    return;
+                }
+                if (roomPassword !== '' && roomPassword.length < 6) {
+                    showRoomError('Room password must be at least 6 characters.');
+                    return;
+                }
+
+                function goToRoom() {
+                    window.location.href = '/r/' + encodeURIComponent(code);
+                }
+
+                if (roomPassword === '') {
+                    goToRoom();
+                    return;
+                }
+
+                $.ajax({
+                    url: '/api/v1/rooms/' + encodeURIComponent(code) + '/verify-password',
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ password: roomPassword }),
+                    headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+                    success: goToRoom,
+                    error: function (xhr) {
+                        var msg = xhr.responseJSON?.message || 'Password required';
+                        showRoomError(msg);
+                        showToast('error', 'Access denied', msg);
+                    }
+                });
+            }
+
+            function submitCreateRoom() {
+                var expiry = $('#createRoomExpiry').val() || '24h';
+                var password = ($('#createRoomPassword').val() || '').trim();
+                if (password !== '' && password.length < 6) {
+                    showCreateRoomError('Password must be at least 6 characters.');
+                    return;
+                }
+                var payload = { expiry: expiry };
+                if (password !== '') {
+                    payload.password = password;
+                }
+                $('#createRoomConfirm').prop('disabled', true);
+                $.ajax({
+                    url: '{{ route('room.store') }}',
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(payload),
+                    headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+                    success: function (data) {
+                        closeCreateRoomModal();
+                        if (data.code) {
+                            showToast('success', 'Room created', 'Code: ' + data.code);
+                            window.location.href = data.url || ('/r/' + data.code);
+                        }
+                    },
+                    error: function (xhr) {
+                        var msg = xhr.responseJSON?.message || xhr.responseJSON?.errors?.password?.[0] || 'Could not create room.';
+                        showCreateRoomError(msg);
+                        showToast('error', 'Room failed', msg);
+                    },
+                    complete: function () {
+                        $('#createRoomConfirm').prop('disabled', false);
+                    }
+                });
+            }
+
+            $('#joinRoomBtn').on('click', openRoomModal);
+            $('#roomModalClose, #roomJoinCancel').on('click', closeRoomModal);
+            $('#roomModal').on('click', function (e) {
+                if (e.target === this) closeRoomModal();
+            });
+            $('#roomModal .modal-content').on('click', function (e) {
+                e.stopPropagation();
+            });
+            $('#roomJoinConfirm').on('click', submitRoomJoin);
+            $('#roomCodeInput').on('input', function () {
+                var cleaned = (this.value || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6);
+                if (this.value !== cleaned) this.value = cleaned;
+                $('#roomCodeError').addClass('hidden').text('');
+            });
+            $('#roomCodeInput').on('keydown', function (e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    submitRoomJoin();
+                }
+                if (e.key === 'Escape') {
+                    closeRoomModal();
+                }
+            });
+            $(document).on('keydown.roomModal', function (e) {
+                if (e.key === 'Escape' && $('#roomModal').hasClass('show')) {
+                    closeRoomModal();
+                }
             });
 
+            $('#createRoomBtn').on('click', openCreateRoomModal);
+            $('#createRoomModalClose, #createRoomCancel').on('click', closeCreateRoomModal);
+            $('#createRoomModal').on('click', function (e) {
+                if (e.target === this) closeCreateRoomModal();
+            });
+            $('#createRoomConfirm').on('click', submitCreateRoom);
+        }
+
+        function updateSharePasswordUi() {
+            var label = shareHasPassword ? 'Password on' : 'Password';
+            $('#sharePasswordBtnLabel').text(label);
+            $('#sharePasswordBtn').toggleClass('is-active', shareHasPassword);
+            $('#sharePasswordClear').toggleClass('hidden', !shareHasPassword);
+            $('#sharePasswordModalHint').text(
+                shareHasPassword
+                    ? 'Change the password or remove protection from your share link.'
+                    : 'Add a password so only people with the secret can open your share link.'
+            );
+        }
+
+        function setupSharePasswordUi() {
+            var app = document.getElementById('airtoshare-app');
+            if (app && app.getAttribute('data-airtoshare-viewing') === '1') {
+                $('#sharePasswordBtn').hide();
+                return;
+            }
+
+            function openSharePasswordModal() {
+                $('#sharePasswordModal').addClass('show');
+                $('#sharePasswordError').addClass('hidden').text('');
+                $('#sharePasswordInput').val('').focus();
+            }
+
+            function closeSharePasswordModal() {
+                $('#sharePasswordModal').removeClass('show');
+                $('#sharePasswordError').addClass('hidden').text('');
+            }
+
+            function saveSharePassword(clear) {
+                var payload = { password: clear ? '' : ($('#sharePasswordInput').val() || '').trim() };
+                if (!clear && payload.password.length < 6) {
+                    $('#sharePasswordError').text('Password must be at least 6 characters.').removeClass('hidden');
+                    return;
+                }
+                $('#sharePasswordSave').prop('disabled', true);
+                $.ajax({
+                    url: '{{ route('share.password.update') }}',
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(payload),
+                    headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+                    success: function (data) {
+                        shareHasPassword = data.has_password === true;
+                        updateSharePasswordUi();
+                        updateShareLinkPanel();
+                        closeSharePasswordModal();
+                        var msg = data.message || (shareHasPassword ? 'Password protection enabled.' : 'Password removed.');
+                        showToast('success', shareHasPassword ? 'Password on' : 'Password off', msg);
+                    },
+                    error: function (xhr) {
+                        var msg = xhr.responseJSON?.errors?.password?.[0]
+                            || xhr.responseJSON?.message
+                            || 'Could not save password.';
+                        $('#sharePasswordError').text(msg).removeClass('hidden');
+                        showToast('error', 'Password failed', msg);
+                    },
+                    complete: function () {
+                        $('#sharePasswordSave').prop('disabled', false);
+                    }
+                });
+            }
+
+            $('#sharePasswordBtn').on('click', openSharePasswordModal);
+            $('#sharePasswordModalClose, #sharePasswordCancel').on('click', closeSharePasswordModal);
+            $('#sharePasswordModal').on('click', function (e) {
+                if (e.target === this) closeSharePasswordModal();
+            });
+            $('#sharePasswordSave').on('click', function () { saveSharePassword(false); });
+            $('#sharePasswordClear').on('click', function () { saveSharePassword(true); });
+
+            updateSharePasswordUi();
+        }
+
+        function setupE2eeToggle() {
+            var toggle = document.getElementById('e2eeToggle');
+            var wrap = document.getElementById('e2eeToggleWrap');
+            var hint = document.getElementById('e2eeHint');
+            var app = document.getElementById('airtoshare-app');
+            if (!toggle) return;
+
+            function disableE2ee(message) {
+                toggle.checked = false;
+                toggle.disabled = true;
+                if (app) app.removeAttribute('data-airtoshare-e2ee');
+                if (wrap) wrap.classList.add('e2ee-unavailable');
+                if (hint) {
+                    hint.textContent = message;
+                    hint.classList.remove('hidden');
+                }
+            }
+
+            function enableE2eeUi() {
+                toggle.disabled = false;
+                if (wrap) wrap.classList.remove('e2ee-unavailable');
+                if (hint) {
+                    hint.textContent = '';
+                    hint.classList.add('hidden');
+                }
+            }
+
+            if (!window.__airtoshareE2ee || !window.__airtoshareE2ee.isSupported()) {
+                var msg = window.__airtoshareE2ee && window.__airtoshareE2ee.supportMessage
+                    ? window.__airtoshareE2ee.supportMessage()
+                    : 'E2EE is not available in this browser.';
+                disableE2ee(msg);
+                return;
+            }
+
+            enableE2eeUi();
+
+            if (toggle.checked && app) {
+                app.setAttribute('data-airtoshare-e2ee', '1');
+                window.__airtoshareE2ee.ensureShareKey().catch(function (err) {
+                    disableE2ee(err && err.message ? err.message : 'Could not generate encryption key.');
+                    showToast('warning', 'E2EE', err && err.message ? err.message : 'Could not generate encryption key in this browser.');
+                });
+            }
+
+            $('#e2eeToggle').on('change', function () {
+                if (!app) return;
+                if (this.checked) {
+                    app.setAttribute('data-airtoshare-e2ee', '1');
+                    if (window.__airtoshareE2ee && window.__airtoshareE2ee.ensureShareKey) {
+                        window.__airtoshareE2ee.ensureShareKey().catch(function (err) {
+                            toggle.checked = false;
+                            app.removeAttribute('data-airtoshare-e2ee');
+                            showToast('warning', 'E2EE', err && err.message ? err.message : 'Could not generate encryption key in this browser.');
+                        });
+                    }
+                } else {
+                    app.removeAttribute('data-airtoshare-e2ee');
+                }
+            });
+        }
+
+        function setupQRModal() {
             $('#qrModalClose').off('click').on('click', function() {
                 $('#qrModal').removeClass('show');
             });
@@ -708,16 +1532,17 @@
                 }
             });
 
-            // Copy URL button
             $('#copyUrlBtn').off('click').on('click', function() {
-                const url = window.location.href;
-                navigator.clipboard.writeText(url).then(() => {
-                    const btn = $(this);
+                var url = getSharePageUrl() || window.location.origin + '/';
+                var btn = $(this);
+                copyToClipboard(url, function () {
                     btn.find('#copyUrlText').text('Copied!');
                     btn.addClass('success');
-                    showToast('success', 'Link Copied!', 'Share this link with others on the same network');
-                    setTimeout(() => {
-                        btn.find('#copyUrlText').text('Copy Link');
+                    showToast('success', 'Link copied!', shareHasPassword
+                        ? 'Send the link and password separately.'
+                        : 'Share this link with anyone.');
+                    setTimeout(function () {
+                        btn.find('#copyUrlText').text('Copy share link');
                         btn.removeClass('success');
                     }, 2000);
                 });
@@ -876,21 +1701,7 @@
         }
 
         function generateQRCode() {
-            const qrcodeDiv = document.getElementById('qrcode');
-            qrcodeDiv.innerHTML = '';
-
-            if (typeof QRCode !== 'undefined') {
-                new QRCode(qrcodeDiv, {
-                    text: window.location.href,
-                    width: 200,
-                    height: 200,
-                    colorDark: '#0ea5e9',
-                    colorLight: '#ffffff',
-                    correctLevel: QRCode.CorrectLevel.H
-                });
-            } else {
-                qrcodeDiv.innerHTML = '<p class=\"qr-loading-text\">QR Code loading...</p>';
-            }
+            refreshQrModalContent();
         }
 
         // Clipboard Sync Functions
@@ -1131,7 +1942,7 @@
         }
 
         function updateLastActivityDisplay() {
-            $('#lastActivity').show();
+            $('#lastActivity').removeClass('hidden');
 
             const updateDisplay = () => {
                 const now = new Date();
@@ -1158,7 +1969,7 @@
             if (!expiresAt) return;
 
             expiryTime = new Date(expiresAt).getTime();
-            $('#expiryCountdown').show();
+            $('#expiryCountdown').removeClass('hidden');
 
             if (countdownInterval) clearInterval(countdownInterval);
             countdownInterval = setInterval(updateCountdown, 1000);
@@ -1205,6 +2016,51 @@
             localStorage.setItem('airtoshare-active-tab', tabName);
         }
 
+        function loadUploadLimits() {
+            fetch('{{ route('limits.index') }}', { credentials: 'same-origin', headers: { 'Accept': 'application/json' } })
+                .then(function (r) { return r.json(); })
+                .then(function (data) {
+                    if (data.status !== 'success' || !data.limits) return;
+                    var zone = document.getElementById('uploadZone');
+                    if (!zone) return;
+                    zone.setAttribute('data-upload-max-files', String(data.limits.active_files_limit));
+                    zone.setAttribute('data-upload-max-size', String(data.limits.legacy_upload_max_bytes));
+                    zone.setAttribute('data-upload-chunked-max-size', String(data.limits.chunked_upload_max_bytes));
+                    if (window.__airtoshareUploadManager && window.__airtoshareUploadManager.init) {
+                        window.__airtoshareUploadManager.init();
+                    }
+                })
+                .catch(function () { /* ignore */ });
+        }
+
+        function setupRealtimeBridge() {
+            document.addEventListener('airtoshare:media.added', function () {
+                fetchMedia();
+                loadIpInfo();
+            });
+            document.addEventListener('airtoshare:media.deleted', function () {
+                fetchMedia();
+                loadIpInfo();
+            });
+            document.addEventListener('airtoshare:text.updated', function () {
+                fetchText();
+            });
+            document.addEventListener('airtoshare:state', function () {
+                fetchMedia();
+                fetchText();
+            });
+            var uploadZone = document.getElementById('uploadZone');
+            if (uploadZone) {
+                uploadZone.addEventListener('upload:summary', function () {
+                    fetchMedia();
+                    loadIpInfo();
+                    if (window.showToast) {
+                        window.showToast('success', 'Upload complete', 'File queue finished');
+                    }
+                });
+            }
+        }
+
         function loadIpInfo() {
             $.ajax({
                 url: '/api/v1/media/ip-info',
@@ -1219,6 +2075,15 @@
                     if (data.expires_at && data.files_count > 0) {
                         startCountdown(data.expires_at);
                     }
+
+                    if (typeof data.has_password === 'boolean') {
+                        shareHasPassword = data.has_password === true;
+                        updateSharePasswordUi();
+                    }
+                    if (data.share_uuid) {
+                        setShareUuid(data.share_uuid);
+                    }
+                    updateShareLinkPanel();
                 },
                 error: function() {
                     console.error('Failed to load IP info');
@@ -1232,11 +2097,28 @@
                 method: 'GET',
                 success: function(data) {
                     if (data.status === 'success') {
-                        $('#textInput').val(data.text);
+                        var source = (data.markdown_source && data.markdown_source.length)
+                            ? data.markdown_source
+                            : (data.text || '');
+                        $('#textInput').val(source);
                         handleTextInput();
-                        if (data.text && data.text.trim().length > 0) {
+                        if (source.trim().length > 0) {
                             updateSaveButton('copy');
                         }
+                        if (data.share_id) {
+                            var app = document.getElementById('airtoshare-app');
+                            if (app) {
+                                app.setAttribute('data-airtoshare-share-id', data.share_id);
+                            }
+                        }
+                        if (data.share_uuid) {
+                            setShareUuid(data.share_uuid);
+                        }
+                        if (typeof data.has_password === 'boolean') {
+                            shareHasPassword = data.has_password === true;
+                            updateSharePasswordUi();
+                        }
+                        updateShareLinkPanel();
                     }
                 },
                 error: function() {
@@ -1252,6 +2134,14 @@
                 success: function(response) {
                     displayFiles(response.files || []);
                     $('#fileCount').text(Object.keys(response.files || {}).length);
+                    if (response.share_uuid) {
+                        setShareUuid(response.share_uuid);
+                    }
+                    if (typeof response.has_password === 'boolean') {
+                        shareHasPassword = response.has_password === true;
+                        updateSharePasswordUi();
+                    }
+                    updateShareLinkPanel();
                 },
                 error: function() {
                     console.error('Failed to fetch media');
@@ -1289,25 +2179,77 @@
         }
 
         function detectLinks(text) {
-            const urlRegex = /(https?:\/\/[^\s]+)/g;
-            const matches = text.match(urlRegex);
-            const container = $('#linksContainer');
-            const linksList = $('#linksList');
+            var items = [];
+            var seen = Object.create(null);
+            var m;
 
-            if (matches && matches.length > 0) {
-                linksList.empty();
-                matches.forEach(url => {
-                    const link = $('<a>', {
-                        href: url,
-                        target: '_blank',
-                        class: 'detected-link',
-                        text: url
-                    });
-                    linksList.append(link);
+            function add(type, value, href) {
+                var key = type + '|' + value.toLowerCase();
+                if (seen[key]) return;
+                seen[key] = true;
+                items.push({ type: type, label: value, href: href });
+            }
+
+            function trimTrail(s) {
+                return s.replace(/[.,;:!?)>\]]+$/g, '');
+            }
+
+            // Emails
+            var emailRegex = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/g;
+            while ((m = emailRegex.exec(text)) !== null) {
+                add('email', m[0], 'mailto:' + m[0]);
+            }
+
+            // http(s) URLs
+            var urlRegex = /https?:\/\/[^\s<>"']+/gi;
+            while ((m = urlRegex.exec(text)) !== null) {
+                var url = trimTrail(m[0]);
+                add('url', url, url);
+            }
+
+            // www. without protocol
+            var wwwRegex = /\bwww\.[^\s<>"']+/gi;
+            while ((m = wwwRegex.exec(text)) !== null) {
+                var www = trimTrail(m[0]);
+                add('url', www, 'https://' + www);
+            }
+
+            // Bare domains e.g. dev.fileshare.test/path
+            var domainRegex = /\b(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+(?:[a-z]{2,})(?:\/[^\s]*)?/gi;
+            while ((m = domainRegex.exec(text)) !== null) {
+                var bare = trimTrail(m[0]);
+                if (bare.indexOf('@') !== -1) continue;
+                var overlaps = items.some(function (i) {
+                    if (i.type !== 'url') return false;
+                    var normalized = i.label.replace(/^https?:\/\//i, '');
+                    return normalized === bare || normalized.indexOf(bare) !== -1 || bare.indexOf(normalized) !== -1;
                 });
-                container.show();
+                if (overlaps) continue;
+                add('url', bare, 'http://' + bare);
+            }
+
+            var container = $('#linksContainer');
+            var linksList = $('#linksList');
+
+            if (items.length > 0) {
+                linksList.empty();
+                items.forEach(function (item) {
+                    var icon = item.type === 'email' ? 'fa-envelope' : 'fa-external-link-alt';
+                    var $link = $('<a>', {
+                        href: item.href,
+                        class: 'detected-link detected-link--' + item.type,
+                        text: item.label
+                    });
+                    if (item.type === 'url') {
+                        $link.attr({ target: '_blank', rel: 'noopener noreferrer' });
+                    }
+                    $link.prepend($('<i>', { class: 'fas ' + icon, 'aria-hidden': 'true' }));
+                    linksList.append($link);
+                });
+                container.removeClass('hidden');
             } else {
-                container.hide();
+                linksList.empty();
+                container.addClass('hidden');
             }
         }
 
@@ -1343,7 +2285,8 @@
                 url: '{{ route('share.store.text') }}',
                 method: 'POST',
                 data: JSON.stringify({
-                    text: text
+                    text: text,
+                    is_e2ee: $('#e2eeToggle').is(':checked') ? 1 : 0
                 }),
                 contentType: 'application/json',
                 headers: {
@@ -1351,8 +2294,20 @@
                 },
                 success: function(data) {
                     setButtonLoading(false);
-                    showToast('success', 'Saved!', 'Text saved successfully and synced across devices');
+                    showToast('success', 'Saved!', 'Text saved. Copy your share link from the panel above.');
                     loadIpInfo(); // Refresh timer and expiry info
+
+                    if (data.share_id) {
+                        var app = document.getElementById('airtoshare-app');
+                        if (app) app.setAttribute('data-airtoshare-share-id', data.share_id);
+                    }
+                    if (data.share_uuid) {
+                        setShareUuid(data.share_uuid);
+                        updateShareLinkPanel();
+                    }
+                    if (window.__airtoshareRealtime && window.__airtoshareRealtime.init) {
+                        window.__airtoshareRealtime.init();
+                    }
 
                     safeGtag('event', 'save_text', {
                         'text_length': text.length
@@ -1420,6 +2375,12 @@
         }
 
         function setupFileUpload() {
+            const uploadZoneEl = document.getElementById('uploadZone');
+            if (uploadZoneEl && uploadZoneEl.hasAttribute('data-upload-manager')) {
+                // Handled by public/assets/js/upload-manager.js
+                return;
+            }
+
             const uploadZone = $('#uploadZone');
             const fileInput = $('#fileInput');
 
@@ -1760,26 +2721,27 @@
         function createFileItem(file) {
             const isImage = file.mime_type.startsWith('image/');
             const isVideo = file.mime_type.startsWith('video/');
+            const isPreviewable = isImage || isVideo;
 
             const item = $(`
-        <div class="column is-12 file-item" data-uuid="${file.uuid}">
+        <div class="column is-12 preview-row file-item" data-uuid="${file.uuid}"
+             data-preview-uuid="${file.uuid}"
+             data-preview-mime="${file.mime_type}"
+             data-preview-size="${file.size}"
+             data-preview-url="${file.original_url}"
+             data-preview-name="${file.name.replace(/"/g, '&quot;')}">
             <input type="checkbox" class="file-checkbox">
             <div class="file-preview preview-trigger" data-uuid="${file.uuid}">
-                ${isImage ?
-                    `<img src="${file.original_url}" alt="${file.name}">` :
-                    isVideo ?
-                    `<video src="${file.original_url}"><i class="fas fa-play-circle file-icon"></i></video>` :
-                    `<i class="fas fa-file file-icon"></i>`
-                }
+                ${isPreviewable ? '' : '<i class="fas fa-file file-icon"></i>'}
             </div>
             <div class="file-info">
                 <div class="file-name" title="${file.name}">${file.name}</div>
                 <div class="file-size">${file.size}</div>
             </div>
             <div class="file-actions">
-                <button class="action-btn download" title="Download">
+                <a class="action-btn download preview-download" href="${file.original_url}" download title="Download">
                     <span class="icon"><i class="fas fa-download"></i></span>
-                </button>
+                </a>
                 <button class="action-btn delete" title="Delete">
                     <span class="icon"><i class="fas fa-trash"></i></span>
                 </button>
@@ -1806,10 +2768,9 @@
                 openPreviewModal(uuid);
             });
 
-            // Download button
+            // Download button (anchor — preview-renderer also exposes .preview-download)
             item.find('.download').off('click').on('click', function(e) {
                 e.stopPropagation();
-                downloadSingleFile(file);
             });
 
             // Delete button
@@ -1831,6 +2792,15 @@
             $('#previewModal').addClass('show');
         }
 
+        function hideAllPreviewElements() {
+            $('#previewImage, #previewVideo, #previewAudio, #previewPdf, #previewText, #previewDocument')
+                .addClass('hidden');
+        }
+
+        function showPreviewElement($el) {
+            $el.removeClass('hidden');
+        }
+
         function showPreview(index) {
             if (index < 0 || index >= allFiles.length) return;
 
@@ -1842,8 +2812,7 @@
             $('#previewFileSize').text(file.size);
             $('#previewCounter').text(`${index + 1} / ${allFiles.length}`);
 
-            // Hide all preview elements
-            $('#previewImage, #previewVideo, #previewAudio, #previewPdf, #previewText, #previewDocument').hide();
+            hideAllPreviewElements();
 
             // Stop any playing media
             const video = $('#previewVideo')[0];
@@ -1851,29 +2820,36 @@
             if (video) video.pause();
             if (audio) audio.pause();
 
-            // Show appropriate preview based on file type
-            const mimeType = file.mime_type.toLowerCase();
-            const fileName = file.name.toLowerCase();
+            const mediaUrl = file.preview_url || file.original_url;
+            const mimeType = (file.mime_type || '').toLowerCase();
+            const fileName = (file.name || '').toLowerCase();
 
             if (mimeType.startsWith('image/')) {
-                $('#previewImage').attr('src', file.original_url).show();
+                const img = $('#previewImage');
+                img.off('error.preview').on('error.preview', function () {
+                    if (file.original_url && img.attr('src') !== file.original_url) {
+                        img.attr('src', file.original_url);
+                    }
+                });
+                img.attr('src', mediaUrl);
+                showPreviewElement(img);
             } else if (mimeType.startsWith('video/')) {
-                video.src = file.original_url;
+                video.src = mediaUrl;
                 video.load();
-                $('#previewVideo').show();
+                showPreviewElement($('#previewVideo'));
             } else if (mimeType.startsWith('audio/')) {
-                audio.src = file.original_url;
+                audio.src = mediaUrl;
                 audio.load();
-                $('#previewAudio').show();
+                showPreviewElement($('#previewAudio'));
             } else if (mimeType === 'application/pdf') {
-                $('#previewPdf').attr('src', file.original_url).show();
+                showPreviewElement($('#previewPdf').attr('src', mediaUrl));
             } else if (isTextFile(mimeType, fileName)) {
-                // Load and display text/code files
                 loadTextPreview(file);
             } else {
-                // For other file types, show download option
                 const icon = getFileIcon(mimeType);
-                $('#previewDocument').find('i').attr('class', `fas ${icon} preview-doc-icon`).end().show();
+                showPreviewElement(
+                    $('#previewDocument').find('i').attr('class', `fas ${icon} preview-doc-icon`).end()
+                );
             }
 
             // Update navigation buttons
@@ -1936,11 +2912,11 @@
 
         // Load text file content for preview
         function loadTextPreview(file) {
-            $('#previewText').show();
+            showPreviewElement($('#previewText'));
             $('#previewCodeContent').text('Loading...');
             $('#previewLanguage').text(getLanguageFromFile(file.name));
 
-            fetch(file.original_url)
+            fetch(file.preview_url || file.original_url)
                 .then(response => response.text())
                 .then(text => {
                     // Limit preview to first 10000 characters
@@ -1976,6 +2952,7 @@
 
         function closePreviewModal() {
             $('#previewModal').removeClass('show');
+            hideAllPreviewElements();
 
             // Stop any playing media
             const video = $('#previewVideo')[0];
@@ -2041,8 +3018,9 @@
                 const uuid = Array.from(selectedFiles)[0];
                 const fileItem = $(`.file-item[data-uuid="${uuid}"]`);
                 const fileName = fileItem.find('.file-name').text();
-                const fileUrl = fileItem.find('.file-preview img').attr('src') ||
-                    fileItem.find('.action-btn.download').data('url');
+                const fileUrl = fileItem.attr('data-preview-url') ||
+                    fileItem.find('.preview-download').attr('href') ||
+                    fileItem.find('.file-preview img.preview-media').attr('src');
 
                 downloadSingleFile({
                     original_url: fileUrl,
@@ -2222,5 +3200,47 @@
                 }
             });
         });
+
+        // QR slot fallback wiring (task 7.3, design.md > Component 1 frontend).
+        //
+        // Acceptance criterion 1.5: when /qr/{slug} fails (the controller
+        // returns HTTP 503 with the fallback HTML), the surrounding <img>
+        // fires its `error` event. We replace the broken image and its
+        // download anchor with the share URL text plus an error banner so
+        // the user can still copy the link manually. The download
+        // affordance is removed entirely in this branch (criterion 1.5
+        // forbids offering a download when generation failed).
+        //
+        // Wired with addEventListener so the handler is independent of the
+        // jQuery-based UI plumbing above; if jQuery fails to load the
+        // fallback still works.
+        (function () {
+            var slot = document.querySelector('[data-qr-slot]');
+            if (!slot) {
+                return;
+            }
+            var img = slot.querySelector('[data-qr-image]');
+            var anchor = slot.querySelector('[data-qr-download]');
+            var fallback = slot.querySelector('[data-qr-fallback]');
+            if (!img || !fallback) {
+                return;
+            }
+
+            function revealFallback() {
+                if (anchor) {
+                    anchor.classList.add('hidden');
+                    // Disable the click-to-download path entirely so a
+                    // late-arriving click cannot trigger a 503 PNG load.
+                    anchor.setAttribute('aria-hidden', 'true');
+                    anchor.setAttribute('tabindex', '-1');
+                    anchor.addEventListener('click', function (e) {
+                        e.preventDefault();
+                    });
+                }
+                fallback.classList.remove('hidden');
+            }
+
+            img.addEventListener('error', revealFallback);
+        })();
     </script>
 @endsection

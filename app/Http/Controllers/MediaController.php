@@ -2,15 +2,53 @@
 
 namespace App\Http\Controllers;
 
+use App\Domain\Principal\IpPrincipal;
+use App\Domain\Principal\Principal;
+use App\Events\MediaAdded;
 use App\Models\MediaFile;
+use App\Models\MediaScan;
+use App\Models\Share;
+use App\Services\ShareService;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use ZipArchive;
 
+/**
+ * Legacy `/api/v1/media` controller.
+ *
+ * Task 5.3 refactor:
+ *   - Every add (upload) path consults {@see ShareService::canAddFile()}
+ *     before any file is persisted. Rejection paths return HTTP 422
+ *     (the status the legacy endpoint already used for limit/size
+ *     violations) and do not modify the owner's existing files
+ *     (Requirements 13.3, 13.4).
+ *   - The single-file download path looks up the corresponding
+ *     `media_scans` row by Spatie media UUID and applies the status
+ *     mapping from design.md > Component 20:
+ *
+ *        missing row OR `pending` → 425 Too Early
+ *        `clean`                  → serve (existing behaviour)
+ *        `infected`               → 451 Unavailable For Legal Reasons
+ *        `error`                  → 503 Service Unavailable
+ *        `skipped_e2ee`           → serve (the unscanned-media notice
+ *                                   is rendered by the surrounding
+ *                                   share view, not here)
+ *     (Requirements 20.2, 20.3, 20.4, 20.9.)
+ *
+ * Guest IP request/response surfaces (status codes, body shape, headers,
+ * one-time-download behaviour) are otherwise preserved byte-for-byte
+ * (Requirement 16.13). The new caps almost never trip for guest IP
+ * because the legacy 20-files-per-IP rule below is stricter; the gate
+ * matters most for Account / Room principals and for an eventual
+ * /api/v2/* hand-off, but it is unconditional here so the contract
+ * holds for every principal kind.
+ */
 class MediaController extends Controller
 {
     private const MAX_FILE_SIZE = 25 * 1024 * 1024; // 25MB
@@ -26,6 +64,11 @@ class MediaController extends Controller
         'application/zip',
         'application/x-rar-compressed'
     ];
+
+    public function __construct(
+        private readonly ShareService $shareService,
+    ) {
+    }
 
     /**
      * Store a media file with current user's IP and expiry of 6 hours
@@ -46,6 +89,7 @@ class MediaController extends Controller
 
         $ip = $request->ip();
         $file = $request->file('file');
+        $principal = $request->principal();
 
         $isAllowed = false;
         foreach (self::ALLOWED_MIME_TYPES as $allowed) {
@@ -55,36 +99,131 @@ class MediaController extends Controller
             }
         }
 
-        if (!$isAllowed) {
+        if (! $isAllowed) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'File type not allowed.'
+                'message' => 'File type not allowed.',
             ], 422);
         }
 
         if ($file->getSize() > self::MAX_FILE_SIZE) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'File size exceeds limit of ' . $this->formatFileSize(self::MAX_FILE_SIZE)
+                'message' => 'File size exceeds limit of ' . $this->formatFileSize(self::MAX_FILE_SIZE),
+            ], 422);
+        }
+
+        if ($this->usesShareAggregate($principal)) {
+            return $this->storeForShareOwner($request, $file, $principal);
+        }
+
+        return $this->storeForLegacyIp($request, $file, $ip);
+    }
+
+    /**
+     * Persist a file on the Share aggregate for Account / Room owners.
+     */
+    private function storeForShareOwner(Request $request, $file, Principal $principal)
+    {
+        $share = $this->shareService->findOrCreateActiveForPrincipal($principal);
+
+        if (! $this->shareService->canAddFile($share, (int) $file->getSize())) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Active files limit reached for this owner.',
+            ], 422);
+        }
+
+        $originalName = $file->getClientOriginalName();
+        $extension = $file->getClientOriginalExtension();
+        $safeName = Str::slug(pathinfo($originalName, PATHINFO_FILENAME)) . '_' . time() . '.' . $extension;
+
+        try {
+            $media = $share->addMedia($file)
+                ->usingName($originalName)
+                ->usingFileName($safeName)
+                ->toMediaCollection('shared_files', 'public');
+
+            if (! $media || ! file_exists($media->getPath())) {
+                throw new \Exception('File was not properly saved to storage');
+            }
+
+            chmod($media->getPath(), 0644);
+
+            \App\Services\VirusScanner::make()->queueForMedia($media);
+            \App\Jobs\ScanMediaForViruses::dispatch($media->uuid);
+
+            $share = $this->shareService->update($share, ['expiry' => '24h']);
+
+            broadcast(new MediaAdded(
+                $share,
+                (string) $media->uuid,
+                (string) $media->name,
+                (int) $media->size,
+                (string) $media->mime_type,
+                $media->getUrl(),
+            ));
+        } catch (\Exception $e) {
+            Log::error('File upload failed for share owner', [
+                'owner_type' => $principal->type(),
+                'owner_id'   => $principal->identifier(),
+                'error'      => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to save file. Please try again.',
+            ], 500);
+        }
+
+        Log::info('File uploaded for share owner', [
+            'owner_type' => $principal->type(),
+            'owner_id'   => $principal->identifier(),
+            'share_id'   => $share->id,
+            'file'       => $originalName,
+        ]);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Media uploaded successfully.',
+            'uuid' => $media->uuid,
+            'url' => $media->getUrl(),
+            'name' => $media->name,
+            'size' => $this->formatFileSize($media->size),
+            'expires_at' => $share->expires_at->toDateTimeString(),
+            'share_id' => $share->id,
+            'share_uuid' => $share->uuid,
+        ]);
+    }
+
+    /**
+     * Legacy IP-only upload path (Requirement 16.13 backward compat).
+     */
+    private function storeForLegacyIp(Request $request, $file, string $ip)
+    {
+        $principal = $request->principal();
+        $shareForGate = $this->ephemeralShareForPrincipal($principal);
+
+        if (! $this->shareService->canAddFile($shareForGate, (int) $file->getSize())) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Active files limit reached for this owner.',
             ], 422);
         }
 
         $expiry = now()->addHours(24);
 
-        // ✅ Get existing or new MediaFile and update expiry
         $sharedMedia = MediaFile::firstOrNew(['ip_address' => $ip]);
         $sharedMedia->expires_at = $expiry;
         $sharedMedia->save();
 
-        // Check file count limit
         if ($sharedMedia->getMedia('shared_files')->count() >= self::MAX_FILES_PER_IP) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Maximum file limit reached (' . self::MAX_FILES_PER_IP . ' files per IP)'
+                'message' => 'Maximum file limit reached (' . self::MAX_FILES_PER_IP . ' files per IP)',
             ], 422);
         }
 
-        // Generate safe file name
         $originalName = $file->getClientOriginalName();
         $extension = $file->getClientOriginalExtension();
         $safeName = Str::slug(pathinfo($originalName, PATHINFO_FILENAME)) . '_' . time() . '.' . $extension;
@@ -95,16 +234,20 @@ class MediaController extends Controller
                 ->usingFileName($safeName)
                 ->toMediaCollection('shared_files', 'public');
 
-            if (!$media || !file_exists($media->getPath())) {
+            if (! $media || ! file_exists($media->getPath())) {
                 throw new \Exception('File was not properly saved to storage');
             }
 
             chmod($media->getPath(), 0644);
+
+            \App\Services\VirusScanner::make()->queueForMedia($media);
+            \App\Jobs\ScanMediaForViruses::dispatch($media->uuid);
         } catch (\Exception $e) {
             Log::error("File upload failed for IP: {$ip}, Error: " . $e->getMessage());
+
             return response()->json([
                 'status' => 'error',
-                'message' => 'Failed to save file. Please try again.'
+                'message' => 'Failed to save file. Please try again.',
             ], 500);
         }
 
@@ -128,13 +271,29 @@ class MediaController extends Controller
      */
     public function index(Request $request)
     {
+        $principal = $request->principal();
+
+        if ($this->usesShareAggregate($principal)) {
+            $share = $this->activeShareForPrincipal($principal);
+
+            if ($share === null) {
+                return response()->json([
+                    'files' => [],
+                    'total_files' => 0,
+                    'total_size' => $this->formatFileSize(0),
+                ]);
+            }
+
+            return response()->json($this->filesPayloadFromShare($share));
+        }
+
         $ip = $request->ip();
 
         $mediaFiles = MediaFile::active($ip)
             ->latest('created_at')
             ->first();
 
-        if (!$mediaFiles) {
+        if (! $mediaFiles) {
             return response()->json([
                 'files' => [],
                 'total_files' => 0,
@@ -142,39 +301,20 @@ class MediaController extends Controller
             ]);
         }
 
-        $files = $mediaFiles->getMedia('shared_files')
-            ->map(function ($item) {
-                $path = $item->getPath();
+        $payload = $this->filesPayloadFromShare($mediaFiles);
+        $share = Share::query()
+            ->where('owner_type', Share::OWNER_TYPE_IP)
+            ->where('owner_id', $ip)
+            ->where('expires_at', '>', Carbon::now())
+            ->orderByDesc('id')
+            ->first();
 
-                // Check if file exists
-                if (!file_exists($path)) {
-                    Log::warning("Missing file on disk: {$path}");
-                    return null; // Optionally: $item->delete();
-                }
+        if ($share !== null) {
+            $payload['share_uuid'] = $share->uuid;
+            $payload['has_password'] = $share->hasPassword();
+        }
 
-                return [
-                    'uuid' => $item->uuid,
-                    'name' => $item->name,
-                    'file_name' => $item->file_name,
-                    'mime_type' => $item->mime_type,
-                    'extension' => $item->extension,
-                    'preview_url' => $item->getFullUrl(),
-                    'original_url' => $item->getUrl(),
-                    'order' => $item->order_column,
-                    'custom_properties' => $item->custom_properties,
-                    'size' => $this->formatFileSize($item->size),
-                    'size_bytes' => $item->size,
-                    'created_at' => $item->created_at->diffForHumans(),
-                ];
-            })
-            ->filter()  // Remove nulls (missing files)
-            ->values(); // Reset array indexes
-
-        return response()->json([
-            'files' => $files,
-            'total_files' => $files->count(),
-            'total_size' => $this->formatFileSize($files->sum('size_bytes')),
-        ]);
+        return response()->json($payload);
     }
 
 
@@ -185,8 +325,28 @@ class MediaController extends Controller
     {
         $uuid = $uuid ?? $request->input('uuid');
 
-        if (!$uuid) {
+        if (! $uuid) {
             return response()->json(['success' => false, 'message' => 'UUID required'], 400);
+        }
+
+        $principal = $request->principal();
+
+        if ($this->usesShareAggregate($principal)) {
+            $mediaItem = Media::where('uuid', $uuid)->first();
+
+            if ($mediaItem === null || ! $this->mediaBelongsToPrincipal($mediaItem, $principal)) {
+                return response()->json(['success' => false, 'message' => 'Media not found'], 404);
+            }
+
+            $mediaItem->delete();
+
+            Log::info('File deleted for share owner', [
+                'owner_type' => $principal->type(),
+                'owner_id'   => $principal->identifier(),
+                'uuid'       => $uuid,
+            ]);
+
+            return response()->json(['success' => true, 'message' => 'File deleted successfully']);
         }
 
         $ip = $request->ip();
@@ -223,6 +383,39 @@ class MediaController extends Controller
      */
     public function destroyAll(Request $request)
     {
+        $principal = $request->principal();
+
+        if ($this->usesShareAggregate($principal)) {
+            $shares = Share::query()
+                ->where('owner_type', $principal->type())
+                ->where('owner_id', $principal->identifier())
+                ->where('expires_at', '>', now())
+                ->get();
+
+            $deletedCount = 0;
+
+            foreach ($shares as $share) {
+                $deletedCount += $share->getMedia('shared_files')->count();
+                $share->clearMediaCollection('shared_files');
+            }
+
+            if ($deletedCount === 0) {
+                return response()->json(['success' => false, 'message' => 'No files found'], 404);
+            }
+
+            Log::info('All files deleted for share owner', [
+                'owner_type' => $principal->type(),
+                'owner_id'   => $principal->identifier(),
+                'count'      => $deletedCount,
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => "Successfully deleted {$deletedCount} files",
+                'deleted_count' => $deletedCount,
+            ]);
+        }
+
         $ip = $request->ip();
 
         $mediaFiles = MediaFile::active($ip)->get();
@@ -286,6 +479,19 @@ class MediaController extends Controller
         if ($expiresAt) {
             $info['expires_at'] = $expiresAt;
             $info['last_accessed'] = $lastAccessed;
+        }
+
+        $principal = $request->principal();
+        $share = Share::query()
+            ->where('owner_type', $principal->type())
+            ->where('owner_id', $principal->identifier())
+            ->where('expires_at', '>', Carbon::now())
+            ->orderByDesc('id')
+            ->first();
+
+        if ($share !== null) {
+            $info['share_uuid'] = $share->uuid;
+            $info['has_password'] = $share->hasPassword();
         }
 
         return response()->json($info);
@@ -376,15 +582,37 @@ class MediaController extends Controller
     }
 
     /**
-     * Download a single file by UUID with one-time download support
+     * Download a single file by UUID with one-time download support.
+     *
+     * Applies the virus-scan status gate from design.md > Component 20
+     * before any byte of file content is served. The mapping is:
+     *
+     *   missing scan row OR `pending` → 425 Too Early
+     *   `clean`                       → serve (existing behaviour)
+     *   `infected`                    → 451 Unavailable For Legal Reasons
+     *   `error`                       → 503 Service Unavailable
+     *   `skipped_e2ee`                → serve (the unscanned-media notice
+     *                                   is rendered by the surrounding
+     *                                   share view, not by this endpoint)
+     *
+     * Validates: Requirements 20.2, 20.3, 20.4, 20.9.
      */
     public function download(Request $request, $uuid)
     {
         // Find media by UUID using Spatie's Media model
-        $media = \Spatie\MediaLibrary\MediaCollections\Models\Media::where('uuid', $uuid)->first();
+        $media = Media::where('uuid', $uuid)->first();
 
         if (!$media) {
             return response()->view('errors.404', [], 404);
+        }
+
+        // Virus-scan status gate (Requirement 20). Applied before
+        // checking the on-disk file because a missing scan row is
+        // semantically the same as `pending` per the design mapping
+        // and must surface 425 regardless of disk state.
+        $gate = $this->scanStatusGate($media->uuid);
+        if ($gate !== null) {
+            return $gate;
         }
 
         $filePath = $media->getPath();
@@ -436,5 +664,129 @@ class MediaController extends Controller
         return response()->download($filePath, $fileName, [
             'Content-Type' => $mimeType
         ]);
+    }
+
+    // -- helpers ------------------------------------------------------------
+
+    /**
+     * Build an in-memory Share that carries only the principal-derived
+     * owner pair. {@see ShareService::canAddFile()} consults
+     * `owner_type`/`owner_id` only - it never touches the share's id or
+     * persisted columns - so we never have to save this row just to
+     * gate a single upload (avoiding a stray `shares` insert on the
+     * rejection path that Requirement 13.4 forbids).
+     */
+    private function ephemeralShareForPrincipal(Principal $principal): Share
+    {
+        $share = new Share();
+        $share->owner_type = $principal->type();
+        $share->owner_id = $principal->identifier();
+
+        return $share;
+    }
+
+    private function usesShareAggregate(Principal $principal): bool
+    {
+        return ! ($principal instanceof IpPrincipal);
+    }
+
+    private function activeShareForPrincipal(Principal $principal): ?Share
+    {
+        return Share::query()
+            ->where('owner_type', $principal->type())
+            ->where('owner_id', $principal->identifier())
+            ->where('expires_at', '>', now())
+            ->orderByDesc('id')
+            ->first();
+    }
+
+    /**
+     * @param  \Spatie\MediaLibrary\HasMedia  $owner
+     * @return array{files: \Illuminate\Support\Collection, total_files: int, total_size: string}
+     */
+    private function filesPayloadFromShare($owner): array
+    {
+        $files = $owner->getMedia('shared_files')
+            ->map(function ($item) {
+                $path = $item->getPath();
+
+                if (! file_exists($path)) {
+                    Log::warning("Missing file on disk: {$path}");
+
+                    return null;
+                }
+
+                return [
+                    'uuid' => $item->uuid,
+                    'name' => $item->name,
+                    'file_name' => $item->file_name,
+                    'mime_type' => $item->mime_type,
+                    'extension' => $item->extension,
+                    'preview_url' => $item->getFullUrl(),
+                    'original_url' => $item->getUrl(),
+                    'order' => $item->order_column,
+                    'custom_properties' => $item->custom_properties,
+                    'size' => $this->formatFileSize($item->size),
+                    'size_bytes' => $item->size,
+                    'created_at' => $item->created_at->diffForHumans(),
+                ];
+            })
+            ->filter()
+            ->values();
+
+        return [
+            'files' => $files,
+            'total_files' => $files->count(),
+            'total_size' => $this->formatFileSize($files->sum('size_bytes')),
+            ...($owner instanceof Share ? [
+                'share_uuid' => $owner->uuid,
+                'has_password' => $owner->hasPassword(),
+            ] : []),
+        ];
+    }
+
+    private function mediaBelongsToPrincipal(Media $media, Principal $principal): bool
+    {
+        if ($media->model_type !== (new Share())->getMorphClass()) {
+            return false;
+        }
+
+        $share = Share::query()->find($media->model_id);
+
+        return $share !== null
+            && $share->owner_type === $principal->type()
+            && $share->owner_id === $principal->identifier();
+    }
+
+    /**
+     * Resolve the scan-status gate for a download. Returns:
+     *   - null when the caller may proceed to serve the bytes
+     *     (clean / skipped_e2ee), or
+     *   - a fully-formed Response carrying the design-mapped status
+     *     code (425 / 451 / 503) for the caller to return verbatim.
+     *
+     * Treating a missing scan row as `pending` (rather than as an
+     * implicit `clean`) is required by Requirement 20.2 and the
+     * design's "missing row OR `pending` → 425" rule: any media that
+     * has not yet been queued (or whose row was lost) must not leak.
+     */
+    private function scanStatusGate(string $mediaUuid): ?Response
+    {
+        $scan = MediaScan::query()->where('media_uuid', $mediaUuid)->first();
+        $status = $scan?->status ?? MediaScan::STATUS_PENDING;
+
+        return match ($status) {
+            MediaScan::STATUS_PENDING => response('Scan pending; please retry shortly.', 425)
+                ->header('Content-Type', 'text/plain; charset=UTF-8'),
+            MediaScan::STATUS_INFECTED => response('File flagged as infected and is unavailable.', 451)
+                ->header('Content-Type', 'text/plain; charset=UTF-8'),
+            MediaScan::STATUS_ERROR => response('Scan failed; awaiting manual review.', 503)
+                ->header('Content-Type', 'text/plain; charset=UTF-8'),
+            MediaScan::STATUS_CLEAN, MediaScan::STATUS_SKIPPED_E2EE => null,
+            // Defensive default: any unknown status is treated as `error`
+            // so a corrupt row can never silently serve infected bytes.
+            default => response('Scan failed; awaiting manual review.', 503)
+                ->header('Content-Type', 'text/plain; charset=UTF-8'),
+        };
     }
 }

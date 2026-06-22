@@ -6,113 +6,126 @@
 
 @section('og_image', url($blog['image']))
 @section('twitter_image', url($blog['image']))
+@section('og_type', 'article')
+@section('og_published_time', date('c', strtotime($blog['date'])))
+@section('breadcrumb_parent_name', 'Blog')
+@section('breadcrumb_parent_url', route('blog.index'))
+@section('breadcrumb_label', $blog['title'])
 
 @section('schema')
-    <script type="application/ld+json">
-{
-  "@@context": "https://schema.org",
-  "@@type": "BlogPosting",
-  "headline": "{{ $blog['title'] }}",
-  "description": "{{ $blog['excerpt'] }}",
-  "image": "{{ url($blog['image']) }}",
-  "author": {
-    "@@type": "Organization",
-    "name": "{{ $blog['author'] }}"
-  },
-  "publisher": {
-    "@@type": "Organization",
-    "name": "AirToShare",
-    "logo": {
-      "@@type": "ImageObject",
-      "url": "{{ url('/favicon.ico') }}"
-    }
-  },
-  "datePublished": "{{ date('Y-m-d', strtotime($blog['date'])) }}",
-  "mainEntityOfPage": {
-    "@@type": "WebPage",
-    "@@id": "{{ route('blog.show', $blog['slug']) }}"
-  }
-}
-</script>
+    @php
+        $blogPostingSchema = [
+            '@context' => 'https://schema.org',
+            '@type' => 'BlogPosting',
+            'headline' => $blog['title'],
+            'description' => $blog['excerpt'],
+            'image' => url($blog['image']),
+            'author' => [
+                '@type' => 'Organization',
+                'name' => $blog['author'],
+            ],
+            'publisher' => [
+                '@type' => 'Organization',
+                'name' => 'AirToShare',
+                'logo' => [
+                    '@type' => 'ImageObject',
+                    'url' => url('/logo.svg'),
+                ],
+            ],
+            'datePublished' => date('Y-m-d', strtotime($blog['date'])),
+            'dateModified' => date('Y-m-d', strtotime($blog['date'])),
+            'mainEntityOfPage' => [
+                '@type' => 'WebPage',
+                '@id' => route('blog.show', $blog['slug']),
+            ],
+        ];
+    @endphp
+    <script type="application/ld+json">{!! json_encode($blogPostingSchema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!}</script>
 @endsection
 
 @section('content')
-    <article class="blog-detail">
-        <header class="blog-detail-header">
-            <a href="{{ route('blog.index') }}" class="blog-back-btn">
-                <i class="fas fa-arrow-left"></i>
-                Back to Blog
-            </a>
-            <span class="blog-category">{{ $blog['category'] }}</span>
-            <h1 class="blog-detail-title">{{ $blog['title'] }}</h1>
-            <div class="blog-detail-meta">
-                <span class="meta-item">
-                    <i class="fas fa-user"></i>
-                    {{ $blog['author'] }}
-                </span>
-                <span class="meta-item">
-                    <i class="fas fa-calendar-alt"></i>
-                    {{ $blog['date'] }}
-                </span>
-                <span class="meta-item">
-                    <i class="fas fa-clock"></i>
-                    {{ $blog['read_time'] }}
-                </span>
+
+@php
+    $catSlug = \Illuminate\Support\Str::slug($blog['category']);
+    $articleUrl = url(route('blog.show', $blog['slug']));
+@endphp
+
+<div class="blog-article-page">
+
+    <nav class="blog-article-nav" aria-label="Blog navigation">
+        <a href="{{ route('blog.index') }}" class="blog-article-back">
+            <i class="fas fa-arrow-left" aria-hidden="true"></i>
+            All articles
+        </a>
+    </nav>
+
+    <article class="blog-article">
+        <header class="blog-article-header">
+            <span class="blog-page-cat blog-page-cat--{{ $catSlug }}">{{ $blog['category'] }}</span>
+            <h1 class="blog-article-title">{{ $blog['title'] }}</h1>
+            <div class="blog-article-meta">
+                <span><i class="fas fa-user" aria-hidden="true"></i> {{ $blog['author'] }}</span>
+                <span><i class="fas fa-calendar-alt" aria-hidden="true"></i> {{ $blog['date'] }}</span>
+                <span><i class="fas fa-clock" aria-hidden="true"></i> {{ $blog['read_time'] }}</span>
             </div>
         </header>
 
-        <div class="blog-detail-image">
-            <img src="{{ $blog['image'] }}" alt="{{ $blog['title'] }}">
-        </div>
+        <figure class="blog-article-figure">
+            <img src="{{ $blog['image'] }}" alt="{{ $blog['title'] }}" width="960" height="540">
+        </figure>
 
-        <div class="blog-detail-content">
+        <div class="blog-article-prose">
             {!! $blog['content'] !!}
         </div>
 
-        <div class="blog-share-section">
-            <h3>Share this article</h3>
-            <div class="share-buttons">
-                <button class="share-btn twitter" onclick="shareOnTwitter()">
-                    <i class="fab fa-x-twitter"></i>
-                    X
-                </button>
-                <button class="share-btn linkedin" onclick="shareOnLinkedIn()">
-                    <i class="fab fa-linkedin"></i>
+        <footer class="blog-article-share">
+            <span class="blog-article-share-label">Share this article</span>
+            <div class="blog-article-share-actions">
+                <a href="https://twitter.com/intent/tweet?url={{ urlencode($articleUrl) }}&text={{ urlencode($blog['title'] . ' — AirToShare') }}"
+                    class="blog-article-share-btn blog-article-share-btn--x" target="_blank" rel="noopener noreferrer">
+                    <i class="fab fa-x-twitter" aria-hidden="true"></i>
+                    Post on X
+                </a>
+                <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ urlencode($articleUrl) }}"
+                    class="blog-article-share-btn blog-article-share-btn--linkedin" target="_blank" rel="noopener noreferrer">
+                    <i class="fab fa-linkedin-in" aria-hidden="true"></i>
                     LinkedIn
-                </button>
-                <button class="share-btn copy" onclick="copyArticleLink()">
-                    <i class="fas fa-link"></i>
-                    Copy Link
+                </a>
+                <button type="button" class="blog-article-share-btn blog-article-share-btn--copy"
+                    data-copy-text="{{ $articleUrl }}">
+                    <i class="fas fa-link" aria-hidden="true"></i>
+                    Copy link
                 </button>
             </div>
-        </div>
+        </footer>
     </article>
 
     @if (count($relatedBlogs) > 0)
-        <section class="related-posts">
-            <h2 class="related-title">
-                <i class="fas fa-newspaper"></i>
-                Related Articles
+        <section class="blog-article-related" aria-labelledby="related-posts-heading">
+            <h2 class="blog-article-related-heading" id="related-posts-heading">
+                <i class="fas fa-newspaper" aria-hidden="true"></i>
+                More to read
             </h2>
-            <div class="related-grid">
+            <div class="blog-page-grid blog-page-grid--compact">
                 @foreach ($relatedBlogs as $related)
-                    <article class="blog-card">
-                        <a href="{{ route('blog.show', $related['slug']) }}" class="blog-card-image">
-                            <img src="{{ $related['image'] }}" alt="{{ $related['title'] }}" loading="lazy">
-                            <span class="blog-category">{{ $related['category'] }}</span>
+                    @php($relCat = \Illuminate\Support\Str::slug($related['category']))
+                    <article class="blog-page-card">
+                        <a href="{{ route('blog.show', $related['slug']) }}" class="blog-page-card-media" tabindex="-1" aria-hidden="true">
+                            <img src="{{ $related['image'] }}" alt="" loading="lazy" width="640" height="400">
+                            <span class="blog-page-cat blog-page-cat--{{ $relCat }}">{{ $related['category'] }}</span>
                         </a>
-                        <div class="blog-card-content">
-                            <h3 class="blog-card-title">
-                                <a href="{{ route('blog.show', $related['slug']) }}">
-                                    {{ $related['title'] }}
-                                </a>
+                        <div class="blog-page-card-body">
+                            <div class="blog-page-card-meta">
+                                <span><i class="fas fa-calendar-alt" aria-hidden="true"></i> {{ $related['date'] }}</span>
+                                <span><i class="fas fa-clock" aria-hidden="true"></i> {{ $related['read_time'] }}</span>
+                            </div>
+                            <h3 class="blog-page-card-title">
+                                <a href="{{ route('blog.show', $related['slug']) }}">{{ $related['title'] }}</a>
                             </h3>
-                            <p class="blog-card-excerpt">
-                                {{ Str::limit($related['excerpt'], 100) }}
-                            </p>
-                            <a href="{{ route('blog.show', $related['slug']) }}" class="blog-read-more">
-                                Read More
-                                <i class="fas fa-arrow-right"></i>
+                            <p class="blog-page-card-excerpt">{{ \Illuminate\Support\Str::limit($related['excerpt'], 120) }}</p>
+                            <a href="{{ route('blog.show', $related['slug']) }}" class="blog-page-read-more">
+                                Read article
+                                <i class="fas fa-arrow-right" aria-hidden="true"></i>
                             </a>
                         </div>
                     </article>
@@ -121,22 +134,17 @@
         </section>
     @endif
 
-    <script>
-        function shareOnTwitter() {
-            const url = encodeURIComponent(window.location.href);
-            const text = encodeURIComponent('{{ $blog['title'] }} - AirToShare');
-            window.open(`https://twitter.com/intent/tweet?url=${url}&text=${text}`, '_blank');
-        }
+    <div class="blog-article-cta">
+        <a href="{{ url('/') }}" class="modern-btn blog-article-cta-btn">
+            <i class="fas fa-share-alt" aria-hidden="true"></i>
+            Try AirToShare
+        </a>
+        <a href="{{ route('blog.index') }}" class="modern-btn secondary blog-article-cta-btn">
+            <i class="fas fa-newspaper" aria-hidden="true"></i>
+            Back to blog
+        </a>
+    </div>
 
-        function shareOnLinkedIn() {
-            const url = encodeURIComponent(window.location.href);
-            window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${url}`, '_blank');
-        }
+</div>
 
-        function copyArticleLink() {
-            navigator.clipboard.writeText(window.location.href).then(() => {
-                showToast('success', 'Link Copied!', 'Article link copied to clipboard');
-            });
-        }
-    </script>
 @endsection

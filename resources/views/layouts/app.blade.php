@@ -6,17 +6,78 @@
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'AirForShare - Instant File Sharing Across Devices')</title>
+    <title>@yield('title', 'AirToShare - Instant File Sharing Across Devices')</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    @if (isset($share) && $share)
+        <meta name="airtoshare-share-id" content="{{ $share->id }}">
+    @endif
     <meta name="theme-color" content="#1A73E8">
+
+    {{--
+        PDF.js viewer URL (Requirement 6.2). Pinned via config so the
+        Preview_Renderer can display application/pdf attachments using a
+        known viewer build. Read by /assets/js/preview-renderer.js; if
+        the tag is missing the renderer falls back to the bundled
+        /assets/pdfjs/web/viewer.html path.
+    --}}
+    <meta name="airtoshare-pdfjs-viewer" content="{{ config('airtoshare.pdfjs_viewer_url') }}">
+
+    {{-- Laravel Reverb / Echo client configuration (Requirement 14.1) --}}
+    <meta name="airtoshare-reverb-key" content="{{ env('REVERB_APP_KEY') }}">
+    <meta name="airtoshare-reverb-host" content="{{ env('REVERB_FRONTEND_HOST', env('REVERB_HOST', 'localhost')) }}">
+    <meta name="airtoshare-reverb-port" content="{{ env('REVERB_PORT', 6001) }}">
+    <meta name="airtoshare-reverb-scheme" content="{{ env('REVERB_SCHEME', 'http') }}">
+    <meta name="airtoshare-owner-ip" content="{{ request()->ip() }}">
+
+    {{--
+        Theme bootstrap (Requirements 4.3, 4.4, 4.5, 4.6, 4.7, 4.8).
+        Runs synchronously before any stylesheet or script so the resolved theme
+        is applied to <html data-theme="..."> before first paint, preventing FOUC.
+        - Reads localStorage["airtoshare_theme"] when set to "light" or "dark" (4.5, 4.6)
+        - Otherwise uses prefers-color-scheme: dark (4.3)
+        - Otherwise defaults to "light" (4.4)
+        - Self-heals an invalid stored value by overwriting it with the resolved theme (4.8)
+        - Any read/write error is swallowed and the page falls back to light without blocking render (4.7)
+    --}}
+    <script>
+        (function () {
+            try {
+                var k = 'airtoshare_theme';
+                var stored = localStorage.getItem(k);
+                var theme;
+                if (stored === 'light' || stored === 'dark') {
+                    theme = stored;
+                } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                    theme = 'dark';
+                } else {
+                    theme = 'light';
+                }
+                document.documentElement.dataset.theme = theme;
+                if (stored !== null && stored !== theme) {
+                    localStorage.setItem(k, theme);
+                }
+            } catch (e) {
+                document.documentElement.dataset.theme = 'light';
+            }
+        })();
+    </script>
 
     <!-- SEO Meta Tags -->
     <meta name="description" content="@yield('description', 'AirToShare - Share files and text instantly across devices on the same network. Simple, fast, and secure file sharing without accounts or external servers.')">
     <meta name="keywords" content="@yield('keywords', 'file sharing, instant sharing, local network, secure sharing, cross-device, no account required')">
 
     <meta name="author" content="AirToShare">
-    <meta name="robots" content="index, follow">
-    <link rel="canonical" href="{{ str_replace('http://', 'https://', url()->current()) }}">
+    @php
+        $robotsMeta = trim(View::getSection('robots') ?? '');
+        if ($robotsMeta === '') {
+            $robotsMeta = ($seoNoindex ?? false) ? 'noindex, nofollow' : 'index, follow';
+        }
+        $isNoindexPage = str_contains(strtolower($robotsMeta), 'noindex');
+    @endphp
+    <meta name="robots" content="{{ $robotsMeta }}">
+    @unless($isNoindexPage)
+        <link rel="canonical" href="{{ url()->current() }}">
+    @endunless
 
     <!-- Additional SEO Meta Tags -->
     <meta name="language" content="English">
@@ -31,14 +92,17 @@
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-    <link rel="manifest" href="/site.webmanifest">
+    <link rel="manifest" href="{{ route('manifest.show') }}">
     <!-- Sitemap Reference -->
     <link rel="sitemap" type="application/xml" title="Sitemap" href="{{ url('/sitemap.xml') }}">
 
     <!-- Open Graph Meta Tags -->
     <meta property="og:title" content="@yield('og_title', \Illuminate\Support\Facades\View::getSection('title', 'AirToShare - Instant File Sharing'))">
     <meta property="og:description" content="@yield('og_description', \Illuminate\Support\Facades\View::getSection('description', 'Share files and text instantly across devices on the same network. Simple, fast, and secure.'))">
-    <meta property="og:type" content="website">
+    <meta property="og:type" content="@yield('og_type', 'website')">
+    @hasSection('og_published_time')
+        <meta property="article:published_time" content="@yield('og_published_time')">
+    @endif
     <meta property="og:url" content="{{ url()->current() }}">
     <meta property="og:site_name" content="AirToShare">
     <meta property="og:locale" content="en_US">
@@ -57,7 +121,7 @@
     <meta name="twitter:site" content="@AirToShare">
     <meta name="twitter:creator" content="@AirToShare">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="{{ asset('assets/css/custom.css') }}?v=1" rel="stylesheet" />
+    <link href="{{ asset('assets/css/custom.css') }}?v=18" rel="stylesheet" />
 
     <!-- Schema.org JSON-LD -->
     @yield('schema')
@@ -87,27 +151,41 @@
     </script>
 
     <!-- Breadcrumb Schema -->
-    @if (request()->path() !== '/')
-        <script type="application/ld+json">
-    {
-      "@@context": "https://schema.org",
-      "@@type": "BreadcrumbList",
-      "itemListElement": [
-        {
-          "@@type": "ListItem",
-          "position": 1,
-          "name": "Home",
-          "item": "{{ url('/') }}"
-        },
-        {
-          "@@type": "ListItem",
-          "position": 2,
-          "name": "@yield('title', 'Page')",
-          "item": "{{ url()->current() }}"
-        }
-      ]
-    }
-    </script>
+    @if (request()->path() !== '/' && ! $isNoindexPage)
+        @php
+            $breadcrumbItems = [
+                ['name' => 'Home', 'item' => url('/')],
+            ];
+            if (trim(View::getSection('breadcrumb_parent_url') ?? '') !== '') {
+                $breadcrumbItems[] = [
+                    'name' => trim(View::getSection('breadcrumb_parent_name') ?? 'Section'),
+                    'item' => trim(View::getSection('breadcrumb_parent_url')),
+                ];
+            }
+            $breadcrumbLabel = trim(View::getSection('breadcrumb_label') ?? '');
+            if ($breadcrumbLabel === '') {
+                $breadcrumbLabel = trim(View::getSection('title') ?? 'Page');
+            }
+            $breadcrumbItems[] = [
+                'name' => $breadcrumbLabel,
+                'item' => url()->current(),
+            ];
+            $breadcrumbSchema = [
+                '@context' => 'https://schema.org',
+                '@type' => 'BreadcrumbList',
+                'itemListElement' => array_map(
+                    static fn (array $item, int $index): array => [
+                        '@type' => 'ListItem',
+                        'position' => $index + 1,
+                        'name' => $item['name'],
+                        'item' => $item['item'],
+                    ],
+                    $breadcrumbItems,
+                    array_keys($breadcrumbItems),
+                ),
+            ];
+        @endphp
+        <script type="application/ld+json">{!! json_encode($breadcrumbSchema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!}</script>
     @endif
 
 
@@ -124,20 +202,72 @@
     <!-- Bulma CSS -->
     <link rel="stylesheet" href="{{ asset('assets/css/bulma.min.css') }}">
     <script src="{{ asset('assets/js/jquery.min.js') }}" defer></script>
+    <script defer>
+        document.addEventListener('DOMContentLoaded', function () {
+            if (window.jQuery) {
+                jQuery.ajaxSetup({
+                    xhrFields: { withCredentials: true },
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                });
+            }
+        });
+    </script>
     <!-- QR Code Library -->
     <script src="{{ asset('assets/js/qrcode.min.js') }}" defer></script>
+    <!-- Theme Manager (Requirement 4: toggle, persistence, runtime contrast self-check) -->
+    <script src="{{ asset('assets/js/theme-manager.js') }}?v=1" defer></script>
+    <!-- Clipboard Component (Requirement 5: tri-strategy copy with disabled-while-in-flight,
+         confirm indicator, and persistent error banner). Data-attribute driven; binds to
+         any [data-copy] / [data-copy-text] element in the page. -->
+    <script src="{{ asset('assets/js/clipboard.js') }}?v=1" defer></script>
+    <!-- Preview Renderer (Requirement 6: classifier, lazy-load via IntersectionObserver,
+         5s out-of-view release, 10s load-error retry control). Data-attribute driven;
+         binds to any .preview-row element in the page. -->
+    <script src="{{ asset('assets/js/preview-renderer.js') }}?v=2" defer></script>
+    {{-- Rich text editor removed — plain textarea for quick text sharing --}}
+    <script src="{{ asset('assets/js/upload-manager.js') }}?v=2" defer></script>
+    <script src="{{ asset('assets/js/encryption-module.js') }}?v=2" defer></script>
+    <script src="{{ asset('assets/js/pwa-manager.js') }}?v=1" defer></script>
+    {{-- Realtime + clipboard sync (Requirements 10, 14) --}}
+    <script src="https://cdn.jsdelivr.net/npm/pusher-js@8.4.0/dist/web/pusher.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/laravel-echo@1.19.0/dist/echo.iife.js" defer></script>
+    <script src="{{ asset('assets/js/realtime.js') }}?v=2" defer></script>
+    <script src="{{ asset('assets/js/clipboard-sync.js') }}?v=1" defer></script>
 
 
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const burger = document.querySelector('.navbar-burger');
-            const menu = document.querySelector('.navbar-menu');
+            const menu = document.getElementById('siteNavMenu');
+
+            function setNavOpen(open) {
+                if (!burger || !menu) return;
+                menu.classList.toggle('is-active', open);
+                burger.classList.toggle('is-active', open);
+                burger.setAttribute('aria-expanded', open ? 'true' : 'false');
+                document.body.classList.toggle('nav-open', open);
+            }
 
             if (burger && menu) {
                 burger.addEventListener('click', () => {
-                    menu.classList.toggle('is-active');
-                    burger.classList.toggle('is-active');
+                    setNavOpen(!menu.classList.contains('is-active'));
+                });
+
+                menu.querySelectorAll('.navbar-pill, .navbar-auth-btn').forEach((link) => {
+                    link.addEventListener('click', () => setNavOpen(false));
+                });
+
+                document.addEventListener('keydown', (event) => {
+                    if (event.key === 'Escape') {
+                        setNavOpen(false);
+                    }
+                });
+
+                document.addEventListener('click', (event) => {
+                    if (!menu.classList.contains('is-active')) return;
+                    if (menu.contains(event.target) || burger.contains(event.target)) return;
+                    setNavOpen(false);
                 });
             }
         });
@@ -232,60 +362,93 @@
     <!-- Toast Container -->
     <div class="toast-container"></div>
 
-    <!-- Modern Navbar -->
-    <nav class="navbar modern-navbar" role="navigation" aria-label="main navigation">
-        <div class="container">
+    <!-- Site header -->
+    <nav class="navbar modern-navbar site-header" role="navigation" aria-label="Main navigation">
+        <div class="container navbar-inner">
             <div class="navbar-brand">
-                <a class="navbar-item" href="{{ url('/') }}" style="
-    width: 125px;
-    height: 50px;
-">
-                    <img src="/logo.svg" alt="Air to share logo" />
+                <a class="navbar-logo-link" href="{{ url('/') }}" aria-label="AirToShare home">
+                    <img src="/logo.svg" alt="AirToShare" width="125" height="50" />
                 </a>
 
-                <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+                <button type="button" class="navbar-burger" aria-label="Open menu" aria-controls="siteNavMenu" aria-expanded="false">
                     <span aria-hidden="true"></span>
                     <span aria-hidden="true"></span>
                     <span aria-hidden="true"></span>
-                </a>
+                </button>
             </div>
 
-            <div class="navbar-menu">
+            <div class="navbar-menu" id="siteNavMenu">
                 <div class="navbar-start">
-                    <a class="navbar-item" href="{{ url('/') }}">
-                        <i class="fas fa-home" style="margin-right: 0.5rem;"></i>
-                        Home
-                    </a>
-                    <a class="navbar-item" href="{{ url('/how-it-works') }}">
-                        <i class="fas fa-info-circle" style="margin-right: 0.5rem;"></i>
-                        How It Works
-                    </a>
-                    <a class="navbar-item" href="{{ url('/faq') }}">
-                        <i class="fas fa-question-circle" style="margin-right: 0.5rem;"></i>
-                        FAQ
-                    </a>
-                    <a class="navbar-item" href="{{ route('blog.index') }}">
-                        <i class="fas fa-newspaper" style="margin-right: 0.5rem;"></i>
-                        Blog
-                    </a>
-                    <a class="navbar-item" href="{{ url('/feedback') }}">
-                        <i class="fas fa-comment" style="margin-right: 0.5rem;"></i>
-                        Feedback
-                    </a>
-                    <a class="navbar-item" href="{{ url('/coming-soon') }}">
-                        <i class="fas fa-rocket" style="margin-right: 0.5rem;"></i>
-                        Coming Soon
-                    </a>
+                    <div class="navbar-pills" role="list">
+                        <a class="navbar-pill @if(request()->is('/')) is-current @endif" href="{{ url('/') }}" role="listitem">
+                            <i class="fas fa-home" aria-hidden="true"></i>
+                            <span>Home</span>
+                        </a>
+                        <a class="navbar-pill @if(request()->is('how-it-works')) is-current @endif" href="{{ url('/how-it-works') }}" role="listitem">
+                            <i class="fas fa-info-circle" aria-hidden="true"></i>
+                            <span>How It Works</span>
+                        </a>
+                        <a class="navbar-pill @if(request()->is('faq')) is-current @endif" href="{{ url('/faq') }}" role="listitem">
+                            <i class="fas fa-question-circle" aria-hidden="true"></i>
+                            <span>FAQ</span>
+                        </a>
+                        <a class="navbar-pill @if(request()->is('blog') || request()->is('blog/*')) is-current @endif" href="{{ route('blog.index') }}" role="listitem">
+                            <i class="fas fa-newspaper" aria-hidden="true"></i>
+                            <span>Blog</span>
+                        </a>
+                        <a class="navbar-pill @if(request()->is('feedback')) is-current @endif" href="{{ url('/feedback') }}" role="listitem">
+                            <i class="fas fa-comment" aria-hidden="true"></i>
+                            <span>Feedback</span>
+                        </a>
+                        @if(Route::has('docs.api'))
+                            <a class="navbar-pill @if(request()->is('docs*')) is-current @endif" href="{{ route('docs.api') }}" role="listitem">
+                                <i class="fas fa-code" aria-hidden="true"></i>
+                                <span>API Docs</span>
+                            </a>
+                        @endif
+                    </div>
                 </div>
 
                 <div class="navbar-end">
-                    <div class="navbar-item">
-                        <div class="buttons">
-                            <a class="button is-primary is-small" href="{{ url('/') }}"
-                                style="background: var(--bg-gradient); border: none; border-radius: var(--border-radius-sm); font-weight: 600;">
-                                <strong>Start Sharing</strong>
+                    <div class="navbar-actions">
+                        @auth('account')
+                            @php($navAccount = auth('account')->user())
+                            <span class="navbar-user-chip" title="{{ $navAccount->email }}">
+                                <i class="fas fa-user-circle" aria-hidden="true"></i>
+                                {{ \Illuminate\Support\Str::before($navAccount->email, '@') }}
+                            </span>
+                            <a class="modern-btn secondary navbar-auth-btn @if(request()->routeIs('account.shares')) is-current @endif" href="{{ route('account.shares') }}">
+                                <i class="fas fa-folder-open" aria-hidden="true"></i>
+                                My Shares
                             </a>
-                        </div>
+                            <form method="POST" action="{{ route('auth.logout') }}" class="navbar-logout-form">
+                                @csrf
+                                <button type="submit" class="modern-btn secondary navbar-auth-btn navbar-logout-btn">
+                                    <i class="fas fa-sign-out-alt" aria-hidden="true"></i>
+                                    Log out
+                                </button>
+                            </form>
+                        @else
+                            <a class="modern-btn secondary navbar-auth-btn" href="{{ route('auth.login') }}">
+                                <i class="fas fa-sign-in-alt" aria-hidden="true"></i>
+                                Log in
+                            </a>
+                            <a class="modern-btn navbar-auth-btn" href="{{ route('auth.register') }}">
+                                <i class="fas fa-user-plus" aria-hidden="true"></i>
+                                Register
+                            </a>
+                        @endauth
+
+                        @unless(request()->is('/'))
+                            <a class="modern-btn navbar-auth-btn navbar-cta-btn" href="{{ url('/') }}">
+                                <i class="fas fa-share-alt" aria-hidden="true"></i>
+                                Start Sharing
+                            </a>
+                        @endunless
+
+                        <button class="theme-toggle theme-toggle--header" id="themeToggle" type="button" title="Toggle Dark Mode" aria-label="Toggle dark mode">
+                            <i class="fas fa-moon" id="themeIcon"></i>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -397,11 +560,6 @@
         }
     </style>
 
-    <!-- Dark Mode Toggle Button -->
-    <button class="theme-toggle" id="themeToggle" title="Toggle Dark Mode">
-        <i class="fas fa-moon" id="themeIcon"></i>
-    </button>
-
     <!-- PWA Install Banner -->
     <div class="pwa-install-banner" id="pwaInstallBanner">
         <div class="pwa-install-content">
@@ -418,28 +576,11 @@
     </div>
 
     <script>
-        // Dark Mode Toggle
-        (function() {
-            const themeToggle = document.getElementById('themeToggle');
-            const themeIcon = document.getElementById('themeIcon');
-            const savedTheme = localStorage.getItem('airtoshare-theme') || 'light';
-
-            document.documentElement.setAttribute('data-theme', savedTheme);
-            updateThemeIcon();
-
-            themeToggle.addEventListener('click', () => {
-                const current = document.documentElement.getAttribute('data-theme');
-                const newTheme = current === 'dark' ? 'light' : 'dark';
-                document.documentElement.setAttribute('data-theme', newTheme);
-                localStorage.setItem('airtoshare-theme', newTheme);
-                updateThemeIcon();
-            });
-
-            function updateThemeIcon() {
-                const theme = document.documentElement.getAttribute('data-theme');
-                themeIcon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
-            }
-        })();
+        // Dark Mode toggle is implemented in /assets/js/theme-manager.js
+        // (loaded with `defer` below). The pre-paint bootstrap in <head>
+        // already resolved the active theme using the same snake-case
+        // localStorage key (`airtoshare_theme`) and the `data-theme`
+        // attribute on <html>, so nothing needs to run inline here.
 
         // PWA Install Prompt
         let deferredPrompt;

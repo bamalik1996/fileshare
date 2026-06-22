@@ -1,0 +1,19 @@
+{
+    "name": "airtoshare",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "test": "vitest run",
+        "test:watch": "vitest",
+        "test:e2e": "playwright test"
+    },
+    "devDependencies": {
+        "@playwright/test": "1.60.0",
+        "axe-core": "4.11.4",
+        "fast-check": "4.8.0",
+        "jsdom": "29.1.1",
+        "marked": "18.0.4",
+        "turndown": "7.2.4",
+        "vitest": "4.1.7"
+    }
+}
