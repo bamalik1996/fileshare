@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Account;
 use App\Services\AccountService;
+use App\Services\RecaptchaVerifier;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -15,8 +16,10 @@ use Illuminate\View\View;
 
 class AuthController extends Controller
 {
-    public function __construct(private readonly AccountService $accounts)
-    {
+    public function __construct(
+        private readonly AccountService $accounts,
+        private readonly RecaptchaVerifier $recaptcha,
+    ) {
     }
 
     public function showRegister(): View
@@ -26,6 +29,8 @@ class AuthController extends Controller
 
     public function register(Request $request): RedirectResponse
     {
+        $this->recaptcha->validateRequest($request);
+
         $data = $request->validate([
             'email'    => ['required', 'string', 'email', 'max:255'],
             'password' => ['required', 'string', 'min:8', 'max:128', 'confirmed'],
@@ -50,6 +55,8 @@ class AuthController extends Controller
 
     public function forgotPassword(Request $request): RedirectResponse
     {
+        $this->recaptcha->validateRequest($request);
+
         $request->validate([
             'email' => ['required', 'string', 'email'],
         ]);
@@ -77,6 +84,8 @@ class AuthController extends Controller
 
     public function resetPassword(Request $request): RedirectResponse
     {
+        $this->recaptcha->validateRequest($request);
+
         $request->validate([
             'token'                 => ['required', 'string'],
             'email'                 => ['required', 'string', 'email'],
@@ -109,6 +118,8 @@ class AuthController extends Controller
 
     public function login(Request $request): RedirectResponse
     {
+        $this->recaptcha->validateRequest($request);
+
         $data = $request->validate([
             'email'    => ['required', 'string', 'email'],
             'password' => ['required', 'string'],

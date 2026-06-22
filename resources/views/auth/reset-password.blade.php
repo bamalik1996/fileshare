@@ -35,6 +35,8 @@
                 placeholder="Repeat new password">
         </div>
 
+        @include('auth.partials.recaptcha')
+
         <button type="submit" class="form-button" style="width: 100%;">
             <i class="fas fa-check" aria-hidden="true"></i>
             Update password
@@ -46,4 +48,5 @@
     </p>
 
     @include('auth.partials.shell-end')
+    @include('auth.partials.recaptcha-script')
 @endsection

@@ -19,6 +19,8 @@
                 placeholder="you@example.com">
         </div>
 
+        @include('auth.partials.recaptcha')
+
         <button type="submit" class="form-button" style="width: 100%;">
             <i class="fas fa-paper-plane" aria-hidden="true"></i>
             Send reset link
@@ -35,4 +37,5 @@
             ['href' => route('auth.register'), 'label' => 'Create a new account'],
         ],
     ])
+    @include('auth.partials.recaptcha-script')
 @endsection

@@ -5172,6 +5172,16 @@ body {
     color: var(--text-secondary);
 }
 
+.auth-captcha {
+    padding-top: 0.25rem;
+}
+
+.auth-captcha-error {
+    margin: 0.35rem 0 0;
+    font-size: 0.8125rem;
+    color: var(--error-color);
+}
+
 .auth-alert {
     display: flex;
     align-items: flex-start;
