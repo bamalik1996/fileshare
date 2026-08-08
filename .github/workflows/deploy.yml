@@ -73,6 +73,14 @@ jobs:
             sudo -u www-data php artisan route:cache
             sudo -u www-data php artisan view:cache
             
+
+            # ----------------------------------
+            # OPcache RESET (🔥 IMPORTANT)
+            # ----------------------------------
+            echo "♻️ Resetting PHP OPcache..."
+            sudo systemctl reload php8.2-fpm
+
+            
             # Final permissions
             sudo chown -R www-data:www-data storage bootstrap/cache
             sudo chmod -R 775 storage bootstrap/cache
