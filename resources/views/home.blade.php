@@ -313,17 +313,10 @@
                     <div class="upload-subtext">
                         or click to browse • Large files use resumable chunked upload
                         <br>
-                        <small>Supported: Images, PDF, DOC, TXT, ZIP, Videos</small>
+                        <small>Supported: {{ config('airtoshare.upload_types.label') }}</small>
                     </div>
                     <input type="file" id="fileInput" data-upload-input multiple
-                        accept="image/*,
-  application/pdf,
-  application/msword,
-  application/vnd.openxmlformats-officedocument.wordprocessingml.document,
-  text/plain,
-  application/zip,
-  video/*,
-  audio/*"
+                        accept="{{ config('airtoshare.upload_types.accept') }}"
                         class="hidden">
 
                     <div class="progress-container" id="progressContainer">

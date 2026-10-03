@@ -9,10 +9,10 @@ use App\Models\Account;
 use App\Models\Share;
 use App\Services\CollectService;
 use App\Services\ShareService;
+use App\Support\UploadTypePolicy;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -32,21 +32,10 @@ class CollectController extends Controller
 {
     private const MAX_FILE_SIZE = 25 * 1024 * 1024; // 25 MB (legacy single-request limit)
 
-    private const ALLOWED_MIME_TYPES = [
-        'image/*',
-        'video/*',
-        'audio/*',
-        'application/pdf',
-        'text/plain',
-        'application/msword',
-        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        'application/zip',
-        'application/x-rar-compressed',
-    ];
-
     public function __construct(
         private readonly CollectService $collect,
         private readonly ShareService $shareService,
+        private readonly UploadTypePolicy $uploadTypes,
     ) {
     }
 
@@ -121,15 +110,7 @@ class CollectController extends Controller
 
         $file = $request->file('file');
 
-        $allowed = false;
-        foreach (self::ALLOWED_MIME_TYPES as $pattern) {
-            if (Str::is($pattern, (string) $file->getMimeType())) {
-                $allowed = true;
-                break;
-            }
-        }
-
-        if (! $allowed) {
+        if (! $this->uploadTypes->isAllowed($file->getMimeType(), $file->getClientOriginalName())) {
             return response()->json([
                 'status'  => 'error',
                 'message' => 'File type not allowed.',

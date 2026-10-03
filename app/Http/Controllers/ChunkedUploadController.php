@@ -78,6 +78,10 @@ class ChunkedUploadController extends Controller
                 return $this->error('Invalid upload metadata.', 422);
             }
 
+            if ($e->getMessage() === ChunkedUploadService::ERR_FILE_TYPE_NOT_ALLOWED) {
+                return $this->error('File type not allowed.', 422);
+            }
+
             throw $e;
         }
 

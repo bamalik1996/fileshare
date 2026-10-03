@@ -17,6 +17,7 @@
         "laravel/tinker": "^2.10.1",
         "league/commonmark": "2.8.2",
         "resend/resend-laravel": "^1.4",
+        "sentry/sentry-laravel": "^4.28",
         "spatie/laravel-medialibrary": "^11.12"
     },
     "require-dev": {
