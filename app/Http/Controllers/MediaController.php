@@ -67,6 +67,7 @@ class MediaController extends Controller
 
     public function __construct(
         private readonly ShareService $shareService,
+        private readonly \App\Services\AnalyticsService $analytics,
     ) {
     }
 
@@ -606,6 +607,26 @@ class MediaController extends Controller
             return response()->view('errors.404', [], 404);
         }
 
+        // Owner link controls (SaaS features, Phase 2). A revoked link or a
+        // link whose download ceiling is spent (incl. burn-after-read) is
+        // blocked with 410 Gone before any scan/disk work is performed.
+        $ownerShare = $media->model instanceof Share ? $media->model : null;
+        if ($ownerShare !== null) {
+            if ($ownerShare->isRevoked()) {
+                return response()->json([
+                    'status'  => 'error',
+                    'message' => 'This link has been revoked by its owner.',
+                ], 410);
+            }
+
+            if ($ownerShare->downloadLimitReached()) {
+                return response()->json([
+                    'status'  => 'error',
+                    'message' => 'This link has reached its download limit.',
+                ], 410);
+            }
+        }
+
         // Virus-scan status gate (Requirement 20). Applied before
         // checking the on-disk file because a missing scan row is
         // semantically the same as `pending` per the design mapping
@@ -632,6 +653,17 @@ class MediaController extends Controller
             'one_time' => $isOneTime,
             'token' => $oneTimeToken
         ]);
+
+        // Record the download for Share analytics before any one-time
+        // deletion removes the media/owner link. Guarded internally so a
+        // logging failure can never block the actual file download.
+        $this->analytics->recordDownloadForMedia($media, $request);
+
+        // Count the download against the Share's ceiling (atomic). This is
+        // what enforces burn-after-read / max-downloads on the next request.
+        if ($ownerShare !== null) {
+            $ownerShare->increment('download_count');
+        }
 
         // Get file info before potential deletion
         $fileName = $media->file_name;

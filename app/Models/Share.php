@@ -9,6 +9,7 @@ use App\Http\Middleware\SharePasswordGate;
 use App\Support\IpAddressMatcher;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -66,6 +67,13 @@ class Share extends Model implements HasMedia
         'expires_at',
         'public_slug',
         'public_view_count',
+        'max_downloads',
+        'download_count',
+        'revoked_at',
+        'is_collect',
+        'collect_slug',
+        'collect_title',
+        'collect_instructions',
         'is_e2ee',
         'is_favourite',
         'notify_browser',
@@ -76,16 +84,22 @@ class Share extends Model implements HasMedia
     /** @var array<string, string> */
     protected $casts = [
         'expires_at' => 'datetime',
+        'revoked_at' => 'datetime',
         'is_e2ee' => 'bool',
         'is_favourite' => 'bool',
         'notify_browser' => 'bool',
         'notify_email' => 'bool',
         'public_view_count' => 'integer',
+        'max_downloads' => 'integer',
+        'download_count' => 'integer',
+        'is_collect' => 'bool',
     ];
 
     /** @var array<string, string> */
     protected $attributes = [
         'public_view_count' => 0,
+        'download_count' => 0,
+        'is_collect' => false,
         'is_e2ee' => false,
         'is_favourite' => false,
         'notify_browser' => false,
@@ -172,6 +186,81 @@ class Share extends Model implements HasMedia
     public function hasPassword(): bool
     {
         return is_string($this->password_hash) && $this->password_hash !== '';
+    }
+
+    /**
+     * True when the owner has revoked this Share's links. Revoked Shares
+     * block downloads (410) and public / recipient views (404) immediately,
+     * independent of expiry (SaaS features, Phase 2).
+     */
+    public function isRevoked(): bool
+    {
+        return $this->revoked_at !== null;
+    }
+
+    /**
+     * True when a download ceiling is set and has been reached. A ceiling
+     * of 1 implements "burn after reading". null = unlimited downloads.
+     */
+    public function downloadLimitReached(): bool
+    {
+        return $this->max_downloads !== null
+            && (int) $this->download_count >= (int) $this->max_downloads;
+    }
+
+    /**
+     * A Share is unavailable to recipients when it is revoked, its download
+     * ceiling is spent, or it has expired. Used by the view/download gates.
+     */
+    public function isAccessBlocked(): bool
+    {
+        return $this->isRevoked() || $this->downloadLimitReached() || $this->isExpired();
+    }
+
+    /**
+     * Branding payload of the Account that owns this Share, or null when
+     * the Share is not Account-owned or the owner has no branding
+     * (SaaS features, Phase 4). Consumed by the public share + collect
+     * pages to render the owner's logo / colour / message.
+     *
+     * @return array{logo_url: ?string, color: ?string, message: ?string}|null
+     */
+    public function brandingPayload(): ?array
+    {
+        if ($this->owner_type !== self::OWNER_TYPE_ACCOUNT) {
+            return null;
+        }
+
+        // Branding is a cosmetic enhancement and must never break the page
+        // render if the owner lookup fails for any reason.
+        try {
+            $account = Account::query()->find($this->owner_id);
+
+            return $account?->brandingPayload();
+        } catch (\Throwable) {
+            return null;
+        }
+    }
+
+    /**
+     * True when this Share is a "file request" inbox that recipients can
+     * upload to via /collect/{slug} (SaaS features, Phase 3).
+     */
+    public function isCollect(): bool
+    {
+        return (bool) $this->is_collect;
+    }
+
+    /**
+     * True when a collect inbox is currently accepting uploads (open,
+     * not revoked, not expired).
+     */
+    public function acceptsCollectUploads(): bool
+    {
+        return $this->isCollect()
+            && is_string($this->collect_slug) && $this->collect_slug !== ''
+            && ! $this->isRevoked()
+            && ! $this->isExpired();
     }
 
     public function ownedByPrincipal(Principal $principal): bool

@@ -9,8 +9,8 @@ use App\Domain\Principal\IpPrincipal;
 use App\Domain\Principal\RoomPrincipal;
 use App\Models\Share;
 use Carbon\Carbon;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Tests\Support\CreatesSharesSchema;
 use Tests\TestCase;
 
 /**
@@ -23,6 +23,8 @@ use Tests\TestCase;
  */
 class ShareModelTest extends TestCase
 {
+    use CreatesSharesSchema;
+
     protected function setUp(): void
     {
         // Use an in-memory SQLite connection so unit-level tests are
@@ -48,24 +50,7 @@ class ShareModelTest extends TestCase
         ]);
         \DB::purge('sqlite');
 
-        Schema::create('shares', function (Blueprint $table) {
-            $table->id();
-            $table->char('uuid', 36)->unique();
-            $table->string('owner_type');
-            $table->string('owner_id');
-            $table->longText('text_content')->nullable();
-            $table->longText('markdown_source')->nullable();
-            $table->string('password_hash')->nullable();
-            $table->timestamp('expires_at');
-            $table->char('public_slug', 12)->nullable()->unique();
-            $table->unsignedInteger('public_view_count')->default(0);
-            $table->boolean('is_e2ee')->default(false);
-            $table->boolean('is_favourite')->default(false);
-            $table->timestamps();
-
-            $table->index(['owner_type', 'owner_id', 'expires_at']);
-            $table->index('expires_at');
-        });
+        $this->createSharesSchema(withOwnerIndexes: true);
     }
 
     protected function tearDown(): void

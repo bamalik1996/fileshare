@@ -11,10 +11,13 @@ use Carbon\Carbon;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
+use Tests\Support\CreatesSharesSchema;
 use Tests\TestCase;
 
 class SharePasswordVerifyTest extends TestCase
 {
+    use CreatesSharesSchema;
+
     protected function setUp(): void
     {
         putenv('DB_CONNECTION=sqlite');
@@ -35,23 +38,7 @@ class SharePasswordVerifyTest extends TestCase
         ]);
         \DB::purge('sqlite');
 
-        Schema::create('shares', function (Blueprint $table) {
-            $table->id();
-            $table->char('uuid', 36)->unique();
-            $table->string('owner_type');
-            $table->string('owner_id');
-            $table->longText('text_content')->nullable();
-            $table->longText('markdown_source')->nullable();
-            $table->string('password_hash')->nullable();
-            $table->timestamp('expires_at');
-            $table->char('public_slug', 12)->nullable()->unique();
-            $table->unsignedInteger('public_view_count')->default(0);
-            $table->boolean('is_e2ee')->default(false);
-            $table->boolean('is_favourite')->default(false);
-            $table->boolean('notify_browser')->default(false);
-            $table->string('notify_email')->nullable();
-            $table->timestamps();
-        });
+        $this->createSharesSchema();
     }
 
     public function test_verify_password_grants_access_via_session(): void

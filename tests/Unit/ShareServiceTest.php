@@ -16,6 +16,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\ValidationException;
+use Tests\Support\CreatesSharesSchema;
 use Tests\TestCase;
 
 /**
@@ -37,6 +38,8 @@ use Tests\TestCase;
  */
 class ShareServiceTest extends TestCase
 {
+    use CreatesSharesSchema;
+
     private ShareService $service;
 
     protected function setUp(): void
@@ -69,43 +72,8 @@ class ShareServiceTest extends TestCase
         config()->set('airtoshare.account_storage_limit_bytes', 1024 * 1024 * 1024);
         config()->set('airtoshare.account_max_expiry_option', '30d');
 
-        Schema::create('shares', function (Blueprint $table) {
-            $table->id();
-            $table->char('uuid', 36)->unique();
-            $table->string('owner_type');
-            $table->string('owner_id');
-            $table->longText('text_content')->nullable();
-            $table->longText('markdown_source')->nullable();
-            $table->string('password_hash')->nullable();
-            $table->timestamp('expires_at');
-            $table->char('public_slug', 12)->nullable()->unique();
-            $table->unsignedInteger('public_view_count')->default(0);
-            $table->boolean('is_e2ee')->default(false);
-            $table->boolean('is_favourite')->default(false);
-            $table->timestamps();
-
-            $table->index(['owner_type', 'owner_id', 'expires_at']);
-            $table->index('expires_at');
-        });
-
-        Schema::create('media', function (Blueprint $table) {
-            $table->id();
-            $table->morphs('model');
-            $table->uuid()->nullable()->unique();
-            $table->string('collection_name');
-            $table->string('name');
-            $table->string('file_name');
-            $table->string('mime_type')->nullable();
-            $table->string('disk');
-            $table->string('conversions_disk')->nullable();
-            $table->unsignedBigInteger('size');
-            $table->json('manipulations');
-            $table->json('custom_properties');
-            $table->json('generated_conversions');
-            $table->json('responsive_images');
-            $table->unsignedInteger('order_column')->nullable();
-            $table->timestamps();
-        });
+        $this->createSharesSchema(withOwnerIndexes: true);
+        $this->createMediaSchema();
 
         $this->service = $this->app->make(ShareService::class);
     }

@@ -803,6 +803,51 @@
             </div>
         </section>
 
+        <!-- Features Highlight Section (SaaS features) -->
+        <section class="seo-section" id="features-section">
+            <div class="seo-section-inner">
+                <h2 class="seo-heading">
+                    <i class="fas fa-wand-magic-sparkles"></i>
+                    Everything you need to share — free
+                </h2>
+                <p class="seo-subheading" style="text-align:center;max-width:720px;margin:0 auto 2rem;opacity:.8;">
+                    Password protection, QR codes and real-time sync, plus powerful new tools to track, control, collect, and brand your shares.
+                </p>
+                <div class="security-features">
+                    <div class="security-feature-card">
+                        <i class="fas fa-chart-line" aria-hidden="true"></i>
+                        <h3>Link analytics</h3>
+                        <p>See views, downloads, unique visitors, countries, and devices for every link — with a full activity log. No raw IPs stored.</p>
+                    </div>
+                    <div class="security-feature-card">
+                        <i class="fas fa-ban" aria-hidden="true"></i>
+                        <h3>Revoke &amp; limits</h3>
+                        <p>Kill a link instantly, cap total downloads, or enable burn-after-reading so a file self-destructs after the first download.</p>
+                    </div>
+                    <div class="security-feature-card">
+                        <i class="fas fa-inbox" aria-hidden="true"></i>
+                        <h3>File requests</h3>
+                        <p>Create a collect link and let anyone upload files to you — no account needed on their side. Perfect for client deliverables.</p>
+                    </div>
+                    <div class="security-feature-card">
+                        <i class="fas fa-palette" aria-hidden="true"></i>
+                        <h3>Your branding</h3>
+                        <p>Add your logo, accent colour, and message to your public share and upload pages for a professional, branded experience.</p>
+                    </div>
+                    <div class="security-feature-card">
+                        <i class="fas fa-lock" aria-hidden="true"></i>
+                        <h3>Password &amp; E2EE</h3>
+                        <p>Protect shares with a password or end-to-end encryption, with custom expiry from one hour up to 30 days.</p>
+                    </div>
+                    <div class="security-feature-card">
+                        <i class="fas fa-bolt" aria-hidden="true"></i>
+                        <h3>Fast &amp; resumable</h3>
+                        <p>Drag-and-drop, chunked resumable uploads, QR codes, real-time updates, and an installable PWA — all included.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- How It Works Section -->
         <section class="seo-section" id="how-it-works-section">
             <div class="seo-section-inner">

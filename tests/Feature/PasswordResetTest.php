@@ -19,8 +19,20 @@ class PasswordResetTest extends TestCase
         putenv('DB_DATABASE=:memory:');
         $_ENV['DB_CONNECTION'] = 'sqlite';
         $_ENV['DB_DATABASE'] = ':memory:';
+        $_SERVER['DB_CONNECTION'] = 'sqlite';
+        $_SERVER['DB_DATABASE'] = ':memory:';
 
         parent::setUp();
+
+        config()->set('database.default', 'sqlite');
+        config()->set('database.connections.sqlite', [
+            'driver' => 'sqlite',
+            'database' => ':memory:',
+            'prefix' => '',
+            'foreign_key_constraints' => false,
+        ]);
+        \DB::purge('sqlite');
+        \DB::reconnect('sqlite');
 
         $this->artisan('migrate', ['--force' => true]);
     }

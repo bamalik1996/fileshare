@@ -6,8 +6,8 @@ namespace Tests\Feature;
 
 use App\Models\Share;
 use Carbon\Carbon;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Tests\Support\CreatesSharesSchema;
 use Tests\TestCase;
 
 /**
@@ -27,6 +27,8 @@ use Tests\TestCase;
  */
 class HomeViewCopyButtonTest extends TestCase
 {
+    use CreatesSharesSchema;
+
     protected function setUp(): void
     {
         // Pin the DB connection BEFORE the framework boots so the
@@ -49,21 +51,7 @@ class HomeViewCopyButtonTest extends TestCase
         ]);
         \DB::purge('sqlite');
 
-        Schema::create('shares', function (Blueprint $table) {
-            $table->id();
-            $table->char('uuid', 36)->unique();
-            $table->string('owner_type');
-            $table->string('owner_id');
-            $table->longText('text_content')->nullable();
-            $table->longText('markdown_source')->nullable();
-            $table->string('password_hash')->nullable();
-            $table->timestamp('expires_at');
-            $table->char('public_slug', 12)->nullable()->unique();
-            $table->unsignedInteger('public_view_count')->default(0);
-            $table->boolean('is_e2ee')->default(false);
-            $table->boolean('is_favourite')->default(false);
-            $table->timestamps();
-        });
+        $this->createSharesSchema();
     }
 
     protected function tearDown(): void

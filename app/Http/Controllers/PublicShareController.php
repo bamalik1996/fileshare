@@ -18,6 +18,7 @@ class PublicShareController extends Controller
     public function __construct(
         private readonly PublicGalleryService $publicGallery,
         private readonly ExpiryManager $expiryManager,
+        private readonly \App\Services\AnalyticsService $analytics,
     ) {
     }
 
@@ -39,7 +40,20 @@ class PublicShareController extends Controller
             ]);
         }
 
+        // Revoked links stop working immediately (SaaS features, Phase 2).
+        // Respond with the same generic 404 used for unknown slugs so a
+        // revoked slug is indistinguishable from one that never existed.
+        if ($share->isRevoked()) {
+            return response()->view('errors.404', [], 404, [
+                'X-Robots-Tag' => 'noindex, nofollow',
+            ]);
+        }
+
         $share->increment('public_view_count');
+
+        // Detailed per-visit analytics (device, country, referrer) on top of
+        // the lightweight aggregate counter above.
+        $this->analytics->recordView($share, $request);
 
         $media = $share->getMedia()->map(fn ($m) => [
             'uuid'         => $m->uuid,
@@ -52,8 +66,9 @@ class PublicShareController extends Controller
 
         return response()
             ->view('share.public', [
-                'share' => $share,
-                'media' => $media,
+                'share'    => $share,
+                'media'    => $media,
+                'branding' => $share->brandingPayload(),
             ])
             ->header('X-Robots-Tag', 'noindex, nofollow');
     }

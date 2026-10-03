@@ -57,6 +57,7 @@ class ShareService
         private readonly PasswordManager $passwordManager,
         private readonly MarkdownRenderer $markdownRenderer,
         private readonly NotificationService $notificationService,
+        private readonly PlanService $planService,
     ) {
     }
 
@@ -363,11 +364,13 @@ class ShareService
             return false;
         }
 
-        $isAccount = $share->owner_type === Share::OWNER_TYPE_ACCOUNT;
-
-        $maxFiles = $isAccount
-            ? (int) config('airtoshare.active_files_limit_account')
-            : (int) config('airtoshare.active_files_limit_ip');
+        // Limits resolved centrally by PlanService (SaaS features, Phase 6)
+        // so a future paid plan can raise them per-Account without changing
+        // this gate. Behaviour is identical to the previous direct config
+        // reads for the current single "free" plan.
+        $principal = $this->principalFromShare($share);
+        $maxFiles = $this->planService->activeFilesLimit($principal);
+        $storageLimit = $this->planService->storageLimitBytes($principal);
 
         // Pull every active share owned by the same principal and join
         // the media table once. We resolve the IDs in a separate query
@@ -383,7 +386,7 @@ class ShareService
             // First file for this owner - only the per-file caps could
             // possibly trip, and those are not our concern.
             return $sizeBytes >= 0 && $maxFiles >= 1
-                && (! $isAccount || $sizeBytes <= (int) config('airtoshare.account_storage_limit_bytes'));
+                && ($storageLimit === null || $sizeBytes <= $storageLimit);
         }
 
         $morphClass = (new Share())->getMorphClass();
@@ -398,8 +401,7 @@ class ShareService
             return false;
         }
 
-        if ($isAccount) {
-            $storageLimit = (int) config('airtoshare.account_storage_limit_bytes');
+        if ($storageLimit !== null) {
             $currentBytes = (int) (clone $mediaQuery)->sum('size');
 
             if ($currentBytes + $sizeBytes > $storageLimit) {

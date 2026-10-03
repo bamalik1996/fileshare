@@ -41,6 +41,9 @@ class Account extends Authenticatable implements MustVerifyEmail
         'email',
         'password_hash',
         'email_verified_at',
+        'brand_logo_path',
+        'brand_color',
+        'brand_message',
     ];
 
     /** @var list<string> */
@@ -112,5 +115,45 @@ class Account extends Authenticatable implements MustVerifyEmail
     public function apiKeys(): HasMany
     {
         return $this->hasMany(ApiKey::class);
+    }
+
+    /**
+     * True when the Account has set at least one branding element
+     * (SaaS features, Phase 4).
+     */
+    public function hasBranding(): bool
+    {
+        return ! empty($this->brand_logo_path)
+            || ! empty($this->brand_color)
+            || ! empty($this->brand_message);
+    }
+
+    /**
+     * Branding payload consumed by the public share and collect pages.
+     * Returns null when the Account has configured no branding so views
+     * can cheaply skip the branded header.
+     *
+     * @return array{logo_url: ?string, color: ?string, message: ?string}|null
+     */
+    public function brandingPayload(): ?array
+    {
+        if (! $this->hasBranding()) {
+            return null;
+        }
+
+        $logoUrl = null;
+        if (! empty($this->brand_logo_path)) {
+            try {
+                $logoUrl = \Illuminate\Support\Facades\Storage::disk('public')->url($this->brand_logo_path);
+            } catch (\Throwable) {
+                $logoUrl = null;
+            }
+        }
+
+        return [
+            'logo_url' => $logoUrl,
+            'color'    => $this->brand_color,
+            'message'  => $this->brand_message,
+        ];
     }
 }

@@ -10,6 +10,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schema;
+use Tests\Support\CreatesSharesSchema;
 use Tests\TestCase;
 
 /**
@@ -26,6 +27,8 @@ use Tests\TestCase;
  */
 class ShareCleanupExpiredTest extends TestCase
 {
+    use CreatesSharesSchema;
+
     protected function setUp(): void
     {
         // In-memory SQLite isolates the test from the dev DB and lets us
@@ -49,21 +52,7 @@ class ShareCleanupExpiredTest extends TestCase
         ]);
         \DB::purge('sqlite');
 
-        Schema::create('shares', function (Blueprint $table) {
-            $table->id();
-            $table->char('uuid', 36)->unique();
-            $table->string('owner_type');
-            $table->string('owner_id');
-            $table->longText('text_content')->nullable();
-            $table->longText('markdown_source')->nullable();
-            $table->string('password_hash')->nullable();
-            $table->timestamp('expires_at');
-            $table->char('public_slug', 12)->nullable()->unique();
-            $table->unsignedInteger('public_view_count')->default(0);
-            $table->boolean('is_e2ee')->default(false);
-            $table->boolean('is_favourite')->default(false);
-            $table->timestamps();
-        });
+        $this->createSharesSchema();
 
         // The command joins against `account_favourites` to exempt
         // pivot-favourited shares (Requirement 16.7).
@@ -74,26 +63,7 @@ class ShareCleanupExpiredTest extends TestCase
             $table->primary(['account_id', 'share_id']);
         });
 
-        // Spatie's HasMedia trait queries a `media` table on
-        // clearMediaCollection.
-        Schema::create('media', function (Blueprint $table) {
-            $table->id();
-            $table->morphs('model');
-            $table->uuid()->nullable()->unique();
-            $table->string('collection_name');
-            $table->string('name');
-            $table->string('file_name');
-            $table->string('mime_type')->nullable();
-            $table->string('disk');
-            $table->string('conversions_disk')->nullable();
-            $table->unsignedBigInteger('size');
-            $table->json('manipulations');
-            $table->json('custom_properties');
-            $table->json('generated_conversions');
-            $table->json('responsive_images');
-            $table->unsignedInteger('order_column')->nullable();
-            $table->timestamps();
-        });
+        $this->createMediaSchema();
 
         // The room cleanup branch (task 12.3) operates on the rooms
         // table introduced in section 2.4. Mirrors the production
