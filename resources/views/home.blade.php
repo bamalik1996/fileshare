@@ -59,6 +59,9 @@
         @if (isset($viewingShare) && $viewingShare)
             data-airtoshare-viewing="1"
         @endif
+        @if (isset($shareMedia))
+            data-airtoshare-bound-media="1"
+        @endif
         @if (isset($share) && $share && $share->hasPassword())
             data-airtoshare-has-password="1"
         @endif
@@ -1142,9 +1145,14 @@
         function initializeApp() {
             var app = document.getElementById('airtoshare-app');
             var isViewing = app && app.getAttribute('data-airtoshare-viewing') === '1';
+            var hasBoundMedia = app && app.getAttribute('data-airtoshare-bound-media') === '1';
 
             if (isViewing) {
                 setupViewerMode();
+            } else if (hasBoundMedia) {
+                seedBoundShareMedia();
+                loadIpInfo();
+                loadUploadLimits();
             } else {
                 loadIpInfo();
                 loadUploadLimits();
@@ -1161,6 +1169,81 @@
             if (savedTab && (savedTab === 'text' || savedTab === 'file')) {
                 switchTab(savedTab);
             }
+        }
+
+        /** In-memory file map for /s/{uuid} pages (viewer or owner bound). */
+        var boundShareFiles = {};
+
+        function isBoundSharePage() {
+            var app = document.getElementById('airtoshare-app');
+            return !!(app && (
+                app.getAttribute('data-airtoshare-viewing') === '1' ||
+                app.getAttribute('data-airtoshare-bound-media') === '1'
+            ));
+        }
+
+        function normalizeBoundFile(file) {
+            var url = file.url || file.original_url || '';
+            var preview = file.preview_url || file.url || file.original_url || url;
+            return {
+                uuid: file.uuid,
+                name: file.name,
+                size: file.size,
+                mime_type: file.mime_type,
+                original_url: url,
+                preview_url: preview,
+            };
+        }
+
+        function renderBoundShareFiles() {
+            displayFiles(boundShareFiles);
+            $('#fileCount').text(Object.keys(boundShareFiles).length);
+        }
+
+        function seedBoundShareMedia() {
+            @if (isset($shareMedia))
+            var viewerMedia = @json($shareMedia ?? []);
+            @else
+            var viewerMedia = [];
+            @endif
+            @if (isset($share) && $share)
+            var viewerText = @json(is_string($share->markdown_source) && $share->markdown_source !== '' ? $share->markdown_source : strip_tags((string) ($share->text_content ?? '')));
+            @else
+            var viewerText = '';
+            @endif
+
+            if (viewerText && typeof viewerText === 'string' && viewerText.trim().length > 0) {
+                $('#textInput').val(viewerText);
+                handleTextInput();
+            }
+
+            boundShareFiles = {};
+            (viewerMedia || []).forEach(function (file) {
+                if (!file || !file.uuid) return;
+                boundShareFiles[file.uuid] = normalizeBoundFile(file);
+            });
+            renderBoundShareFiles();
+        }
+
+        function mergeBoundShareMedia(detail) {
+            if (!detail || !detail.uuid) return;
+            boundShareFiles[detail.uuid] = normalizeBoundFile(detail);
+            renderBoundShareFiles();
+        }
+
+        function removeBoundShareMedia(detail) {
+            if (!detail || !detail.uuid) return;
+            delete boundShareFiles[detail.uuid];
+            renderBoundShareFiles();
+        }
+
+        function applyBoundShareMediaList(list) {
+            boundShareFiles = {};
+            (list || []).forEach(function (file) {
+                if (!file || !file.uuid) return;
+                boundShareFiles[file.uuid] = normalizeBoundFile(file);
+            });
+            renderBoundShareFiles();
         }
 
         function setupViewerMode() {
@@ -1183,22 +1266,21 @@
             $('#e2eeToggleWrap').css('opacity', '0.5');
             $('#shareLinkPanel').addClass('hidden');
 
-            var filesMap = {};
+            boundShareFiles = {};
             (viewerMedia || []).forEach(function (file) {
-                filesMap[file.uuid] = {
-                    uuid: file.uuid,
-                    name: file.name,
-                    size: file.size,
-                    mime_type: file.mime_type,
-                    original_url: file.url,
-                    preview_url: file.preview_url || file.url,
-                };
+                if (!file || !file.uuid) return;
+                boundShareFiles[file.uuid] = normalizeBoundFile(file);
             });
-            displayFiles(filesMap);
-            $('#fileCount').text(Object.keys(filesMap).length);
+            renderBoundShareFiles();
 
-            if (viewerText.trim().length || Object.keys(filesMap).length) {
-                showToast('info', 'Protected share', 'You are viewing a password-protected share (read-only).');
+            var app = document.getElementById('airtoshare-app');
+            var hasPassword = app && app.getAttribute('data-airtoshare-has-password') === '1';
+            if (viewerText.trim().length || Object.keys(boundShareFiles).length) {
+                if (hasPassword) {
+                    showToast('info', 'Protected share', 'You are viewing a password-protected share (read-only).');
+                } else {
+                    showToast('info', 'Shared with you', 'You are viewing a shared link (read-only).');
+                }
             }
         }
 
@@ -2089,18 +2171,37 @@
         }
 
         function setupRealtimeBridge() {
-            document.addEventListener('airtoshare:media.added', function () {
+            document.addEventListener('airtoshare:media.added', function (ev) {
+                if (isBoundSharePage()) {
+                    mergeBoundShareMedia(ev.detail || {});
+                    return;
+                }
                 fetchMedia();
                 loadIpInfo();
             });
-            document.addEventListener('airtoshare:media.deleted', function () {
+            document.addEventListener('airtoshare:media.deleted', function (ev) {
+                if (isBoundSharePage()) {
+                    removeBoundShareMedia(ev.detail || {});
+                    return;
+                }
                 fetchMedia();
                 loadIpInfo();
             });
             document.addEventListener('airtoshare:text.updated', function () {
+                if (isBoundSharePage() && document.getElementById('airtoshare-app')
+                    && document.getElementById('airtoshare-app').getAttribute('data-airtoshare-viewing') === '1') {
+                    return;
+                }
                 fetchText();
             });
-            document.addEventListener('airtoshare:state', function () {
+            document.addEventListener('airtoshare:state', function (ev) {
+                if (isBoundSharePage()) {
+                    var detail = ev.detail || {};
+                    if (Array.isArray(detail.media)) {
+                        applyBoundShareMediaList(detail.media);
+                    }
+                    return;
+                }
                 fetchMedia();
                 fetchText();
             });
