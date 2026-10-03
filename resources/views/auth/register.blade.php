@@ -1,27 +1,31 @@
 @extends('layouts.app')
 
 @section('title', 'Register – AirToShare')
-@section('description', 'Create a free AirToShare account for favourites, 100 files, 1 GB storage, and 30-day expiry options.')
+@section('description', 'Create a free AirToShare account for analytics, revoke, file requests, branding, 500 files, 10 GB storage, and 30-day expiry — no credit card.')
 
 @section('content')
     @include('auth.partials.shell-start', [
-        'title' => 'Create your account',
-        'subtitle' => 'Save favourites, get higher limits, and keep shares longer.',
+        'title' => 'Create your free account',
+        'subtitle' => 'Analytics, revoke & limits, file requests, branding, and higher ceilings. No credit card.',
         'icon' => 'fas fa-user-plus',
     ])
 
     <div class="auth-benefits">
         <div class="auth-benefit">
             <i class="fas fa-folder-open" aria-hidden="true"></i>
-            <span>100 files</span>
+            <span>500 files</span>
         </div>
         <div class="auth-benefit">
             <i class="fas fa-database" aria-hidden="true"></i>
-            <span>1 GB storage</span>
+            <span>10 GB storage</span>
         </div>
         <div class="auth-benefit">
-            <i class="fas fa-star" aria-hidden="true"></i>
-            <span>Favourites</span>
+            <i class="fas fa-chart-line" aria-hidden="true"></i>
+            <span>Analytics</span>
+        </div>
+        <div class="auth-benefit">
+            <i class="fas fa-inbox" aria-hidden="true"></i>
+            <span>File requests</span>
         </div>
     </div>
 

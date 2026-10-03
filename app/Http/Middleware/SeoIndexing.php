@@ -30,6 +30,7 @@ class SeoIndexing
         'verification.verify',
         'account.shares',
         'account.destroy',
+        'account.cancel-deletion',
         'account.shares.favourite',
         'account.shares.public.enable',
         'account.shares.public.disable',

@@ -12,6 +12,7 @@ class Kernel extends ConsoleKernel
         \App\Console\Commands\FixFilePermissions::class,
         \App\Console\Commands\ShareCleanupExpired::class,
         \App\Console\Commands\ScheduleExpiryReminders::class,
+        \App\Console\Commands\PurgeScheduledAccountDeletions::class,
     ];
 
     protected function schedule(Schedule $schedule)
@@ -19,6 +20,11 @@ class Kernel extends ConsoleKernel
         // Run media cleanup every 30 minutes
         $schedule->command('media:cleanup-expired')
                  ->everyThirtyMinutes()
+                 ->withoutOverlapping();
+
+        // Permanently remove accounts past the 48h deletion grace period.
+        $schedule->command('accounts:purge-scheduled-deletions')
+                 ->hourly()
                  ->withoutOverlapping();
 
         // Hourly cleanup of the new `shares` aggregate (task 3.4 in

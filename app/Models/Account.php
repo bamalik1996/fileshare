@@ -29,6 +29,7 @@ use Illuminate\Notifications\Notifiable;
  * @property string $email
  * @property string $password_hash
  * @property ?\Illuminate\Support\Carbon $email_verified_at
+ * @property ?\Illuminate\Support\Carbon $deletion_scheduled_at
  * @property ?string $remember_token
  */
 class Account extends Authenticatable implements MustVerifyEmail
@@ -44,6 +45,7 @@ class Account extends Authenticatable implements MustVerifyEmail
         'brand_logo_path',
         'brand_color',
         'brand_message',
+        'deletion_scheduled_at',
     ];
 
     /** @var list<string> */
@@ -55,8 +57,14 @@ class Account extends Authenticatable implements MustVerifyEmail
     /** @var array<string, string> */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'deletion_scheduled_at' => 'datetime',
         'password_hash' => 'hashed',
     ];
+
+    public function isDeletionScheduled(): bool
+    {
+        return $this->deletion_scheduled_at !== null;
+    }
 
     /**
      * Tell the auth subsystem the password column is `password_hash`,

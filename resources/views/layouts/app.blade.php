@@ -433,9 +433,9 @@
                                 <i class="fas fa-sign-in-alt" aria-hidden="true"></i>
                                 Log in
                             </a>
-                            <a class="modern-btn navbar-auth-btn" href="{{ route('auth.register') }}">
+                            <a class="modern-btn navbar-auth-btn" href="{{ route('auth.register') }}" title="Free account — analytics, revoke, file requests, branding & higher limits">
                                 <i class="fas fa-user-plus" aria-hidden="true"></i>
-                                Register
+                                Free account
                             </a>
                         @endauth
 
@@ -454,6 +454,8 @@
             </div>
         </div>
     </nav>
+
+    @include('partials.guest-discovery')
 
     <!-- Main Content -->
     <main class="modern-container">

@@ -179,6 +179,8 @@ Route::middleware(['auth:account', 'account.verified'])->group(function () {
         ->name('account.shares.analytics');
     Route::delete('/account', [\App\Http\Controllers\AccountController::class, 'destroy'])
         ->name('account.destroy');
+    Route::post('/account/cancel-deletion', [\App\Http\Controllers\AccountController::class, 'cancelDeletion'])
+        ->name('account.cancel-deletion');
     Route::post('/account/shares/{share}/favourite', [\App\Http\Controllers\AccountController::class, 'favourite'])
         ->name('account.shares.favourite');
     Route::post('/account/shares/{share}/public/enable', [\App\Http\Controllers\AccountController::class, 'enablePublic'])
