@@ -72,13 +72,44 @@ class AccountController extends Controller
         ]);
     }
 
+    /**
+     * Schedule account deletion in 48 hours (soft request). Requires typed
+     * confirmation so a single mis-click cannot wipe the account.
+     */
     public function destroy(Request $request): RedirectResponse
     {
         /** @var Account $account */
         $account = $request->user('account');
-        $this->accounts->deleteAccount($account);
 
-        return redirect('/')->with('status', 'Account deleted.');
+        $validated = $request->validate([
+            'confirm_email' => ['required', 'email'],
+        ]);
+
+        if (strtolower(trim($validated['confirm_email'])) !== strtolower($account->email)) {
+            return redirect()
+                ->route('account.shares')
+                ->withErrors(['confirm_email' => 'Email does not match your account. Deletion was not scheduled.']);
+        }
+
+        $this->accounts->scheduleDeletion($account);
+
+        return redirect()
+            ->route('account.shares')
+            ->with('status', 'Account deletion scheduled. You have 48 hours to cancel before it is permanently removed.');
+    }
+
+    /**
+     * Cancel a pending account deletion during the grace period.
+     */
+    public function cancelDeletion(Request $request): RedirectResponse
+    {
+        /** @var Account $account */
+        $account = $request->user('account');
+        $this->accounts->cancelDeletion($account);
+
+        return redirect()
+            ->route('account.shares')
+            ->with('status', 'Account deletion cancelled. Your account is safe.');
     }
 
     /**

@@ -47,21 +47,49 @@
                 <i class="fas fa-palette" aria-hidden="true"></i>
                 Branding
             </a>
-            <form method="POST" action="{{ route('account.destroy') }}"
-                onsubmit="return confirm('Delete your account and all shares? This cannot be undone.');">
-                @csrf
-                @method('DELETE')
-                <button type="submit" class="modern-btn danger">
+            @unless ($account->isDeletionScheduled())
+                <button type="button" class="modern-btn danger" id="openDeleteAccountModal">
                     <i class="fas fa-trash-alt" aria-hidden="true"></i>
                     Delete account
                 </button>
-            </form>
+            @endunless
         </div>
+
+        @if ($account->isDeletionScheduled())
+            <div class="account-deletion-banner" role="alert">
+                <div class="account-deletion-banner-copy">
+                    <strong>
+                        <i class="fas fa-hourglass-half" aria-hidden="true"></i>
+                        Account deletion scheduled
+                    </strong>
+                    <p>
+                        Your account and shares will be permanently deleted on
+                        <strong>{{ $account->deletion_scheduled_at->timezone(config('app.timezone'))->format('M j, Y g:i A T') }}</strong>
+                        (about {{ $account->deletion_scheduled_at->diffForHumans() }}).
+                        You can cancel anytime before then.
+                    </p>
+                </div>
+                <form method="POST" action="{{ route('account.cancel-deletion') }}">
+                    @csrf
+                    <button type="submit" class="modern-btn">
+                        <i class="fas fa-undo" aria-hidden="true"></i>
+                        Cancel deletion
+                    </button>
+                </form>
+            </div>
+        @endif
 
         @if (session('status'))
             <div class="auth-alert auth-alert-success account-alert" role="status">
                 <i class="fas fa-check-circle" aria-hidden="true"></i>
                 <span>{{ session('status') }}</span>
+            </div>
+        @endif
+
+        @if ($errors->has('confirm_email'))
+            <div class="auth-alert auth-alert-error account-alert" role="alert">
+                <i class="fas fa-exclamation-circle" aria-hidden="true"></i>
+                <span>{{ $errors->first('confirm_email') }}</span>
             </div>
         @endif
 
@@ -287,6 +315,51 @@
             </div>
         @endif
     </div>
+
+    @unless ($account->isDeletionScheduled())
+        <div class="modal-overlay" id="deleteAccountModal" role="dialog" aria-modal="true"
+            aria-labelledby="deleteAccountModalTitle" data-email="{{ $account->email }}">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title modal-title-danger" id="deleteAccountModalTitle">
+                        <i class="fas fa-exclamation-triangle" aria-hidden="true"></i>
+                        Delete account?
+                    </div>
+                    <button type="button" class="modal-close" data-close-delete-modal aria-label="Close">
+                        <i class="fas fa-times" aria-hidden="true"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p class="modal-text-primary">
+                        This schedules permanent deletion in <strong>48 hours</strong>.
+                        Until then you can cancel anytime. After 48 hours your account,
+                        shares, API keys, and favourites are removed for good.
+                    </p>
+                    <p class="account-delete-confirm-hint">
+                        Type your email <strong>{{ $account->email }}</strong> to confirm:
+                    </p>
+                    <form method="POST" action="{{ route('account.destroy') }}" id="deleteAccountForm">
+                        @csrf
+                        @method('DELETE')
+                        <div class="form-group">
+                            <label class="form-label" for="confirmEmailInput">Confirm email</label>
+                            <input class="form-input" type="email" name="confirm_email" id="confirmEmailInput"
+                                autocomplete="off" required placeholder="{{ $account->email }}">
+                        </div>
+                        <div class="account-delete-actions">
+                            <button type="button" class="modern-btn secondary" data-close-delete-modal>
+                                Keep account
+                            </button>
+                            <button type="submit" class="modern-btn danger" id="confirmDeleteAccountBtn" disabled>
+                                <i class="fas fa-trash-alt" aria-hidden="true"></i>
+                                Schedule deletion
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    @endunless
 
     <style>
         .account-share-stats { gap: 1rem; }
@@ -612,6 +685,56 @@
                     });
                 });
             });
+
+            // Delete-account confirmation modal (48h scheduled deletion)
+            var deleteModal = document.getElementById('deleteAccountModal');
+            var openDeleteBtn = document.getElementById('openDeleteAccountModal');
+            var confirmEmailInput = document.getElementById('confirmEmailInput');
+            var confirmDeleteBtn = document.getElementById('confirmDeleteAccountBtn');
+            var expectedEmail = deleteModal
+                ? String(deleteModal.dataset.email || '').toLowerCase()
+                : '';
+
+            function syncDeleteConfirmState() {
+                if (!confirmEmailInput || !confirmDeleteBtn) return;
+                var typed = String(confirmEmailInput.value || '').trim().toLowerCase();
+                confirmDeleteBtn.disabled = typed !== expectedEmail;
+            }
+
+            function openDeleteModal() {
+                if (!deleteModal) return;
+                deleteModal.classList.add('show');
+                if (confirmEmailInput) {
+                    confirmEmailInput.value = '';
+                    syncDeleteConfirmState();
+                    confirmEmailInput.focus();
+                }
+            }
+
+            function closeDeleteModal() {
+                if (!deleteModal) return;
+                deleteModal.classList.remove('show');
+            }
+
+            if (openDeleteBtn) {
+                openDeleteBtn.addEventListener('click', openDeleteModal);
+            }
+            if (confirmEmailInput) {
+                confirmEmailInput.addEventListener('input', syncDeleteConfirmState);
+            }
+            document.querySelectorAll('[data-close-delete-modal]').forEach(function (el) {
+                el.addEventListener('click', closeDeleteModal);
+            });
+            if (deleteModal) {
+                deleteModal.addEventListener('click', function (e) {
+                    if (e.target === deleteModal) closeDeleteModal();
+                });
+                document.addEventListener('keydown', function (e) {
+                    if (e.key === 'Escape' && deleteModal.classList.contains('show')) {
+                        closeDeleteModal();
+                    }
+                });
+            }
         })();
     </script>
 @endsection

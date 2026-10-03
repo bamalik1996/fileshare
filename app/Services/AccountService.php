@@ -21,6 +21,9 @@ class AccountService
 
     private const BCRYPT_COST = 12;
 
+    /** Grace period before a scheduled account deletion is purged permanently. */
+    public const DELETION_GRACE_HOURS = 48;
+
     /**
      * @throws ValidationException
      */
@@ -71,6 +74,47 @@ class AccountService
         Auth::guard('account')->logout();
         request()->session()->invalidate();
         request()->session()->regenerateToken();
+    }
+
+    /**
+     * Mark the account for permanent deletion after {@see DELETION_GRACE_HOURS}.
+     * The account stays usable so the owner can cancel in time.
+     */
+    public function scheduleDeletion(Account $account): void
+    {
+        $account->deletion_scheduled_at = now()->addHours(self::DELETION_GRACE_HOURS);
+        $account->save();
+    }
+
+    public function cancelDeletion(Account $account): void
+    {
+        if ($account->deletion_scheduled_at === null) {
+            return;
+        }
+
+        $account->deletion_scheduled_at = null;
+        $account->save();
+    }
+
+    /**
+     * Permanently remove accounts whose grace period has elapsed.
+     *
+     * @return int Number of accounts purged
+     */
+    public function purgeScheduledDeletions(): int
+    {
+        $due = Account::query()
+            ->whereNotNull('deletion_scheduled_at')
+            ->where('deletion_scheduled_at', '<=', now())
+            ->get();
+
+        $purged = 0;
+        foreach ($due as $account) {
+            $this->deleteAccount($account);
+            $purged++;
+        }
+
+        return $purged;
     }
 
     public function deleteAccount(Account $account): void
