@@ -1,53 +1,67 @@
 @extends('layouts.app')
 
 @section('title', ($share->collect_title ?: 'Send files') . ' – AirToShare')
-@section('description', 'Upload files securely to this AirToShare file request.')
+@section('description', $share->collect_instructions ?: 'Upload files securely to this AirToShare file request.')
+@section('robots', 'noindex, nofollow')
 
 @section('content')
-    <div class="account-page">
-        @include('partials.brand-header', ['branding' => $branding ?? null])
-        <div class="account-hero">
-            <h1 class="account-title">
-                <i class="fas fa-inbox" aria-hidden="true"></i>
-                {{ $share->collect_title ?: 'Send files' }}
-            </h1>
-            <p class="account-subtitle">
-                @if ($share->collect_instructions)
-                    {{ $share->collect_instructions }}
-                @else
-                    Drop your files below to send them securely. No account needed.
-                @endif
-            </p>
-        </div>
+    @php
+        $branding = $branding ?? null;
+        $hasBrand = is_array($branding) && (
+            ! empty($branding['logo_url'])
+            || ! empty($branding['message'])
+            || ! empty($branding['color'])
+        );
+        $brandColor = (! empty($branding['color']) && preg_match('/^#[0-9A-Fa-f]{6}$/', (string) $branding['color']))
+            ? $branding['color']
+            : null;
+    @endphp
 
-        <div class="modern-card">
-            <div id="collect-dropzone" class="collect-dropzone" tabindex="0" role="button"
-                aria-label="Drag and drop files here or click to choose">
-                <i class="fas fa-cloud-upload-alt collect-dropzone-icon" aria-hidden="true"></i>
-                <p class="collect-dropzone-text">Drag &amp; drop files here, or <strong>click to choose</strong></p>
-                <p class="collect-dropzone-hint">Up to 25 MB per file</p>
-                <input type="file" id="collect-input" multiple hidden>
+    <div class="branded-request-page @if ($hasBrand) is-branded @endif"
+        id="airtoshare-collect-view"
+        @if ($brandColor) style="--brand-accent: {{ $brandColor }};" @endif>
+
+        @include('partials.brand-header', ['branding' => $branding])
+
+        <div class="branded-request-shell">
+            <header class="branded-request-header">
+                <span class="branded-request-kicker">
+                    <i class="fas fa-inbox" aria-hidden="true"></i>
+                    File request
+                </span>
+                <h1 class="branded-request-title">
+                    {{ $share->collect_title ?: 'Send files' }}
+                </h1>
+                <p class="branded-request-subtitle">
+                    @if ($share->collect_instructions)
+                        {{ $share->collect_instructions }}
+                    @else
+                        Drop your files below to send them securely. No account needed.
+                    @endif
+                </p>
+            </header>
+
+            <div class="modern-card branded-request-card">
+                <div id="collect-dropzone" class="collect-dropzone" tabindex="0" role="button"
+                    aria-label="Drag and drop files here or click to choose">
+                    <div class="collect-dropzone-icon-wrap" aria-hidden="true">
+                        <i class="fas fa-cloud-upload-alt collect-dropzone-icon"></i>
+                    </div>
+                    <p class="collect-dropzone-text">Drag &amp; drop files here, or <strong>click to choose</strong></p>
+                    <p class="collect-dropzone-hint">Up to 25 MB per file · Images, video, audio, PDF, Office, ZIP</p>
+                    <input type="file" id="collect-input" multiple hidden
+                        accept="image/*,video/*,audio/*,application/pdf,text/plain,.doc,.docx,.zip,.rar">
+                </div>
+
+                <ul id="collect-queue" class="collect-queue" aria-live="polite"></ul>
             </div>
 
-            <ul id="collect-queue" class="collect-queue" aria-live="polite"></ul>
+            <footer class="branded-request-trust">
+                <i class="fas fa-shield-alt" aria-hidden="true"></i>
+                <span>Files are scanned and delivered securely via <strong>AirToShare</strong>.</span>
+            </footer>
         </div>
     </div>
-
-    <style>
-        .collect-dropzone { border: 2px dashed rgba(128,128,128,.45); border-radius: 14px; padding: 2.5rem 1rem; text-align: center; cursor: pointer; transition: border-color .15s, background .15s; }
-        .collect-dropzone.is-dragover { border-color: #6366f1; background: rgba(99,102,241,.08); }
-        .collect-dropzone-icon { font-size: 2.5rem; opacity: .7; margin-bottom: .5rem; }
-        .collect-dropzone-text { margin: .25rem 0; }
-        .collect-dropzone-hint { font-size: .8rem; opacity: .6; margin: 0; }
-        .collect-queue { list-style: none; padding: 0; margin: 1.25rem 0 0; }
-        .collect-item { display: flex; align-items: center; gap: .75rem; padding: .6rem 0; border-bottom: 1px dashed rgba(128,128,128,.2); font-size: .9rem; }
-        .collect-item-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .collect-item-bar { width: 120px; height: 8px; background: rgba(128,128,128,.2); border-radius: 999px; overflow: hidden; flex-shrink: 0; }
-        .collect-item-fill { height: 100%; width: 0; background: linear-gradient(90deg,#6366f1,#8b5cf6); transition: width .2s; }
-        .collect-item-status { width: 90px; text-align: right; flex-shrink: 0; font-size: .8rem; }
-        .collect-item.is-done .collect-item-status { color: #22c55e; }
-        .collect-item.is-error .collect-item-status { color: #ef4444; }
-    </style>
 
     <script>
         (function () {
