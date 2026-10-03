@@ -2,8 +2,9 @@
  * AirToShare Realtime client (Requirements 14.1, 14.5, 14.8, 14.9).
  *
  * Subscribes to `private-share.{id}` via Laravel Echo + Reverb when
- * Reverb credentials are present in `<meta>` tags and a share id is
- * available on `[data-airtoshare-share-id]`.
+ * Reverb credentials are present in `<meta>` tags and one or more share
+ * ids are available on `[data-airtoshare-share-id]` (home page = one;
+ * My Shares = one per card).
  */
 (function () {
     'use strict';
@@ -16,9 +17,17 @@
         return el ? el.getAttribute('content') : '';
     }
 
-    function readShareId() {
-        var root = document.querySelector('[data-airtoshare-share-id]');
-        return root ? root.getAttribute('data-airtoshare-share-id') : '';
+    function readShareIds() {
+        var nodes = document.querySelectorAll('[data-airtoshare-share-id]');
+        var ids = [];
+        var seen = {};
+        for (var i = 0; i < nodes.length; i++) {
+            var id = nodes[i].getAttribute('data-airtoshare-share-id');
+            if (!id || seen[id]) continue;
+            seen[id] = true;
+            ids.push(id);
+        }
+        return ids;
     }
 
     function backoffMs(attempt) {
@@ -57,8 +66,9 @@
         }
     }
 
-    function subscribeShare(shareId, cfg) {
+    function subscribeShare(shareId, options) {
         if (!getEcho()) return null;
+        options = options || {};
 
         var attempt = 0;
         var channel = null;
@@ -67,16 +77,30 @@
             try {
                 channel = getEcho().private('share.' + shareId);
                 channel.listen('.media.added', function (e) {
-                    document.dispatchEvent(new CustomEvent('airtoshare:media.added', { detail: e }));
+                    var detail = e || {};
+                    if (detail.share_id == null) {
+                        detail.share_id = shareId;
+                    }
+                    document.dispatchEvent(new CustomEvent('airtoshare:media.added', { detail: detail }));
                 });
                 channel.listen('.media.deleted', function (e) {
-                    document.dispatchEvent(new CustomEvent('airtoshare:media.deleted', { detail: e }));
+                    var detail = e || {};
+                    if (detail.share_id == null) {
+                        detail.share_id = shareId;
+                    }
+                    document.dispatchEvent(new CustomEvent('airtoshare:media.deleted', { detail: detail }));
                 });
                 channel.listen('.text.updated', function (e) {
-                    document.dispatchEvent(new CustomEvent('airtoshare:text.updated', { detail: e }));
+                    var detail = e || {};
+                    if (detail.share_id == null) {
+                        detail.share_id = shareId;
+                    }
+                    document.dispatchEvent(new CustomEvent('airtoshare:text.updated', { detail: detail }));
                 });
                 showOfflineBanner(false);
-                fetchState(shareId).then(reconcileDom).catch(function () { /* ignore */ });
+                if (!options.skipReconcile) {
+                    fetchState(shareId).then(reconcileDom).catch(function () { /* ignore */ });
+                }
             } catch (err) {
                 scheduleReconnect();
             }
@@ -133,9 +157,9 @@
     }
 
     function init() {
-        var shareId = readShareId();
+        var shareIds = readShareIds();
         var key = meta('airtoshare-reverb-key');
-        if (!shareId || !key) return;
+        if (!shareIds.length || !key) return;
 
         var cfg = {
             key: key,
@@ -148,7 +172,10 @@
             return;
         }
 
-        subscribeShare(shareId, cfg);
+        var multi = shareIds.length > 1;
+        for (var i = 0; i < shareIds.length; i++) {
+            subscribeShare(shareIds[i], { skipReconcile: multi });
+        }
 
         var ip = meta('airtoshare-owner-ip');
         if (ip && getEcho()) {

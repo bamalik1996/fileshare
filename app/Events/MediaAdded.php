@@ -42,6 +42,7 @@ class MediaAdded implements ShouldBroadcastNow
     public function broadcastWith(): array
     {
         return [
+            'share_id'  => $this->share->id,
             'uuid'      => $this->mediaUuid,
             'name'      => $this->name,
             'size'      => $this->size,

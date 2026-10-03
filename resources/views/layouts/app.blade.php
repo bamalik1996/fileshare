@@ -231,7 +231,7 @@
     {{-- Realtime + clipboard sync (Requirements 10, 14) --}}
     <script src="https://cdn.jsdelivr.net/npm/pusher-js@8.4.0/dist/web/pusher.min.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/laravel-echo@1.19.0/dist/echo.iife.js" defer></script>
-    <script src="{{ asset('assets/js/realtime.js') }}?v=2" defer></script>
+    <script src="{{ asset('assets/js/realtime.js') }}?v=3" defer></script>
     <script src="{{ asset('assets/js/clipboard-sync.js') }}?v=1" defer></script>
 
 

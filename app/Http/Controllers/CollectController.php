@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Events\MediaAdded;
+use App\Jobs\SendCollectFileReceived;
 use App\Support\SafeBroadcast;
 use App\Models\Account;
 use App\Models\Share;
@@ -160,6 +161,12 @@ class CollectController extends Controller
                 (string) $media->mime_type,
                 $media->getUrl(),
             ));
+
+            SendCollectFileReceived::dispatch(
+                $share,
+                (string) $media->name,
+                (int) $media->size,
+            );
         } catch (\Throwable $e) {
             Log::error('Collect upload failed', [
                 'collect_slug' => $slug,
