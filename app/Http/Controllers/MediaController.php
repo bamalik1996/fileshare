@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Domain\Principal\IpPrincipal;
 use App\Domain\Principal\Principal;
 use App\Events\MediaAdded;
+use App\Support\SafeBroadcast;
 use App\Models\MediaFile;
 use App\Models\MediaScan;
 use App\Models\Share;
@@ -138,7 +139,7 @@ class MediaController extends Controller
 
             $share = $this->shareService->update($share, ['expiry' => '24h']);
 
-            broadcast(new MediaAdded(
+            SafeBroadcast::event(new MediaAdded(
                 $share,
                 (string) $media->uuid,
                 (string) $media->name,

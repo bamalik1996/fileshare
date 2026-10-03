@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Jobs;
 
 use App\Events\ExpiryReminderBrowser;
+use App\Support\SafeBroadcast;
 use App\Mail\ShareExpiryReminder;
 use App\Models\Share;
 use App\Models\ShareNotification;
@@ -68,7 +69,7 @@ class SendExpiryReminder implements ShouldQueue
                     throw new \RuntimeException('Browser channel requires IP owner.');
                 }
 
-                broadcast(new ExpiryReminderBrowser(
+                SafeBroadcast::event(new ExpiryReminderBrowser(
                     $share,
                     $ip,
                     'Your share expires at ' . $share->expires_at?->toDateTimeString(),

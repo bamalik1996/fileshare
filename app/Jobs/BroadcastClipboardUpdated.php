@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Jobs;
 
 use App\Events\ClipboardUpdated;
+use App\Support\SafeBroadcast;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -36,7 +37,7 @@ class BroadcastClipboardUpdated implements ShouldQueue
 
     public function handle(): void
     {
-        broadcast(new ClipboardUpdated($this->roomId, $this->text, $this->updatedAt));
+        SafeBroadcast::event(new ClipboardUpdated($this->roomId, $this->text, $this->updatedAt));
     }
 
     public function failed(\Throwable $exception): void
