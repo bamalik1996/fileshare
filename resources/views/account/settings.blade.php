@@ -175,36 +175,46 @@
                     Live preview
                 </div>
 
-                <div class="account-branding-preview-frame" id="brandingPreviewFrame"
+                <div class="account-branding-preview-frame branded-request-page is-branded" id="brandingPreviewFrame"
                     style="--brand-accent: {{ $color }};">
-                    <div class="brand-header branding-preview-header" id="brandingPreviewHeader">
-                        <img class="brand-header-logo"
-                            id="brandingPreviewLogo"
-                            src="{{ $logoUrl ?: '' }}"
-                            alt="Logo preview"
-                            @if (! $logoUrl) hidden @endif>
-                        <p class="brand-header-message"
-                            id="brandingPreviewMessage"
-                            @if (trim((string) $message) === '') hidden @endif>{{ $message }}</p>
-                        <p class="branding-preview-empty" id="brandingPreviewEmpty"
-                            @if ($logoUrl || trim((string) $message) !== '') hidden @endif>
-                            Add a logo or message to see your brand here.
-                        </p>
+                    <div class="brand-hero" id="brandingPreviewHeader">
+                        <div class="brand-hero-panel">
+                            <img class="brand-hero-logo"
+                                id="brandingPreviewLogo"
+                                src="{{ $logoUrl ?: '' }}"
+                                alt="Logo preview"
+                                @if (! $logoUrl) hidden @endif>
+                            <div class="brand-hero-mark" id="brandingPreviewMark"
+                                @if ($logoUrl) hidden @endif aria-hidden="true">
+                                <i class="fas fa-share-alt"></i>
+                            </div>
+                            <p class="brand-hero-message"
+                                id="brandingPreviewMessage"
+                                @if (trim((string) $message) === '') hidden @endif>{{ $message }}</p>
+                            <p class="branding-preview-empty" id="brandingPreviewEmpty"
+                                @if ($logoUrl || trim((string) $message) !== '') hidden @endif>
+                                Add a logo or message — colour already tints this page.
+                            </p>
+                        </div>
                     </div>
 
                     <div class="branding-preview-body">
+                        <span class="branded-request-kicker">
+                            <i class="fas fa-inbox" aria-hidden="true"></i>
+                            File request
+                        </span>
                         <div class="branding-preview-skeleton branding-preview-skeleton--title"></div>
                         <div class="branding-preview-skeleton"></div>
                         <div class="branding-preview-skeleton branding-preview-skeleton--short"></div>
                         <button type="button" class="modern-btn branding-preview-btn" tabindex="-1">
-                            <i class="fas fa-download" aria-hidden="true"></i>
-                            Download
+                            <i class="fas fa-cloud-upload-alt" aria-hidden="true"></i>
+                            Upload files
                         </button>
                     </div>
                 </div>
 
                 <p class="form-hint branding-preview-hint">
-                    This is how recipients see your brand on <code>/p/…</code> and <code>/collect/…</code> pages.
+                    Recipients see this treatment on <code>/p/…</code> and <code>/collect/…</code> pages.
                 </p>
             </aside>
         </div>
@@ -226,11 +236,16 @@
             var previewEmpty = document.getElementById('brandingPreviewEmpty');
             var objectUrl = null;
 
+            var previewMark = document.getElementById('brandingPreviewMark');
+
             function syncPreviewVisibility() {
                 var hasLogo = previewLogo && previewLogo.getAttribute('src') && !previewLogo.hidden;
                 var hasMsg = previewMessage && previewMessage.textContent.trim().length > 0 && !previewMessage.hidden;
                 if (previewEmpty) {
                     previewEmpty.hidden = !!(hasLogo || hasMsg);
+                }
+                if (previewMark) {
+                    previewMark.hidden = !!hasLogo;
                 }
             }
 
