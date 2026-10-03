@@ -14,6 +14,135 @@ class BlogController extends Controller
     {
         return [
             [
+                'slug' => 'link-analytics-see-who-opened-your-share',
+                'title' => 'Link Analytics: See Who Opened Your Share',
+                'excerpt' => 'Track views and downloads on every share — device, browser, country, and referrer — without storing raw IP addresses.',
+                'image' => '/assets/images/blog/link-analytics.jpg',
+                'date' => 'October 3, 2026',
+                'author' => 'AirToShare Team',
+                'category' => 'Feature Update',
+                'read_time' => '4 min read',
+                'content' => '
+                    <p>Wondering if anyone opened your link? AirToShare now records <strong>privacy-safe analytics</strong> for every share you own — views, downloads, and a quick breakdown of how people arrive.</p>
+
+                    <h2>What you can see</h2>
+                    <ul>
+                        <li><strong>Views &amp; downloads</strong> — totals for each share</li>
+                        <li><strong>Device &amp; browser</strong> — desktop, mobile, Chrome, Safari, and more</li>
+                        <li><strong>Country / city</strong> — when the edge network provides it (no geo API calls from us)</li>
+                        <li><strong>Referrer</strong> — where the visitor came from, when available</li>
+                    </ul>
+
+                    <h2>Privacy by design</h2>
+                    <p>We never store raw IP addresses. Each event keeps a <strong>salted, truncated hash</strong> so we can count unique activity without logging who you are on the public internet. Analytics stay on our servers — no third-party trackers.</p>
+
+                    <h2>Where to find it</h2>
+                    <ol>
+                        <li>Log in and open <strong>My Shares</strong></li>
+                        <li>Pick a share and open the <strong>Analytics</strong> panel</li>
+                        <li>Review totals and recent events</li>
+                    </ol>
+
+                    <p>Perfect for client deliveries, resumes, and “did they get it?” follow-ups — without installing anything on the recipient’s side.</p>
+                ',
+            ],
+            [
+                'slug' => 'revoke-links-and-download-limits',
+                'title' => 'Revoke Links & Set Download Limits',
+                'excerpt' => 'Kill a share instantly, cap how many times files can be downloaded, or burn the link after a single use.',
+                'image' => '/assets/images/blog/link-controls.jpg',
+                'date' => 'October 2, 2026',
+                'author' => 'AirToShare Team',
+                'category' => 'Security',
+                'read_time' => '4 min read',
+                'content' => '
+                    <p>Sent a link to the wrong person? Need a file to vanish after one download? AirToShare now gives you full <strong>link control</strong> from My Shares.</p>
+
+                    <h2>Revoke (and restore)</h2>
+                    <p>Hit <strong>Revoke</strong> on any share you own. Public and download links stop working immediately (recipients see an error). Change your mind? Restore the share just as quickly.</p>
+
+                    <h2>Download limits</h2>
+                    <ul>
+                        <li>Set a maximum number of downloads for the whole share</li>
+                        <li>When the limit is reached, further downloads return <strong>410 Gone</strong></li>
+                        <li>Clear the limit anytime to go back to unlimited</li>
+                    </ul>
+
+                    <h2>Burn after read</h2>
+                    <p>Set the limit to <strong>1</strong> for classic burn-after-read behaviour — ideal for passwords, contracts, or one-shot hand-offs. Combine with a share password for defence in depth.</p>
+
+                    <h2>How to use it</h2>
+                    <ol>
+                        <li>Open <strong>My Shares</strong></li>
+                        <li>Use <strong>Revoke / Restore</strong> on the share card</li>
+                        <li>Open <strong>Limits</strong> to set, burn, or clear the download cap</li>
+                    </ol>
+                ',
+            ],
+            [
+                'slug' => 'file-request-links-collect-uploads',
+                'title' => 'File Request Links: Collect Uploads From Anyone',
+                'excerpt' => 'Send a collect link so clients, students, or teammates can drop files into your inbox — no account required for them.',
+                'image' => '/assets/images/blog/file-request-collect.jpg',
+                'date' => 'October 1, 2026',
+                'author' => 'AirToShare Team',
+                'category' => 'Feature Update',
+                'read_time' => '4 min read',
+                'content' => '
+                    <p>Stop chasing attachments over email. Create a <strong>file request</strong> (collect page) and let others upload straight into a share you control.</p>
+
+                    <h2>How it works</h2>
+                    <ol>
+                        <li>From <strong>My Shares</strong>, click <strong>Create file request</strong></li>
+                        <li>Add an optional title and instructions (e.g. “PDFs only, under 25 MB”)</li>
+                        <li>Copy the <code>/collect/...</code> link and send it</li>
+                        <li>Guests drag-and-drop files; you see them on your share</li>
+                    </ol>
+
+                    <h2>Why it helps</h2>
+                    <ul>
+                        <li>Recipients do <strong>not</strong> need an AirToShare account</li>
+                        <li>Uploads reuse the same virus scan and realtime pipeline as normal shares</li>
+                        <li>You keep ownership — revoke or expire the inbox when you are done</li>
+                    </ul>
+
+                    <h2>Good use cases</h2>
+                    <p>Client proofs, homework drop-boxes, contractor hand-offs, event photo collection — anywhere you need inbound files without creating accounts for every uploader.</p>
+                ',
+            ],
+            [
+                'slug' => 'custom-branding-on-public-shares',
+                'title' => 'Custom Branding on Public & Collect Pages',
+                'excerpt' => 'Add your logo, brand colour, and a short message so recipients see your identity — not a generic share page.',
+                'image' => '/assets/images/blog/custom-branding.jpg',
+                'date' => 'September 30, 2026',
+                'author' => 'AirToShare Team',
+                'category' => 'UX Update',
+                'read_time' => '3 min read',
+                'content' => '
+                    <p>Make every public delivery feel like it came from <strong>your</strong> brand. Account settings now include simple branding that appears on public gallery and file-request pages.</p>
+
+                    <h2>What you can customise</h2>
+                    <ul>
+                        <li><strong>Logo</strong> — PNG, JPG, SVG, or WebP (up to 2 MB)</li>
+                        <li><strong>Brand colour</strong> — any 6-digit hex colour for accents</li>
+                        <li><strong>Short message</strong> — up to 160 characters under your header</li>
+                    </ul>
+
+                    <h2>Where it shows</h2>
+                    <p>Branding appears on <strong>public share</strong> pages (<code>/p/...</code>) and <strong>collect / file request</strong> pages so clients instantly recognise who asked for the files.</p>
+
+                    <h2>Set it up</h2>
+                    <ol>
+                        <li>Log in and open <strong>Account → Settings</strong></li>
+                        <li>Upload a logo, pick a colour, write your message</li>
+                        <li>Save — new public and collect views pick it up immediately</li>
+                    </ol>
+
+                    <p>Remove the logo anytime if you want to go back to the default AirToShare header.</p>
+                ',
+            ],
+            [
                 'slug' => 'user-accounts-and-email-verification',
                 'title' => 'User Accounts & Email Verification Are Here',
                 'excerpt' => 'Create a free account to unlock higher limits, save your shares, and verify your email with a secure one-click link.',
@@ -27,7 +156,7 @@ class BlogController extends Controller
 
                     <h2>Why create an account?</h2>
                     <ul>
-                        <li><strong>100 files</strong> and <strong>1 GB</strong> storage (vs 50 files for guests)</li>
+                        <li><strong>500 files</strong> and <strong>10 GB</strong> storage (vs 100 files for guests)</li>
                         <li><strong>My Shares</strong> dashboard to manage everything in one place</li>
                         <li><strong>Favourites</strong> — pin up to 50 important shares</li>
                         <li><strong>30-day expiry</strong> option for longer-lived shares</li>
