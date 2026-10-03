@@ -13,6 +13,7 @@ use App\Services\ShareService;
 use Closure;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -149,17 +150,27 @@ class ResolvePrincipal
 
     private function claimGuestContentOnce(Request $request, Account $account): void
     {
-        if (! $request->hasSession()) {
+        try {
+            if (! $request->hasSession()) {
+                $this->shareService->claimGuestContentForAccount($account, (string) $request->ip());
+
+                return;
+            }
+
+            if ($request->session()->get('guest_content_claimed_for') === (string) $account->getKey()) {
+                return;
+            }
+
             $this->shareService->claimGuestContentForAccount($account, (string) $request->ip());
-
-            return;
+            $request->session()->put('guest_content_claimed_for', (string) $account->getKey());
+        } catch (\Throwable $e) {
+            // Claiming guest content is a best-effort login side-effect.
+            // Principal resolution must still succeed (e.g. unit tests with
+            // no shares table, or a transient DB blip right after auth).
+            Log::warning('ResolvePrincipal: failed to claim guest content', [
+                'account_id' => $account->getKey(),
+                'reason'     => $e->getMessage(),
+            ]);
         }
-
-        if ($request->session()->get('guest_content_claimed_for') === (string) $account->getKey()) {
-            return;
-        }
-
-        $this->shareService->claimGuestContentForAccount($account, (string) $request->ip());
-        $request->session()->put('guest_content_claimed_for', (string) $account->getKey());
     }
 }

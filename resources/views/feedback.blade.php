@@ -129,9 +129,9 @@
             Other ways to reach us
         </h2>
         <div class="feedback-page-channels">
-            <a href="mailto:support@airtoshare.com" class="feedback-page-channel">
+            <a href="mailto:bilalmalik531996@gmail.com" class="feedback-page-channel">
                 <span class="feedback-page-channel-icon"><i class="fas fa-envelope" aria-hidden="true"></i></span>
-                <span class="feedback-page-channel-label">support@airtoshare.com</span>
+                <span class="feedback-page-channel-label">bilalmalik531996@gmail.com</span>
             </a>
             <a href="https://web.facebook.com/airtoshare/" target="_blank" rel="noopener noreferrer" class="feedback-page-channel">
                 <span class="feedback-page-channel-icon"><i class="fab fa-facebook-f" aria-hidden="true"></i></span>

@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Domain\Principal\AccountPrincipal;
-use App\Domain\Principal\ApiKeyPrincipal;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -46,32 +44,21 @@ class LimitsController extends Controller
      * it contains no user-specific data beyond the limit tier, so a
      * short-lived client-side cache (e.g. 60 s) is safe.
      */
+    public function __construct(
+        private readonly \App\Services\PlanService $plans,
+    ) {
+    }
+
     public function index(Request $request): JsonResponse
     {
-        $principal = $request->principal();
-
-        // Account principals (session login or API key) get the higher
-        // per-account limits defined by Requirement 16.9. All others
-        // (IP, room) get the IP limits from Requirement 13.3.
-        $isAccount = $principal instanceof AccountPrincipal
-            || $principal instanceof ApiKeyPrincipal;
-
-        $activeFilesLimit = $isAccount
-            ? (int) config('airtoshare.active_files_limit_account')
-            : (int) config('airtoshare.active_files_limit_ip');
-
-        $storageLimit = $isAccount
-            ? (int) config('airtoshare.account_storage_limit_bytes')
-            : null;
-
+        // Limits are resolved centrally by PlanService (SaaS features,
+        // Phase 6) so a future paid plan can change ceilings here without
+        // touching this endpoint. Account tiers (session login or API key)
+        // get the higher per-account limits (Requirement 16.9); IP/room
+        // tiers get the IP limits (Requirement 13.3).
         return response()->json([
             'status' => 'success',
-            'limits' => [
-                'legacy_upload_max_bytes'    => (int) config('airtoshare.legacy_upload_max_bytes'),
-                'chunked_upload_max_bytes'   => (int) config('airtoshare.chunked_upload_max_bytes'),
-                'active_files_limit'         => $activeFilesLimit,
-                'account_storage_limit_bytes' => $storageLimit,
-            ],
+            'limits' => $this->plans->limitsPayload($request->principal()),
         ]);
     }
 }

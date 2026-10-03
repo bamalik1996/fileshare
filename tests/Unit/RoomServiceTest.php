@@ -11,6 +11,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\ValidationException;
+use Tests\Support\CreatesSharesSchema;
 use Tests\TestCase;
 
 /**
@@ -30,6 +31,8 @@ use Tests\TestCase;
  */
 class RoomServiceTest extends TestCase
 {
+    use CreatesSharesSchema;
+
     private RoomService $service;
 
     protected function setUp(): void
@@ -68,6 +71,9 @@ class RoomServiceTest extends TestCase
             $table->index('expires_at');
             $table->index('last_activity_at');
         });
+
+        // RoomService::create() also persists an owned Share aggregate.
+        $this->createSharesSchema();
 
         $this->service = $this->app->make(RoomService::class);
     }

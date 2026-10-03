@@ -7,6 +7,7 @@ namespace Tests\Feature;
 use App\Models\Share;
 use App\Support\IpAddressMatcher;
 use Carbon\Carbon;
+use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Broadcast;
 use Tests\TestCase;
@@ -14,6 +15,21 @@ use Tests\TestCase;
 class BroadcastingAuthTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // phpunit.xml uses BROADCAST_CONNECTION=null so events never hit
+        // the network. Channel routes are registered on whichever driver
+        // is default at boot (null), so we switch to reverb and re-load
+        // routes/channels.php onto that driver before asserting ACL.
+        config()->set('broadcasting.default', 'reverb');
+        Broadcast::forgetDrivers();
+        require base_path('routes/channels.php');
+
+        $this->withoutMiddleware(ValidateCsrfToken::class);
+    }
 
     public function test_share_channel_auth_allows_open_share_for_guest(): void
     {
@@ -26,7 +42,7 @@ class BroadcastingAuthTest extends TestCase
 
         $response = $this->post('/broadcasting/auth', [
             'socket_id' => '1234.5678',
-            'channel_name' => 'private-share.' . $share->id,
+            'channel_name' => 'private-share.'.$share->id,
         ]);
 
         $response->assertOk();
@@ -39,7 +55,7 @@ class BroadcastingAuthTest extends TestCase
         $response = $this->withServerVariables(['REMOTE_ADDR' => '127.0.0.1'])
             ->post('/broadcasting/auth', [
                 'socket_id' => '1234.5678',
-                'channel_name' => 'private-ip.' . $token,
+                'channel_name' => 'private-ip.'.$token,
             ]);
 
         $response->assertOk();

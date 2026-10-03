@@ -20,6 +20,7 @@ class ShareViewController extends Controller
     public function __construct(
         private readonly ShareService $shareService,
         private readonly ExpiryManager $expiryManager,
+        private readonly \App\Services\AnalyticsService $analytics,
     ) {
     }
 
@@ -37,6 +38,20 @@ class ShareViewController extends Controller
         }
 
         $isOwner = $share->ownedByPrincipal($request->principal());
+
+        // Revoked links are dead for recipients (SaaS features, Phase 2), but
+        // the owner can still open their own revoked Share (e.g. to restore
+        // it or inspect analytics).
+        if (! $isOwner && $share->isRevoked()) {
+            abort(404);
+        }
+
+        // Count recipient (non-owner) opens of the primary /s/{uuid} link so
+        // the owner's dashboard reflects real reach. Owner self-views are
+        // intentionally excluded.
+        if (! $isOwner) {
+            $this->analytics->recordView($share, $request);
+        }
 
         $shareMedia = [];
         try {

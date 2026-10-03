@@ -175,6 +175,8 @@ Route::get('/auth/email/verify/{id}/{hash}', [\App\Http\Controllers\EmailVerific
 Route::middleware(['auth:account', 'account.verified'])->group(function () {
     Route::get('/account/shares', [\App\Http\Controllers\AccountController::class, 'shares'])
         ->name('account.shares');
+    Route::get('/account/shares/{share}/analytics', [\App\Http\Controllers\AccountController::class, 'analytics'])
+        ->name('account.shares.analytics');
     Route::delete('/account', [\App\Http\Controllers\AccountController::class, 'destroy'])
         ->name('account.destroy');
     Route::post('/account/shares/{share}/favourite', [\App\Http\Controllers\AccountController::class, 'favourite'])
@@ -183,7 +185,25 @@ Route::middleware(['auth:account', 'account.verified'])->group(function () {
         ->name('account.shares.public.enable');
     Route::post('/account/shares/{share}/public/disable', [\App\Http\Controllers\AccountController::class, 'disablePublic'])
         ->name('account.shares.public.disable');
+    Route::post('/account/shares/{share}/revoke', [\App\Http\Controllers\AccountController::class, 'revoke'])
+        ->name('account.shares.revoke');
+    Route::post('/account/shares/{share}/download-limit', [\App\Http\Controllers\AccountController::class, 'downloadLimit'])
+        ->name('account.shares.download-limit');
+    Route::post('/account/collect', [\App\Http\Controllers\CollectController::class, 'create'])
+        ->name('account.collect.create');
+    Route::get('/account/settings', [\App\Http\Controllers\AccountController::class, 'settings'])
+        ->name('account.settings');
+    Route::post('/account/settings', [\App\Http\Controllers\AccountController::class, 'updateSettings'])
+        ->name('account.settings.update');
 });
+
+// Public "file request" / collect flow (SaaS features, Phase 3). Recipients
+// upload files to an Account owner's collect inbox without an account.
+Route::get('/collect/{slug}', [\App\Http\Controllers\CollectController::class, 'show'])
+    ->name('collect.show');
+Route::post('/collect/{slug}', [\App\Http\Controllers\CollectController::class, 'upload'])
+    ->middleware('throttle:save-text')
+    ->name('collect.upload');
 
 Route::get('/manifest.webmanifest', [\App\Http\Controllers\ManifestController::class, 'show'])
     ->name('manifest.show');

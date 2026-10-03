@@ -235,6 +235,15 @@ class MediaControllerTest extends TestCase
             $table->unsignedInteger('public_view_count')->default(0);
             $table->boolean('is_e2ee')->default(false);
             $table->boolean('is_favourite')->default(false);
+            $table->boolean('notify_browser')->default(false);
+            $table->boolean('notify_email')->default(false);
+            $table->unsignedInteger('max_downloads')->nullable();
+            $table->unsignedInteger('download_count')->default(0);
+            $table->timestamp('revoked_at')->nullable();
+            $table->boolean('is_collect')->default(false);
+            $table->char('collect_slug', 12)->nullable()->unique();
+            $table->string('collect_title')->nullable();
+            $table->text('collect_instructions')->nullable();
             $table->timestamps();
 
             $table->index(['owner_type', 'owner_id', 'expires_at']);

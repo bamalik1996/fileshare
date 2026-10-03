@@ -14,6 +14,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\Rules\In;
+use Tests\Support\CreatesSharesSchema;
 use Tests\TestCase;
 
 /**
@@ -31,6 +32,8 @@ use Tests\TestCase;
  */
 class ExpiryManagerTest extends TestCase
 {
+    use CreatesSharesSchema;
+
     private ExpiryManager $manager;
 
     protected function setUp(): void
@@ -56,41 +59,8 @@ class ExpiryManagerTest extends TestCase
         ]);
         \DB::purge('sqlite');
 
-        Schema::create('shares', function (Blueprint $table) {
-            $table->id();
-            $table->char('uuid', 36)->unique();
-            $table->string('owner_type');
-            $table->string('owner_id');
-            $table->longText('text_content')->nullable();
-            $table->longText('markdown_source')->nullable();
-            $table->string('password_hash')->nullable();
-            $table->timestamp('expires_at');
-            $table->char('public_slug', 12)->nullable()->unique();
-            $table->unsignedInteger('public_view_count')->default(0);
-            $table->boolean('is_e2ee')->default(false);
-            $table->boolean('is_favourite')->default(false);
-            $table->timestamps();
-        });
-
-        // Spatie's HasMedia trait queries a `media` table on clearMediaCollection.
-        Schema::create('media', function (Blueprint $table) {
-            $table->id();
-            $table->morphs('model');
-            $table->uuid()->nullable()->unique();
-            $table->string('collection_name');
-            $table->string('name');
-            $table->string('file_name');
-            $table->string('mime_type')->nullable();
-            $table->string('disk');
-            $table->string('conversions_disk')->nullable();
-            $table->unsignedBigInteger('size');
-            $table->json('manipulations');
-            $table->json('custom_properties');
-            $table->json('generated_conversions');
-            $table->json('responsive_images');
-            $table->unsignedInteger('order_column')->nullable();
-            $table->timestamps();
-        });
+        $this->createSharesSchema();
+        $this->createMediaSchema();
 
         $this->manager = $this->app->make(ExpiryManager::class);
     }

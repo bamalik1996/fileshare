@@ -28,9 +28,13 @@ return [
     |
     */
 
-    'active_files_limit_ip'      => (int) env('AIRTOSHARE_ACTIVE_FILES_LIMIT_IP', 50),
-    'active_files_limit_account' => (int) env('AIRTOSHARE_ACTIVE_FILES_LIMIT_ACCOUNT', 100),
-    'account_storage_limit_bytes' => (int) env('AIRTOSHARE_ACCOUNT_STORAGE_LIMIT_BYTES', 1024 * 1024 * 1024),
+    // Free-tier limits (SaaS features, Phase 6). Intentionally generous while
+    // we grow the user base - no billing gates these yet. The ceilings are
+    // resolved centrally by App\Services\PlanService so a future paid plan can
+    // override them per-Account without touching call sites.
+    'active_files_limit_ip'      => (int) env('AIRTOSHARE_ACTIVE_FILES_LIMIT_IP', 100),
+    'active_files_limit_account' => (int) env('AIRTOSHARE_ACTIVE_FILES_LIMIT_ACCOUNT', 500),
+    'account_storage_limit_bytes' => (int) env('AIRTOSHARE_ACCOUNT_STORAGE_LIMIT_BYTES', 10 * 1024 * 1024 * 1024),
 
     /*
     |--------------------------------------------------------------------------

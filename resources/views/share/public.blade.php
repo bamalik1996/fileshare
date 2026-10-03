@@ -6,6 +6,7 @@
 @section('content')
     <div class="modern-card" id="airtoshare-public-view"
          @if($share) data-airtoshare-share-id="{{ $share->id }}" @endif>
+        @include('partials.brand-header', ['branding' => $branding ?? null])
         <h1 class="title is-4">Shared content</h1>
         <p class="subtitle is-6">This is a private public link. It is not indexed by search engines.</p>
 
