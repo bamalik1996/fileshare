@@ -121,7 +121,9 @@
                         $isExpired = $share->isExpired();
                         $stats = $analytics[$share->id] ?? ['views' => 0, 'downloads' => 0];
                     @endphp
-                    <article class="modern-card account-share-card" data-share-uuid="{{ $share->uuid }}">
+                    <article class="modern-card account-share-card"
+                        data-share-uuid="{{ $share->uuid }}"
+                        data-airtoshare-share-id="{{ $share->id }}">
                         <div class="account-share-card-header">
                             <div class="account-share-meta">
                                 @if ($share->is_favourite)
@@ -182,7 +184,9 @@
                             </div>
                             <div class="account-share-detail">
                                 <i class="fas fa-paperclip" aria-hidden="true"></i>
-                                {{ $share->media_count ?? 0 }} {{ Str::plural('file', $share->media_count ?? 0) }}
+                                <span data-airtoshare-media-count data-count="{{ $share->media_count ?? 0 }}">
+                                    {{ $share->media_count ?? 0 }} {{ Str::plural('file', $share->media_count ?? 0) }}
+                                </span>
                             </div>
                             <div class="account-share-detail account-share-stats">
                                 <span title="Views"><i class="fas fa-eye" aria-hidden="true"></i> {{ $stats['views'] }}</span>
@@ -392,6 +396,7 @@
         .account-limits-hint { font-size: .82rem; opacity: .75; margin: 0 0 .7rem; }
         .account-limits-row { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; }
         .account-limit-input { width: 160px; padding: .45rem .6rem; border-radius: 8px; border: 1px solid rgba(128,128,128,.4); background: transparent; color: inherit; }
+        .account-media-count-flash { color: #16a34a; font-weight: 600; transition: color .3s ease; }
     </style>
 
     <script>
@@ -684,6 +689,35 @@
                         btn.disabled = false;
                     });
                 });
+            });
+
+            // Live file-count updates when someone uploads to a collect link
+            document.addEventListener('airtoshare:media.added', function (ev) {
+                var detail = ev.detail || {};
+                var shareId = detail.share_id != null ? String(detail.share_id) : '';
+                if (!shareId) return;
+
+                var card = document.querySelector(
+                    '.account-share-card[data-airtoshare-share-id="' + shareId + '"]'
+                );
+                if (!card) return;
+
+                var countEl = card.querySelector('[data-airtoshare-media-count]');
+                if (countEl) {
+                    var next = parseInt(countEl.getAttribute('data-count') || '0', 10) + 1;
+                    countEl.setAttribute('data-count', String(next));
+                    countEl.textContent = next + ' ' + (next === 1 ? 'file' : 'files');
+                    countEl.classList.add('account-media-count-flash');
+                    setTimeout(function () {
+                        countEl.classList.remove('account-media-count-flash');
+                    }, 1200);
+                }
+
+                toast(
+                    'success',
+                    'File received',
+                    (detail.name ? detail.name + ' uploaded.' : 'A new file was uploaded.')
+                );
             });
 
             // Delete-account confirmation modal (48h scheduled deletion)
