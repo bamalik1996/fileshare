@@ -8,6 +8,7 @@ use App\Events\MediaAdded;
 use App\Models\Share;
 use App\Models\UploadChunk;
 use App\Models\UploadSession;
+use App\Support\SafeBroadcast;
 use App\Support\UploadTypePolicy;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Log;
@@ -400,7 +401,7 @@ class ChunkedUploadService
             'media_uuid'   => $media->uuid,
         ]);
 
-        broadcast(new MediaAdded(
+        SafeBroadcast::event(new MediaAdded(
             $share,
             (string) $media->uuid,
             (string) $media->name,

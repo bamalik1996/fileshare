@@ -9,6 +9,7 @@ use App\Domain\Principal\IpPrincipal;
 use App\Domain\Principal\Principal;
 use App\Domain\Principal\RoomPrincipal;
 use App\Events\TextUpdated;
+use App\Support\SafeBroadcast;
 use App\Models\Account;
 use App\Models\MediaFile;
 use App\Models\Share;
@@ -286,7 +287,7 @@ class ShareService
         $newTextLength = mb_strlen(strip_tags((string) ($share->text_content ?? '')));
 
         if ($newTextLength !== $previousTextLength) {
-            broadcast(new TextUpdated($share, $newTextLength));
+            SafeBroadcast::event(new TextUpdated($share, $newTextLength));
         }
 
         return $share;

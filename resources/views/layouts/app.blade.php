@@ -23,10 +23,10 @@
     <meta name="airtoshare-pdfjs-viewer" content="{{ config('airtoshare.pdfjs_viewer_url') }}">
 
     {{-- Laravel Reverb / Echo client configuration (Requirement 14.1) --}}
-    <meta name="airtoshare-reverb-key" content="{{ env('REVERB_APP_KEY') }}">
-    <meta name="airtoshare-reverb-host" content="{{ env('REVERB_FRONTEND_HOST', env('REVERB_HOST', 'localhost')) }}">
-    <meta name="airtoshare-reverb-port" content="{{ env('REVERB_PORT', 6001) }}">
-    <meta name="airtoshare-reverb-scheme" content="{{ env('REVERB_SCHEME', 'http') }}">
+    <meta name="airtoshare-reverb-key" content="{{ config('broadcasting.reverb_frontend.key') }}">
+    <meta name="airtoshare-reverb-host" content="{{ config('broadcasting.reverb_frontend.host') }}">
+    <meta name="airtoshare-reverb-port" content="{{ config('broadcasting.reverb_frontend.port') }}">
+    <meta name="airtoshare-reverb-scheme" content="{{ config('broadcasting.reverb_frontend.scheme') }}">
     <meta name="airtoshare-owner-ip" content="{{ request()->ip() }}">
 
     {{--

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Events\MediaAdded;
+use App\Support\SafeBroadcast;
 use App\Models\Account;
 use App\Models\Share;
 use App\Services\CollectService;
@@ -150,7 +151,7 @@ class CollectController extends Controller
             \App\Services\VirusScanner::make()->queueForMedia($media);
             \App\Jobs\ScanMediaForViruses::dispatch($media->uuid);
 
-            broadcast(new MediaAdded(
+            SafeBroadcast::event(new MediaAdded(
                 $share,
                 (string) $media->uuid,
                 (string) $media->name,
