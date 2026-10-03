@@ -5781,6 +5781,269 @@ body {
     gap: 0.75rem;
 }
 
+/* Account branding settings */
+.account-branding-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+    gap: 1.5rem;
+    align-items: start;
+}
+
+.account-branding-card,
+.account-branding-preview-card {
+    padding: 1.75rem;
+}
+
+.account-branding-card:hover,
+.account-branding-preview-card:hover {
+    transform: none;
+    box-shadow: var(--shadow-lg);
+    border-color: rgba(14, 165, 233, 0.1);
+}
+
+.account-branding-section {
+    margin-bottom: 1.75rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(14, 165, 233, 0.12);
+}
+
+.account-branding-section:last-of-type {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.account-branding-heading {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    margin: 0 0 0.35rem;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.account-branding-heading i {
+    color: var(--primary-color);
+    font-size: 0.95rem;
+}
+
+.account-branding-lead {
+    margin: 0 0 1rem;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: var(--text-secondary);
+}
+
+.form-hint {
+    margin: 0.5rem 0 0;
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+    line-height: 1.45;
+}
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.branding-logo-dropzone {
+    border: 2px dashed rgba(14, 165, 233, 0.35);
+    border-radius: var(--border-radius);
+    padding: 1.5rem 1rem;
+    text-align: center;
+    cursor: pointer;
+    transition: var(--transition);
+    background: var(--bg-gradient-light);
+}
+
+.branding-logo-dropzone:hover,
+.branding-logo-dropzone:focus-visible,
+.branding-logo-dropzone.is-dragover {
+    border-color: var(--primary-color);
+    background: rgba(14, 165, 233, 0.08);
+    outline: none;
+}
+
+.branding-logo-dropzone.has-logo {
+    border-style: solid;
+    border-color: rgba(14, 165, 233, 0.2);
+}
+
+.branding-logo-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+}
+
+.branding-logo-placeholder i {
+    font-size: 2rem;
+    color: var(--primary-color);
+    opacity: 0.85;
+}
+
+.branding-logo-preview img {
+    max-height: 72px;
+    max-width: 220px;
+    object-fit: contain;
+}
+
+.branding-remove-logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin-top: 0.75rem;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+}
+
+.branding-remove-logo input {
+    accent-color: var(--primary-color);
+}
+
+.branding-color-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.branding-color-swatch {
+    width: 52px;
+    height: 48px;
+    padding: 3px;
+    border: 2px solid rgba(14, 165, 233, 0.25);
+    border-radius: var(--border-radius-sm);
+    background: var(--bg-primary);
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.branding-color-hex {
+    max-width: 140px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.branding-char-count {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.account-branding-preview-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin-bottom: 1rem;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--primary-color);
+}
+
+.account-branding-preview-frame {
+    --brand-accent: var(--primary-color);
+    border: 1px solid rgba(14, 165, 233, 0.18);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    background: var(--bg-primary);
+}
+
+.branding-preview-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
+    text-align: center;
+    margin: 0;
+    padding: 1.25rem 1rem;
+    border-bottom: 2px solid var(--brand-accent, rgba(14, 165, 233, 0.25));
+    background: var(--bg-gradient-light);
+}
+
+.branding-preview-header .brand-header-logo {
+    max-height: 64px;
+    max-width: 180px;
+    object-fit: contain;
+}
+
+.branding-preview-header .brand-header-message {
+    margin: 0;
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    opacity: 0.9;
+}
+
+.branding-preview-empty {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    font-style: italic;
+}
+
+.branding-preview-body {
+    padding: 1.25rem 1rem 1.5rem;
+}
+
+.branding-preview-skeleton {
+    height: 10px;
+    border-radius: 999px;
+    background: rgba(14, 165, 233, 0.12);
+    margin-bottom: 0.65rem;
+}
+
+.branding-preview-skeleton--title {
+    width: 55%;
+    height: 14px;
+    margin-bottom: 1rem;
+}
+
+.branding-preview-skeleton--short {
+    width: 40%;
+    margin-bottom: 1.25rem;
+}
+
+.branding-preview-btn {
+    pointer-events: none;
+    background: var(--brand-accent, var(--bg-gradient)) !important;
+    box-shadow: none;
+    padding: 0.65rem 1.25rem;
+    font-size: 0.9rem;
+}
+
+.branding-preview-hint {
+    margin-top: 1rem;
+}
+
+.branding-preview-hint code {
+    font-size: 0.8rem;
+    background: rgba(14, 165, 233, 0.08);
+    padding: 0.1rem 0.35rem;
+    border-radius: 4px;
+}
+
+@media (max-width: 900px) {
+    .account-branding-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .account-branding-preview-card {
+        order: -1;
+    }
+}
+
 @media (max-width: 768px) {
     .account-title {
         font-size: 1.75rem;
