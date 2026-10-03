@@ -19,6 +19,100 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Allowed Upload Types (expanded allowlist)
+    |--------------------------------------------------------------------------
+    |
+    | Option B: broad common document / media / code / archive types.
+    | Executable installers (.exe, .msi, .bat, .cmd, .ps1, .dll, .scr, .com,
+    | .apk, …) are intentionally omitted — they are not accepted.
+    |
+    | A file passes when its MIME matches mime_patterns OR its extension is
+    | listed in extensions (covers browsers that send application/octet-stream).
+    |
+    */
+
+    'upload_types' => [
+        'label' => 'Images, Office, PDF, Text/code, Archives, Audio, Video',
+
+        // HTML <input accept="…"> value (comma-separated).
+        'accept' => implode(',', [
+            'image/*',
+            'video/*',
+            'audio/*',
+            '.pdf',
+            '.doc', '.docx', '.odt',
+            '.xls', '.xlsx', '.csv', '.ods',
+            '.ppt', '.pptx', '.odp',
+            '.txt', '.md', '.rtf',
+            '.json', '.xml', '.yaml', '.yml',
+            '.html', '.htm', '.css', '.js', '.ts', '.tsx', '.jsx',
+            '.php', '.py', '.java', '.go', '.rs', '.c', '.cpp', '.h', '.cs', '.rb', '.swift', '.kt', '.sql',
+            '.zip', '.rar', '.7z', '.tar', '.gz', '.tgz',
+            '.epub',
+        ]),
+
+        'mime_patterns' => [
+            'image/*',
+            'video/*',
+            'audio/*',
+            'text/*',
+            'application/pdf',
+            'application/msword',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'application/vnd.ms-excel',
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'application/vnd.ms-powerpoint',
+            'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+            'application/vnd.oasis.opendocument.text',
+            'application/vnd.oasis.opendocument.spreadsheet',
+            'application/vnd.oasis.opendocument.presentation',
+            'application/rtf',
+            'application/json',
+            'application/xml',
+            'application/javascript',
+            'application/typescript',
+            'application/x-yaml',
+            'application/yaml',
+            'application/zip',
+            'application/x-zip-compressed',
+            'application/x-rar-compressed',
+            'application/vnd.rar',
+            'application/x-7z-compressed',
+            'application/x-tar',
+            'application/gzip',
+            'application/x-gzip',
+            'application/epub+zip',
+            'application/csv',
+            'text/csv',
+            'text/markdown',
+            'text/x-markdown',
+        ],
+
+        'extensions' => [
+            // Images / media (wildcard mimes usually cover these; listed for octet-stream)
+            'jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp', 'ico', 'heic', 'heif', 'avif',
+            'mp4', 'webm', 'mov', 'mkv', 'avi', 'm4v',
+            'mp3', 'wav', 'ogg', 'm4a', 'flac', 'aac',
+            // Documents / Office
+            'pdf', 'doc', 'docx', 'odt', 'rtf',
+            'xls', 'xlsx', 'csv', 'ods',
+            'ppt', 'pptx', 'odp',
+            'epub',
+            // Text / code
+            'txt', 'md', 'markdown', 'log',
+            'json', 'xml', 'yaml', 'yml', 'toml', 'ini', 'env',
+            'html', 'htm', 'css', 'scss', 'less',
+            'js', 'mjs', 'cjs', 'ts', 'tsx', 'jsx',
+            'php', 'py', 'java', 'go', 'rs', 'c', 'cpp', 'h', 'hpp', 'cs', 'rb', 'swift', 'kt', 'kts',
+            'sql',
+            // Archives
+            'zip', 'rar', '7z', 'tar', 'gz', 'tgz', 'bz2',
+            // Intentionally omitted (not allowed): exe, msi, bat, cmd, ps1, dll, scr, com, apk, sh
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Per-Owner Active File and Storage Limits
     |--------------------------------------------------------------------------
     |

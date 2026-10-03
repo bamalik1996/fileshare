@@ -840,7 +840,7 @@
                         or click to browse • Max 25MB per file • Images, Documents, Archives
                     </div>
                     <input type="file" style="display: none;" multiple
-                        accept="image/*,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain,application/zip">
+                        accept="{{ config('airtoshare.upload_types.accept') }}">
                 </div>
             </div>
 

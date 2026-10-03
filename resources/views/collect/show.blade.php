@@ -50,7 +50,7 @@
                     <p class="collect-dropzone-text">Drag &amp; drop files here, or <strong>click to choose</strong></p>
                     <p class="collect-dropzone-hint">Up to 25 MB per file · Images, video, audio, PDF, Office, ZIP</p>
                     <input type="file" id="collect-input" multiple hidden
-                        accept="image/*,video/*,audio/*,application/pdf,text/plain,.doc,.docx,.zip,.rar">
+                        accept="{{ config('airtoshare.upload_types.accept') }}">
                 </div>
 
                 <ul id="collect-queue" class="collect-queue" aria-live="polite"></ul>

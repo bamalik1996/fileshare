@@ -53,21 +53,11 @@ class MediaController extends Controller
 {
     private const MAX_FILE_SIZE = 25 * 1024 * 1024; // 25MB
     private const MAX_FILES_PER_IP = 20;
-    private const ALLOWED_MIME_TYPES = [
-        'image/*',
-        'video/*',
-        'audio/*',
-        'application/pdf',
-        'text/plain',
-        'application/msword',
-        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        'application/zip',
-        'application/x-rar-compressed'
-    ];
 
     public function __construct(
         private readonly ShareService $shareService,
         private readonly \App\Services\AnalyticsService $analytics,
+        private readonly \App\Support\UploadTypePolicy $uploadTypes,
     ) {
     }
 
@@ -92,15 +82,7 @@ class MediaController extends Controller
         $file = $request->file('file');
         $principal = $request->principal();
 
-        $isAllowed = false;
-        foreach (self::ALLOWED_MIME_TYPES as $allowed) {
-            if (Str::is($allowed, $file->getMimeType())) {
-                $isAllowed = true;
-                break;
-            }
-        }
-
-        if (! $isAllowed) {
+        if (! $this->uploadTypes->isAllowed($file->getMimeType(), $file->getClientOriginalName())) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'File type not allowed.',

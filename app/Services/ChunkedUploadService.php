@@ -8,6 +8,7 @@ use App\Events\MediaAdded;
 use App\Models\Share;
 use App\Models\UploadChunk;
 use App\Models\UploadSession;
+use App\Support\UploadTypePolicy;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -70,6 +71,14 @@ class ChunkedUploadService
     /** Thrown when the session is not found, expired, or already completed. */
     public const ERR_SESSION_NOT_FOUND = 'session_not_found';
 
+    /** Thrown when the declared MIME / extension is outside the allowlist. */
+    public const ERR_FILE_TYPE_NOT_ALLOWED = 'file_type_not_allowed';
+
+    public function __construct(
+        private readonly UploadTypePolicy $uploadTypes = new UploadTypePolicy(),
+    ) {
+    }
+
     // -----------------------------------------------------------------------
     // Public API
     // -----------------------------------------------------------------------
@@ -99,6 +108,10 @@ class ChunkedUploadService
         ?int $shareId = null,
     ): UploadSession {
         $this->validateStartMetadata($totalChunks, $totalBytes);
+
+        if (! $this->uploadTypes->isAllowed($mime, $filename)) {
+            throw new \InvalidArgumentException(self::ERR_FILE_TYPE_NOT_ALLOWED);
+        }
 
         $session = UploadSession::create([
             'share_id'     => $shareId,
