@@ -11,8 +11,15 @@ return [
     /*
      * The maximum file size of an item in bytes.
      * Adding a larger file will result in an exception.
+     *
+     * Keep this at least as large as airtoshare.chunked_upload_max_bytes
+     * (default 500 MB) so resumable assembly is not rejected by Spatie
+     * after chunks have already been accepted.
      */
-    'max_file_size' => 1024 * 1024 * 30, // 10MB
+    'max_file_size' => (int) env(
+        'MEDIA_LIBRARY_MAX_FILE_SIZE',
+        env('AIRTOSHARE_CHUNKED_UPLOAD_MAX_BYTES', 500 * 1024 * 1024)
+    ),
 
     /*
      * This queue connection will be used to generate derived and responsive images.
