@@ -6,7 +6,7 @@
 User-agent: *
 Allow: /
 
-# Transactional / private URLs (also noindex) — don't waste crawl budget
+# Transactional / private URLs (also noindex) - don't waste crawl budget
 Disallow: /api/
 Disallow: /admin/
 Disallow: /storage/
