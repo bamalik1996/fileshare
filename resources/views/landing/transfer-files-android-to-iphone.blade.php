@@ -46,7 +46,7 @@
 
     <section class="hiw-section">
         <h2 class="hiw-section-heading"><i class="fas fa-circle-question" aria-hidden="true"></i> FAQ</h2>
-        <div class="hiw-card">
+        <div class="hiw-card" style="padding:1.35rem 1.5rem;">
             <h3 class="hiw-step-title">Why can I not just AirDrop from Android?</h3>
             <p class="hiw-step-text">AirDrop is Apple-only and does not work with Android. AirToShare bridges the two in the browser.</p>
             <h3 class="hiw-step-title" style="margin-top:1rem;">Will photos keep their quality?</h3>
@@ -56,7 +56,7 @@
 
     <section class="hiw-section">
         <h2 class="hiw-section-heading"><i class="fas fa-link" aria-hidden="true"></i> Related guides</h2>
-        <div class="hiw-card"><ul class="hiw-step-text">
+        <div class="hiw-card" style="padding:1.35rem 1.5rem;"><ul class="hiw-step-text">
             <li><a href="{{ url('/transfer-files-android-to-pc') }}">Android to PC</a></li>
             <li><a href="{{ url('/airdrop-for-android') }}">AirDrop for Android</a></li>
             <li><a href="{{ url('/send-files-between-devices') }}">Send files between devices</a></li>
@@ -64,7 +64,7 @@
     </section>
 
     <section class="hiw-section">
-        <div class="hiw-card" style="text-align:center;">
+        <div class="hiw-card" style="text-align:center;padding:1.75rem 1.5rem;">
             <h2 class="hiw-section-heading" style="justify-content:center;"><i class="fas fa-bolt" aria-hidden="true"></i> Ready to share?</h2>
             <p class="hiw-step-text" style="max-width:54ch;margin:0 auto 1.25rem;">No app, no signup. Open AirToShare and move files from Android to iPhone in seconds.</p>
             <a href="{{ url('/') }}" class="modern-btn primary"><i class="fas fa-paper-plane" aria-hidden="true"></i> Start sharing free</a>
