@@ -9,7 +9,7 @@
     <script type="application/ld+json">
 {
   "@@context": "https://schema.org",
-  "@@type": "SoftwareApplication",
+  "@@type": "WebApplication",
   "name": "AirToShare – WeTransfer Alternative",
   "description": "A free, no-signup alternative to WeTransfer for sending files",
   "url": "{{ url()->current() }}",

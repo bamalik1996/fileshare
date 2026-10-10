@@ -9,7 +9,7 @@
     <script type="application/ld+json">
 {
   "@@context": "https://schema.org",
-  "@@type": "SoftwareApplication",
+  "@@type": "WebApplication",
   "name": "AirToShare – Snapdrop Alternative",
   "description": "A browser file-sharing alternative to Snapdrop and PairDrop",
   "url": "{{ url()->current() }}",

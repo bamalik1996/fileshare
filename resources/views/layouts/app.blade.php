@@ -137,7 +137,6 @@
       "description": "Instant file sharing across devices on the same network",
       "sameAs": [
         "https://web.facebook.com/airtoshare/",
-        "https://github.com/airtoshare",
         "https://twitter.com/airtoshare",
         "https://www.linkedin.com/company/airtoshare"
       ],
@@ -494,10 +493,6 @@
                         <a href="https://twitter.com/airtoshare" target="_blank" rel="noopener noreferrer"
                             title="Follow us on Twitter">
                             <i class="fab fa-twitter"></i>
-                        </a>
-                        <a href="https://github.com/airtoshare" target="_blank" rel="noopener noreferrer"
-                            title="View on GitHub">
-                            <i class="fab fa-github"></i>
                         </a>
                         <a href="https://www.linkedin.com/company/airtoshare" target="_blank"
                             rel="noopener noreferrer" title="Connect on LinkedIn">

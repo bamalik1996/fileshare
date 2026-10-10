@@ -17,7 +17,7 @@
   "description": "Exciting new features coming to AirToShare file sharing platform",
   "url": "{{ url('/coming-soon') }}",
   "mainEntity": {
-    "@@type": "SoftwareApplication",
+    "@@type": "WebApplication",
     "name": "AirToShare",
     "applicationCategory": "UtilitiesApplication",
     "operatingSystem": "Web Browser",

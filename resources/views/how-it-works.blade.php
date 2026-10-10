@@ -217,6 +217,55 @@
         </div>
     </section>
 
+    <section class="hiw-section" id="hiw-guides" aria-labelledby="hiw-guides-heading">
+        <h2 class="hiw-section-heading" id="hiw-guides-heading">
+            <i class="fas fa-book-open" aria-hidden="true"></i>
+            Guides
+        </h2>
+        <div class="hiw-ways-grid">
+            <a class="hiw-way-card" href="{{ url('/airdrop-for-pc') }}" style="text-decoration:none;display:block;">
+                <div class="hiw-way-icon"><i class="fab fa-windows" aria-hidden="true"></i></div>
+                <h3 class="hiw-way-title">AirDrop for PC &amp; Windows</h3>
+                <p class="hiw-way-text">Send between your phone and a Windows PC — no app.</p>
+            </a>
+            <a class="hiw-way-card" href="{{ url('/airdrop-for-android') }}" style="text-decoration:none;display:block;">
+                <div class="hiw-way-icon"><i class="fab fa-android" aria-hidden="true"></i></div>
+                <h3 class="hiw-way-title">AirDrop for Android</h3>
+                <p class="hiw-way-text">Share between Android, iPhone, Mac and PC.</p>
+            </a>
+            <a class="hiw-way-card" href="{{ url('/send-files-between-devices') }}" style="text-decoration:none;display:block;">
+                <div class="hiw-way-icon"><i class="fas fa-right-left" aria-hidden="true"></i></div>
+                <h3 class="hiw-way-title">Send files between devices</h3>
+                <p class="hiw-way-text">Phone to PC and any OS, in the browser.</p>
+            </a>
+            <a class="hiw-way-card" href="{{ url('/online-clipboard') }}" style="text-decoration:none;display:block;">
+                <div class="hiw-way-icon"><i class="fas fa-clipboard" aria-hidden="true"></i></div>
+                <h3 class="hiw-way-title">Online clipboard</h3>
+                <p class="hiw-way-text">Copy and paste text across devices, live.</p>
+            </a>
+            <a class="hiw-way-card" href="{{ url('/transfer-files-android-to-pc') }}" style="text-decoration:none;display:block;">
+                <div class="hiw-way-icon"><i class="fas fa-laptop" aria-hidden="true"></i></div>
+                <h3 class="hiw-way-title">Android to PC</h3>
+                <p class="hiw-way-text">Step-by-step, no USB cable.</p>
+            </a>
+            <a class="hiw-way-card" href="{{ url('/transfer-files-android-to-iphone') }}" style="text-decoration:none;display:block;">
+                <div class="hiw-way-icon"><i class="fas fa-mobile-screen" aria-hidden="true"></i></div>
+                <h3 class="hiw-way-title">Android to iPhone</h3>
+                <p class="hiw-way-text">Step-by-step, nothing to install.</p>
+            </a>
+            <a class="hiw-way-card" href="{{ url('/wetransfer-alternative') }}" style="text-decoration:none;display:block;">
+                <div class="hiw-way-icon"><i class="fas fa-scale-balanced" aria-hidden="true"></i></div>
+                <h3 class="hiw-way-title">WeTransfer alternative</h3>
+                <p class="hiw-way-text">Free sending with no signup or email.</p>
+            </a>
+            <a class="hiw-way-card" href="{{ url('/snapdrop-alternative') }}" style="text-decoration:none;display:block;">
+                <div class="hiw-way-icon"><i class="fas fa-scale-balanced" aria-hidden="true"></i></div>
+                <h3 class="hiw-way-title">Snapdrop alternative</h3>
+                <p class="hiw-way-text">Local sharing plus links and Rooms.</p>
+            </a>
+        </div>
+    </section>
+
     <section class="hiw-page-cta" aria-labelledby="hiw-cta-heading">
         <div class="hiw-page-cta-inner">
             <div class="hiw-page-cta-text">

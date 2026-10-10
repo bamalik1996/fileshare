@@ -2,14 +2,14 @@
 
 @section('title', 'AirDrop for Android – Share Files With iPhone & PC | AirToShare')
 @section('breadcrumb_label', 'AirDrop for Android')
-@section('description', 'Android has no AirDrop with iPhone or Windows — AirToShare does it in any browser. Send files and text between Android, iPhone, Mac and PC instantly. No app, no signup.')
+@section('description', 'No AirDrop between Android, iPhone and PC? AirToShare does it in any browser. Send files and text instantly. No app, no signup.')
 @section('keywords', 'airdrop for android, airdrop android, android to iphone sharing, send files android to iphone, share files android to pc, airdrop alternative android')
 
 @section('schema')
     <script type="application/ld+json">
 {
   "@@context": "https://schema.org",
-  "@@type": "SoftwareApplication",
+  "@@type": "WebApplication",
   "name": "AirToShare – AirDrop for Android",
   "description": "Browser-based AirDrop alternative for Android phones",
   "url": "{{ url()->current() }}",
