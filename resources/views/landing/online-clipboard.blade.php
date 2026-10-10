@@ -33,7 +33,7 @@
 
     <section class="hiw-section">
         <h2 class="hiw-section-heading"><i class="fas fa-star" aria-hidden="true"></i> What makes it different</h2>
-        <div class="hiw-card">
+        <div class="hiw-card" style="padding:1.35rem 1.5rem;">
             <p class="hiw-step-text">Most sharing tools only move files. AirToShare also gives you a real cross‑device clipboard: type or paste text and it is instantly available on any device with the link. Create a <strong>Room</strong> with a 6‑character code and everyone in it sees clipboard changes <strong>live</strong> — ideal for sending a Wi‑Fi password, a login code, or a long URL from phone to laptop.</p>
         </div>
     </section>
@@ -51,7 +51,7 @@
 
     <section class="hiw-section">
         <h2 class="hiw-section-heading"><i class="fas fa-circle-question" aria-hidden="true"></i> FAQ</h2>
-        <div class="hiw-card">
+        <div class="hiw-card" style="padding:1.35rem 1.5rem;">
             <h3 class="hiw-step-title">Is the online clipboard free?</h3>
             <p class="hiw-step-text">Yes — free with no account. Create a free account only if you want longer expiry and history.</p>
             <h3 class="hiw-step-title" style="margin-top:1rem;">Does the text sync live?</h3>
@@ -63,7 +63,7 @@
 
     <section class="hiw-section">
         <h2 class="hiw-section-heading"><i class="fas fa-link" aria-hidden="true"></i> Related guides</h2>
-        <div class="hiw-card"><ul class="hiw-step-text">
+        <div class="hiw-card" style="padding:1.35rem 1.5rem;"><ul class="hiw-step-text">
             <li><a href="{{ url('/send-files-between-devices') }}">Send files between devices</a></li>
             <li><a href="{{ url('/airdrop-for-pc') }}">AirDrop for PC &amp; Windows</a></li>
             <li><a href="{{ url('/airdrop-for-android') }}">AirDrop for Android</a></li>
@@ -71,7 +71,7 @@
     </section>
 
     <section class="hiw-section">
-        <div class="hiw-card" style="text-align:center;">
+        <div class="hiw-card" style="text-align:center;padding:1.75rem 1.5rem;">
             <h2 class="hiw-section-heading" style="justify-content:center;"><i class="fas fa-bolt" aria-hidden="true"></i> Ready to share?</h2>
             <p class="hiw-step-text" style="max-width:54ch;margin:0 auto 1.25rem;">No app, no signup. Open AirToShare in your browser and start sharing text and files between your devices in seconds.</p>
             <a href="{{ url('/') }}" class="modern-btn primary"><i class="fas fa-paper-plane" aria-hidden="true"></i> Start sharing free</a>
