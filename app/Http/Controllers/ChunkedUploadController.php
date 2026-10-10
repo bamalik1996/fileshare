@@ -190,6 +190,18 @@ class ChunkedUploadController extends Controller
 
         $media = $this->chunkedUploadService->assemble($session);
 
+        // Inline assembly (the default) must return the media. A null here
+        // means the session had no target share; report it instead of
+        // pretending the upload is queued.
+        if ($media === null && ! config('airtoshare.chunked_assembly_queue', false)) {
+            \Illuminate\Support\Facades\Log::error('ChunkedUploadController: inline assembly returned no media', [
+                'session_uuid' => $session->uuid,
+                'share_id'     => $session->share_id,
+            ]);
+
+            return $this->error('Upload could not be finalised. Please try again.', 500);
+        }
+
         // When assembly is dispatched to a background job the response
         // carries no media UUID yet; the client polls or waits for realtime.
         if ($media === null) {
