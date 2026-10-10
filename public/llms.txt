@@ -36,6 +36,14 @@ Standard upload: up to 25 MB per file. Chunked pipeline: up to 500 MB per file.
 - [FAQ](https://airtoshare.app/faq): Help center — accounts, security, features, troubleshooting
 - [Feedback](https://airtoshare.app/feedback): Contact support, bug reports, feature requests
 - [Blog](https://airtoshare.app/blog): Feature announcements and guides
+- [AirDrop for PC & Windows](https://airtoshare.app/airdrop-for-pc): Browser AirDrop alternative for Windows PCs
+- [AirDrop for Android](https://airtoshare.app/airdrop-for-android): Cross-OS sharing from Android to iPhone/PC
+- [Send files between devices](https://airtoshare.app/send-files-between-devices): Phone to PC and any-OS transfer
+- [Online clipboard](https://airtoshare.app/online-clipboard): Share text and sync clipboard across devices
+- [Transfer Android to PC](https://airtoshare.app/transfer-files-android-to-pc): Step-by-step, no cable
+- [Transfer Android to iPhone](https://airtoshare.app/transfer-files-android-to-iphone): Step-by-step, no app
+- [WeTransfer alternative](https://airtoshare.app/wetransfer-alternative): Free, no-signup file sending
+- [Snapdrop alternative](https://airtoshare.app/snapdrop-alternative): Local sharing plus links and Rooms
 - [Sitemap](https://airtoshare.app/sitemap.xml): XML sitemap
 
 ## Private / noindex routes (not for search indexing)

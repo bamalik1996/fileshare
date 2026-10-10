@@ -26,6 +26,14 @@ class SitemapController extends Controller
         // 2. Static Pages definition
         $pages = [
             'how-it-works' => ['priority' => '0.8', 'freq' => 'weekly'],
+            'airdrop-for-pc' => ['priority' => '0.9', 'freq' => 'weekly'],
+            'airdrop-for-android' => ['priority' => '0.9', 'freq' => 'weekly'],
+            'online-clipboard' => ['priority' => '0.8', 'freq' => 'weekly'],
+            'send-files-between-devices' => ['priority' => '0.8', 'freq' => 'weekly'],
+            'transfer-files-android-to-pc' => ['priority' => '0.8', 'freq' => 'weekly'],
+            'transfer-files-android-to-iphone' => ['priority' => '0.8', 'freq' => 'weekly'],
+            'wetransfer-alternative' => ['priority' => '0.7', 'freq' => 'weekly'],
+            'snapdrop-alternative' => ['priority' => '0.7', 'freq' => 'weekly'],
             'faq' => ['priority' => '0.7', 'freq' => 'weekly'],
             'feedback' => ['priority' => '0.6', 'freq' => 'monthly'],
             'blog' => ['priority' => '0.9', 'freq' => 'daily'],

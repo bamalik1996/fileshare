@@ -78,4 +78,44 @@ class HomeController extends Controller
     {
         return view('smart-file-organization');
     }
+
+    public function airdropForPc()
+    {
+        return view('landing.airdrop-for-pc');
+    }
+
+    public function airdropForAndroid()
+    {
+        return view('landing.airdrop-for-android');
+    }
+
+    public function onlineClipboard()
+    {
+        return view('landing.online-clipboard');
+    }
+
+    public function sendFilesBetweenDevices()
+    {
+        return view('landing.send-files-between-devices');
+    }
+
+    public function transferAndroidToPc()
+    {
+        return view('landing.transfer-files-android-to-pc');
+    }
+
+    public function transferAndroidToIphone()
+    {
+        return view('landing.transfer-files-android-to-iphone');
+    }
+
+    public function wetransferAlternative()
+    {
+        return view('landing.wetransfer-alternative');
+    }
+
+    public function snapdropAlternative()
+    {
+        return view('landing.snapdrop-alternative');
+    }
 }
