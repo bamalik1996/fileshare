@@ -82,6 +82,11 @@ jobs:
             sudo chown -R www-data:www-data storage bootstrap/cache
             sudo chmod -R 775 storage bootstrap/cache
             
+            # Reload PHP-FPM so OPcache drops the old compiled code and the
+            # new PHP files are used immediately (graceful: no dropped requests).
+            echo "♻️ Reloading PHP-FPM..."
+            sudo systemctl reload php8.3-fpm || echo "⚠️ PHP-FPM reload failed (deploy continues)"
+
             echo "✅ Deployment completed!"
             
       - name: 🎉 Success Notification
