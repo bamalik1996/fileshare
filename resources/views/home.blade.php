@@ -107,7 +107,7 @@
         <div class="home-chip">
             <i class="fas fa-weight-hanging" aria-hidden="true"></i>
             <span class="home-chip-label">Max</span>
-            <span id="maxFileSize">25 MB</span>
+            <span id="maxFileSize">500 MB</span>
         </div>
         <div class="home-chip home-chip--expiry hidden" id="expiryCountdown">
             <i class="fas fa-hourglass-half" aria-hidden="true"></i>
@@ -2161,6 +2161,8 @@
                     zone.setAttribute('data-upload-max-files', String(data.limits.active_files_limit));
                     zone.setAttribute('data-upload-max-size', String(data.limits.legacy_upload_max_bytes));
                     zone.setAttribute('data-upload-chunked-max-size', String(data.limits.chunked_upload_max_bytes));
+                    var maxMb = Math.round(data.limits.chunked_upload_max_bytes / 1048576);
+                    $('#maxFileSize').text(maxMb >= 1024 ? (Math.round(maxMb / 102.4) / 10) + ' GB' : maxMb + ' MB');
                     if (window.__airtoshareUploadManager && window.__airtoshareUploadManager.init) {
                         window.__airtoshareUploadManager.init();
                     }
@@ -2226,7 +2228,7 @@
                     $('#userIp').text(data.ip);
                     $('#fileCount').text(data.files_count);
                     $('#maxFiles').text(data.max_files);
-                    $('#maxFileSize').text(data.max_file_size);
+                    // Max chip shows the chunked limit (set in loadUploadLimits), not the legacy 25 MB endpoint.
 
                     // Start countdown timer if there are files
                     if (data.expires_at && data.files_count > 0) {

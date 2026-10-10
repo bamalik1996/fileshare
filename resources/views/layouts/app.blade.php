@@ -224,7 +224,7 @@
          binds to any .preview-row element in the page. -->
     <script src="{{ asset('assets/js/preview-renderer.js') }}?v=2" defer></script>
     {{-- Rich text editor removed — plain textarea for quick text sharing --}}
-    <script src="{{ asset('assets/js/upload-manager.js') }}?v=2" defer></script>
+    <script src="{{ asset('assets/js/upload-manager.js') }}?v=3" defer></script>
     <script src="{{ asset('assets/js/encryption-module.js') }}?v=2" defer></script>
     <script src="{{ asset('assets/js/pwa-manager.js') }}?v=1" defer></script>
     {{-- Realtime + clipboard sync (Requirements 10, 14) --}}

@@ -275,7 +275,7 @@
                 </button>
                 <div class="faq-answer" hidden>
                     <ul>
-                        <li><strong>Guests:</strong> 50 active files, 25 MB per file, default 24h expiry</li>
+                        <li><strong>Guests:</strong> 50 active files, up to 500 MB per file, default 24h expiry</li>
                         <li><strong>Accounts:</strong> 100 active files, 1 GB total storage, up to 30-day expiry</li>
                         <li><strong>Large files:</strong> chunked upload supports up to 500 MB per file (over 5 MB)</li>
                     </ul>
@@ -387,7 +387,7 @@
                         <li><strong>Documents:</strong> PDF, DOC, DOCX, plain text</li>
                         <li><strong>Archives:</strong> ZIP, RAR</li>
                     </ul>
-                    <p>Standard uploads: up to <strong>25 MB</strong> per file. Chunked uploads: up to <strong>500 MB</strong>. Guests: 50 files; accounts: 100 files and 1 GB total.</p>
+                    <p>Up to <strong>500 MB</strong> per file. Files over 5 MB upload automatically in resumable chunks, so a dropped connection doesn't restart the upload. Guests: 50 files; accounts: 100 files and 1 GB total.</p>
                 </div>
             </div>
 
@@ -397,7 +397,7 @@
                     <i class="fas fa-chevron-down faq-icon" aria-hidden="true"></i>
                 </button>
                 <div class="faq-answer" hidden>
-                    <p>Guest users: up to <strong>50 active files</strong>. Registered accounts: up to <strong>100 files</strong> and <strong>1 GB</strong> total storage. Each standard upload can be up to <strong>25 MB</strong>; larger files use chunked upload (up to 500 MB).</p>
+                    <p>Guest users: up to <strong>50 active files</strong>. Registered accounts: up to <strong>100 files</strong> and <strong>1 GB</strong> total storage. Each file can be up to <strong>500 MB</strong>; files over 5 MB upload automatically in resumable chunks.</p>
                 </div>
             </div>
 
@@ -560,7 +560,7 @@
                 <div class="faq-answer" hidden>
                     <p>If your upload fails, check these common issues:</p>
                     <ul>
-                        <li>File exceeds 25 MB (use chunked path for larger files up to 500 MB)</li>
+                        <li>File exceeds the 500 MB per-file limit</li>
                         <li>Unsupported file type</li>
                         <li>Active file or storage limit reached (register for higher account limits)</li>
                         <li>Poor network connection</li>
