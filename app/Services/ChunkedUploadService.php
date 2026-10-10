@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Events\MediaAdded;
+use App\Models\MediaFile;
 use App\Models\Share;
 use App\Models\UploadChunk;
 use App\Models\UploadSession;
@@ -13,6 +14,7 @@ use App\Support\UploadTypePolicy;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 /**
@@ -396,13 +398,29 @@ class ChunkedUploadService
 
         fclose($out);
 
-        // Register with Spatie.
-        $media = $share
+        // Register with Spatie. Guests (IP owners) list, count, delete and
+        // zip their files from the legacy per-IP MediaFile container, so a
+        // chunked upload must land there too or it never shows up in the
+        // guest's file list. Account / room owners keep using the Share.
+        $target = $share;
+        if ($share->owner_type === Share::OWNER_TYPE_IP) {
+            $target = MediaFile::firstOrNew(['ip_address' => $share->owner_id]);
+            $target->expires_at = now()->addHours(24);
+            $target->save();
+        }
+
+        $ext = pathinfo($session->filename, PATHINFO_EXTENSION);
+        $safeName = (Str::slug(pathinfo($session->filename, PATHINFO_FILENAME)) ?: 'file')
+            . '_' . time() . ($ext !== '' ? '.' . strtolower($ext) : '');
+
+        $media = $target
             ->addMedia($tmpPath)
             ->usingName($session->filename)
-            ->usingFileName(basename($session->filename))
+            ->usingFileName($safeName)
             ->withCustomProperties(['session_uuid' => $session->uuid])
             ->toMediaCollection('shared_files', 'public');
+
+        @chmod($media->getPath(), 0644);
 
         Log::info('ChunkedUploadService: assembly complete', [
             'session_uuid' => $session->uuid,
