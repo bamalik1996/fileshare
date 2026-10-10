@@ -73,6 +73,11 @@ jobs:
             sudo -u www-data php artisan route:cache
             sudo -u www-data php artisan view:cache
             
+            # Notify Bing/Yandex/etc. (IndexNow) about the live URLs.
+            # Non-fatal: a failed ping must never fail the deploy.
+            echo "📣 Submitting URLs to IndexNow..."
+            sudo -u www-data php artisan indexnow:submit || echo "⚠️ IndexNow submit failed (deploy continues)"
+            
             # Final permissions
             sudo chown -R www-data:www-data storage bootstrap/cache
             sudo chmod -R 775 storage bootstrap/cache

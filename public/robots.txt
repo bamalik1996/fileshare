@@ -1,50 +1,25 @@
+# AirToShare robots.txt
+# One group for all crawlers (search engines and AI assistants).
+# Note: a bot with its own "User-agent" group ignores this one, so don't add
+# per-bot groups unless they repeat every rule below.
+
 User-agent: *
 Allow: /
 
-# Sitemap location
-Sitemap: https://airtoshare.app/sitemap.xml
-
-# Allow all major search engines
-User-agent: Googlebot
-Allow: /
-
-User-agent: Bingbot
-Allow: /
-
-User-agent: Slurp
-Allow: /
-
-User-agent: DuckDuckBot
-Allow: /
-
-User-agent: Baiduspider
-Allow: /
-
-User-agent: YandexBot
-Allow: /
-
-User-agent: facebookexternalhit
-Allow: /
-
-User-agent: Twitterbot
-Allow: /
-
-User-agent: LinkedInBot
-Allow: /
-
-# Disallow API endpoints from indexing
+# Transactional / private URLs (also noindex) — don't waste crawl budget
 Disallow: /api/
-
-# Disallow admin areas (if any)
 Disallow: /admin/
-
-# Disallow temporary files
 Disallow: /storage/
+Disallow: /s/
+Disallow: /r/
+Disallow: /p/
+Disallow: /qr/
+Disallow: /download/
+Disallow: /collect/
+Disallow: /auth/
+Disallow: /account/
+Disallow: /rooms
+Disallow: /verify-password
+Disallow: /*?*download=
 
-# Allow important files
-Allow: /favicon.ico
-Allow: /sitemap.xml
-Allow: /robots.txt
-
-# Crawl delay (optional - be respectful)
-Crawl-delay: 1
+Sitemap: https://airtoshare.app/sitemap.xml

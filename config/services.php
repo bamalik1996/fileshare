@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'indexnow' => [
+        'key' => env('INDEXNOW_KEY', '3142a8fe5972381cb4b04a2bf1dcfcf1'),
+        'host' => env('INDEXNOW_HOST', 'airtoshare.app'),
+    ],
+
 ];
