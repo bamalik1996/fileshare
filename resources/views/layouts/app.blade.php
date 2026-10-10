@@ -121,7 +121,7 @@
     <meta name="twitter:site" content="@AirToShare">
     <meta name="twitter:creator" content="@AirToShare">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="{{ asset('assets/css/custom.css') }}?v=19" rel="stylesheet" />
+    <link href="{{ asset('assets/css/custom.css') }}?v=23" rel="stylesheet" />
 
     <!-- Schema.org JSON-LD -->
     @yield('schema')
@@ -222,7 +222,7 @@
     <!-- Preview Renderer (Requirement 6: classifier, lazy-load via IntersectionObserver,
          5s out-of-view release, 10s load-error retry control). Data-attribute driven;
          binds to any .preview-row element in the page. -->
-    <script src="{{ asset('assets/js/preview-renderer.js') }}?v=2" defer></script>
+    <script src="{{ asset('assets/js/preview-renderer.js') }}?v=4" defer></script>
     {{-- Rich text editor removed — plain textarea for quick text sharing --}}
     <script src="{{ asset('assets/js/upload-manager.js') }}?v=3" defer></script>
     <script src="{{ asset('assets/js/encryption-module.js') }}?v=2" defer></script>

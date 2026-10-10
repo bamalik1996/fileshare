@@ -262,8 +262,13 @@ class ChunkedUploadService
         $session->completed_at = now();
         $session->save();
 
-        // Dispatch to background job when the queue worker is available.
-        if (class_exists(\App\Jobs\AssembleChunkedUpload::class)) {
+        // Assemble inline by default so the file appears as soon as the last
+        // chunk is acknowledged. Queued assembly silently never ran when no
+        // queue worker was running (files >5 MB uploaded but never showed up).
+        // Set AIRTOSHARE_CHUNKED_ASSEMBLY_QUEUE=true only on servers that run
+        // a permanent `php artisan queue:work` process.
+        if (config('airtoshare.chunked_assembly_queue', false)
+            && class_exists(\App\Jobs\AssembleChunkedUpload::class)) {
             \App\Jobs\AssembleChunkedUpload::dispatch($session->fresh());
 
             return null;
@@ -283,6 +288,9 @@ class ChunkedUploadService
      */
     public function performAssembly(UploadSession $session): ?Media
     {
+        // Large files (up to 500 MB) can take a while to concatenate.
+        @set_time_limit(300);
+
         return $this->runInlineAssembly($session);
     }
 
