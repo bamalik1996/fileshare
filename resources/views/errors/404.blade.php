@@ -15,7 +15,7 @@
   "description": "Page not found error on AirToShare file sharing platform",
   "url": "{{ url()->current() }}",
   "mainEntity": {
-    "@@type": "SoftwareApplication",
+    "@@type": "WebApplication",
     "name": "AirToShare",
     "applicationCategory": "UtilitiesApplication",
     "operatingSystem": "Web Browser"

@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'AirToShare – Send Files Between Devices Instantly, No App')
-@section('description', 'Send files and text between any devices — phone to PC, Android to iPhone — instantly in your browser. No app, no signup. A free AirDrop alternative for Windows, Mac, Android and iOS.')
+@section('description', 'Send files and text between any devices, phone to PC or Android to iPhone, instantly in your browser. A free AirDrop alternative. No app, no signup.')
 
 @section('keywords', 'airdrop for pc, airdrop for windows, airdrop for android, send files between devices, transfer files from phone to pc, share files between devices, wetransfer alternative, online clipboard, share text between devices, file sharing no signup')
 

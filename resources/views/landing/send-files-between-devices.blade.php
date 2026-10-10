@@ -9,7 +9,7 @@
     <script type="application/ld+json">
 {
   "@@context": "https://schema.org",
-  "@@type": "SoftwareApplication",
+  "@@type": "WebApplication",
   "name": "AirToShare – Send Files Between Devices",
   "description": "Send files between any devices in the browser",
   "url": "{{ url()->current() }}",

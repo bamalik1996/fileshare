@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Online Clipboard – Share Text & Copy-Paste Between Devices | AirToShare')
+@section('title', 'Online Clipboard – Copy & Paste Between Devices | AirToShare')
 @section('breadcrumb_label', 'Online Clipboard')
 @section('description', 'A free online clipboard to share text and copy-paste between your phone, PC and other devices instantly. Live sync in a Room, no app and no signup.')
 @section('keywords', 'online clipboard, share text between devices, copy paste between devices, share text online, clipboard sync, cross device clipboard')
@@ -9,7 +9,7 @@
     <script type="application/ld+json">
 {
   "@@context": "https://schema.org",
-  "@@type": "SoftwareApplication",
+  "@@type": "WebApplication",
   "name": "AirToShare – Online Clipboard",
   "description": "Share text and sync your clipboard across devices in the browser",
   "url": "{{ url()->current() }}",

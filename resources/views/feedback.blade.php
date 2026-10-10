@@ -137,10 +137,6 @@
                 <span class="feedback-page-channel-icon"><i class="fab fa-facebook-f" aria-hidden="true"></i></span>
                 <span class="feedback-page-channel-label">Facebook</span>
             </a>
-            <a href="https://github.com/airtoshare" target="_blank" rel="noopener noreferrer" class="feedback-page-channel">
-                <span class="feedback-page-channel-icon"><i class="fab fa-github" aria-hidden="true"></i></span>
-                <span class="feedback-page-channel-label">GitHub</span>
-            </a>
             <a href="https://x.com/airtoshare" target="_blank" rel="noopener noreferrer" class="feedback-page-channel">
                 <span class="feedback-page-channel-icon"><i class="fab fa-twitter" aria-hidden="true"></i></span>
                 <span class="feedback-page-channel-label">@AirToShare</span>

@@ -2,7 +2,7 @@
 
 @section('title', 'FAQ - Frequently Asked Questions | AirToShare Help Center')
 @section('breadcrumb_label', 'FAQ')
-@section('description', 'How to share files between devices, send files from Android to iPhone or phone to PC, and use AirToShare safely. Answers on limits, privacy, large files, and AirDrop on Windows.')
+@section('description', 'AirToShare help: send files Android to iPhone or phone to PC, AirDrop on Windows, file limits, privacy and large files, answered.')
 @section('keywords', 'airdrop for windows, send files android to iphone, transfer files android to pc, share files between devices, file sharing faq, airtoshare help, online clipboard, wetransfer alternative')
 
 @section('schema')

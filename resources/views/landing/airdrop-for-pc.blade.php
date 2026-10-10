@@ -9,7 +9,7 @@
     <script type="application/ld+json">
 {
   "@@context": "https://schema.org",
-  "@@type": "SoftwareApplication",
+  "@@type": "WebApplication",
   "name": "AirToShare – AirDrop for PC",
   "description": "Browser-based AirDrop alternative for Windows PCs",
   "url": "{{ url()->current() }}",
