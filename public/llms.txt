@@ -27,7 +27,7 @@ AirToShare is a web-based file and text sharing app. Guests can share immediatel
 | Guest (IP) | 25 | — | Instant, no sign-up |
 | Account | 100 | 1 GB | Email verification required; up to 30-day expiry |
 
-Standard upload: up to 25 MB per file. Chunked pipeline: up to 500 MB per file.
+Up to 500 MB per file for everyone (guests included); files over 5 MB upload automatically in resumable chunks.
 
 ## Public pages (indexable)
 

@@ -53,7 +53,7 @@
         <h2 class="hiw-section-heading"><i class="fas fa-circle-question" aria-hidden="true"></i> FAQ</h2>
         <div class="hiw-card" style="padding:1.35rem 1.5rem;">
             <h3 class="hiw-step-title">What is the file size limit?</h3>
-            <p class="hiw-step-text">Up to 25 MB per file on the standard path, and up to 500 MB per file with chunked upload.</p>
+            <p class="hiw-step-text">Up to 500 MB per file. Files over 5 MB upload automatically in resumable chunks.</p>
             <h3 class="hiw-step-title" style="margin-top:1rem;">Does it work between different operating systems?</h3>
             <p class="hiw-step-text">Yes — it is browser-based, so Windows, Mac, Android and iOS all work together.</p>
         </div>

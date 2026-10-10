@@ -929,7 +929,7 @@
                         rejectedReasons.size + ' file' +
                         (rejectedReasons.size === 1 ? '' : 's') +
                         ' rejected: exceed max upload size of ' +
-                        formatBytes(manager.maxSize)
+                        formatBytes(manager.chunkedMaxSize)
                     );
                 }
                 manager._showError(parts.join('. ') + '.');
