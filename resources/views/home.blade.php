@@ -2798,12 +2798,14 @@
                 <p>No files uploaded yet. Start by dragging files above!</p>
             </div>
         `);
-                controls.hide();
+                // .hidden is display:none !important, so jQuery .show()/.hide()
+                // can't toggle it: switch the class instead.
+                controls.addClass('hidden');
                 return;
             }
 
             grid.removeClass('empty');
-            controls.show();
+            controls.removeClass('hidden');
 
             Object.values(files).forEach(file => {
                 if (!file.original_url || !file.preview_url) {
