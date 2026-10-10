@@ -2,11 +2,8 @@
 
 @section('title', 'FAQ - Frequently Asked Questions | AirToShare Help Center')
 @section('breadcrumb_label', 'FAQ')
-@section('description',
-    'Find answers to common questions about AirToShare file sharing. Learn about security, file
-    limits, compatibility, and troubleshooting tips.')
-@section('keywords',
-    'AirToShare FAQ, file sharing help, share text online, share text online free, text share online, online text share, share text file online, online share text, how to share large text files online, how to share text online')
+@section('description', 'How to share files between devices, send files from Android to iPhone or phone to PC, and use AirToShare safely. Answers on limits, privacy, large files, and AirDrop on Windows.')
+@section('keywords', 'airdrop for windows, send files android to iphone, transfer files android to pc, share files between devices, file sharing faq, airtoshare help, online clipboard, wetransfer alternative')
 
 @section('schema')
     <script type="application/ld+json">
@@ -14,6 +11,30 @@
   "@@context": "https://schema.org",
   "@@type": "FAQPage",
   "mainEntity": [
+    {
+      "@@type": "Question",
+      "name": "How do I AirDrop to a Windows PC?",
+      "acceptedAnswer": {
+        "@@type": "Answer",
+        "text": "Windows has no AirDrop, but AirToShare does the same thing in any browser. Open AirToShare on both your phone and PC, add your files or text, then copy the share link or scan the QR code. No app or signup required."
+      }
+    },
+    {
+      "@@type": "Question",
+      "name": "How do I send files from Android to iPhone?",
+      "acceptedAnswer": {
+        "@@type": "Answer",
+        "text": "Open AirToShare in the browser on your Android phone, add the files, and copy the share link or show the QR code. Open that link on the iPhone to download. It works across Android and iOS with nothing to install."
+      }
+    },
+    {
+      "@@type": "Question",
+      "name": "How do I transfer files from Android to a PC?",
+      "acceptedAnswer": {
+        "@@type": "Answer",
+        "text": "On the same Wi-Fi, open AirToShare on both the Android phone and the PC and they sync automatically. Or add files on the phone and open the share link on the PC. Files up to 500 MB are supported via chunked upload."
+      }
+    },
     {
       "@@type": "Question",
       "name": "Is AirToShare safe to use?",
@@ -165,6 +186,37 @@
 
     <div class="faq-page-card">
         <div class="faq-page-list" id="faqList">
+            <!-- Cross-device transfer (GEO/SEO) -->
+            <div class="faq-item" data-category="usage">
+                <button type="button" class="faq-question" aria-expanded="false">
+                    <span class="faq-question-text">How do I AirDrop to a Windows PC?</span>
+                    <i class="fas fa-chevron-down faq-icon" aria-hidden="true"></i>
+                </button>
+                <div class="faq-answer" hidden>
+                    <p>Windows has no AirDrop — but AirToShare does the same thing in any browser. Open AirToShare on both your phone and PC, add your files or text, then copy the share link or scan the QR code. <strong>No app, no signup.</strong></p>
+                </div>
+            </div>
+
+            <div class="faq-item" data-category="usage">
+                <button type="button" class="faq-question" aria-expanded="false">
+                    <span class="faq-question-text">How do I send files from Android to iPhone?</span>
+                    <i class="fas fa-chevron-down faq-icon" aria-hidden="true"></i>
+                </button>
+                <div class="faq-answer" hidden>
+                    <p>Open AirToShare in the browser on your Android phone, add the files, and copy the <strong>share link</strong> or show the <strong>QR code</strong>. Open that link on the iPhone to download — it works across Android and iOS with nothing to install.</p>
+                </div>
+            </div>
+
+            <div class="faq-item" data-category="usage">
+                <button type="button" class="faq-question" aria-expanded="false">
+                    <span class="faq-question-text">How do I transfer files from Android to a PC?</span>
+                    <i class="fas fa-chevron-down faq-icon" aria-hidden="true"></i>
+                </button>
+                <div class="faq-answer" hidden>
+                    <p>On the same Wi-Fi, open AirToShare on both devices and they sync automatically. Or add files on the phone and open the <strong>share link</strong> on the PC. Large files up to <strong>500 MB</strong> work via chunked upload.</p>
+                </div>
+            </div>
+
             <!-- Accounts -->
             <div class="faq-item" data-category="accounts">
                 <button type="button" class="faq-question" aria-expanded="false">

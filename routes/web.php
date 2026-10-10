@@ -12,6 +12,14 @@ Route::controller(HomeController::class)->group(function () {
     Route::get('/faq', 'faq');
     Route::get('/feedback', 'feedback');
     Route::get('/coming-soon', 'comingSoon');
+    Route::get('/airdrop-for-pc', 'airdropForPc');
+    Route::get('/airdrop-for-android', 'airdropForAndroid');
+    Route::get('/online-clipboard', 'onlineClipboard');
+    Route::get('/send-files-between-devices', 'sendFilesBetweenDevices');
+    Route::get('/transfer-files-android-to-pc', 'transferAndroidToPc');
+    Route::get('/transfer-files-android-to-iphone', 'transferAndroidToIphone');
+    Route::get('/wetransfer-alternative', 'wetransferAlternative');
+    Route::get('/snapdrop-alternative', 'snapdropAlternative');
     // Route::get('/smart-file-organization', 'smartFileOrganization');
     Route::get('/sitemap.xml', [\App\Http\Controllers\SitemapController::class, 'index']);
 });

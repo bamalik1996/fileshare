@@ -476,6 +476,10 @@
                     <div class="footer-links">
                         <a href="{{ url('/') }}">Home</a>
                         <a href="{{ url('/how-it-works') }}">How It Works</a>
+                        <a href="{{ url('/airdrop-for-pc') }}">AirDrop for PC</a>
+                        <a href="{{ url('/airdrop-for-android') }}">AirDrop for Android</a>
+                        <a href="{{ url('/send-files-between-devices') }}">Send Files Between Devices</a>
+                        <a href="{{ url('/online-clipboard') }}">Online Clipboard</a>
                         <a href="{{ url('/faq') }}">FAQ</a>
                         <a href="{{ route('blog.index') }}">Blog</a>
                         <a href="{{ url('/feedback') }}">Contact</a>

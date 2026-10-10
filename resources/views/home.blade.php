@@ -1,12 +1,9 @@
 @extends('layouts.app')
 
-@section('title', 'AirToShare – Instant, Secure File Sharing Across Devices')
-@section('description',
-    'Experience instant, secure peer-to-peer file and text sharing across all your devices on the
-    same local Wi-Fi network. No cloud uploads, no logins required, and completely free. Fast, private, and simple.')
+@section('title', 'AirToShare – Send Files Between Devices Instantly, No App')
+@section('description', 'Send files and text between any devices — phone to PC, Android to iPhone — instantly in your browser. No app, no signup. A free AirDrop alternative for Windows, Mac, Android and iOS.')
 
-@section('keywords',
-    'file sharing, instant sharing, share text online, share text online free, text share online, online text share, share text file online, online share text, how to share large text files online, how to share text online')
+@section('keywords', 'airdrop for pc, airdrop for windows, airdrop for android, send files between devices, transfer files from phone to pc, share files between devices, wetransfer alternative, online clipboard, share text between devices, file sharing no signup')
 
 @section('schema')
     <script type="application/ld+json">
@@ -81,6 +78,7 @@
             <img src="/icon.svg" class="home-hero-logo" alt="" width="40" height="40" />
             Share text &amp; files instantly
         </h1>
+        <p class="home-hero-lead">AirToShare is a free, no-install AirDrop alternative for Windows, Mac, Android and iPhone — share files and text between any devices right in your browser.</p>
         <p class="home-hero-lead">Save or upload on this device, then copy your link — or scan QR — to open it anywhere.</p>
     </header>
 
