@@ -222,7 +222,7 @@
     <!-- Preview Renderer (Requirement 6: classifier, lazy-load via IntersectionObserver,
          5s out-of-view release, 10s load-error retry control). Data-attribute driven;
          binds to any .preview-row element in the page. -->
-    <script src="{{ asset('assets/js/preview-renderer.js') }}?v=2" defer></script>
+    <script src="{{ asset('assets/js/preview-renderer.js') }}?v=3" defer></script>
     {{-- Rich text editor removed — plain textarea for quick text sharing --}}
     <script src="{{ asset('assets/js/upload-manager.js') }}?v=3" defer></script>
     <script src="{{ asset('assets/js/encryption-module.js') }}?v=2" defer></script>
