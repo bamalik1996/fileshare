@@ -184,7 +184,28 @@
         }
     }
 
+    // Card mode: rows rendered as file cards (.fc-card) show a coloured
+    // file-type tile instead of text placeholders, error banners or
+    // embedded viewers. The icon class comes from data-fc-icon.
+    function cardRow(frame) {
+        var row = frame && frame.closest ? frame.closest('.fc-card') : null;
+        return row || null;
+    }
+
+    function showCardTile(frame, row, loading) {
+        emptyNode(frame);
+        var tile = document.createElement('div');
+        tile.className = 'fc-tile' + (loading ? ' fc-loading' : '');
+        var icon = document.createElement('i');
+        icon.className = (row.dataset && row.dataset.fcIcon) || 'fa-solid fa-file';
+        icon.setAttribute('aria-hidden', 'true');
+        tile.appendChild(icon);
+        frame.appendChild(tile);
+    }
+
     function showLoading(frame) {
+        var card = cardRow(frame);
+        if (card) { showCardTile(frame, card, true); return; }
         emptyNode(frame);
         var span = document.createElement('span');
         span.className = 'preview-loading';
@@ -194,6 +215,8 @@
     }
 
     function showGeneric(frame, name) {
+        var card = cardRow(frame);
+        if (card) { showCardTile(frame, card, false); return; }
         emptyNode(frame);
         var wrap = document.createElement('div');
         wrap.className = 'preview-generic';
@@ -209,6 +232,8 @@
     }
 
     function showError(frame, name, onRetry) {
+        var card = cardRow(frame);
+        if (card) { showCardTile(frame, card, false); return; }
         emptyNode(frame);
         var wrap = document.createElement('div');
         wrap.className = 'preview-error';
@@ -284,6 +309,12 @@
         // by the CSP (frame-src) and showed the browser's broken-frame icon.
         // The full PDF still opens in the preview modal on click.
         var state = getState(row);
+        if (cardRow(frame)) {
+            showCardTile(frame, cardRow(frame), false);
+            state.loading = false;
+            state.loaded = true;
+            return;
+        }
         emptyNode(frame);
         var wrap = document.createElement('div');
         wrap.className = 'preview-pdf-tile';
@@ -308,11 +339,14 @@
     function renderVideo(row, frame, ctx) {
         var video = document.createElement('video');
         video.className = 'preview-media';
-        video.controls = true;
+        var inCard = !!cardRow(frame);
+        video.controls = !inCard;          // cards: silent poster frame, click opens the modal
+        video.muted = inCard;
+        video.setAttribute('playsinline', '');
         video.preload = 'metadata';
         // Use a single <source> child so we can set the type hint.
         var src = document.createElement('source');
-        src.src = ctx.url;
+        src.src = inCard ? ctx.url + '#t=0.1' : ctx.url;   // #t: show a real frame as the poster
         if (ctx.mime) src.type = ctx.mime;
         video.appendChild(src);
         bindLoadGuard(row, video, ctx);

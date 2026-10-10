@@ -17,6 +17,10 @@ return [
     'legacy_upload_max_bytes'  => (int) env('AIRTOSHARE_LEGACY_UPLOAD_MAX_BYTES', 25 * 1024 * 1024),
     'chunked_upload_max_bytes' => (int) env('AIRTOSHARE_CHUNKED_UPLOAD_MAX_BYTES', 500 * 1024 * 1024),
 
+    // Assemble chunked uploads in a queued job (true) or inline in the final
+    // request (false, default). Only enable with a running queue worker.
+    'chunked_assembly_queue' => (bool) env('AIRTOSHARE_CHUNKED_ASSEMBLY_QUEUE', false),
+
     /*
     |--------------------------------------------------------------------------
     | Allowed Upload Types (expanded allowlist)

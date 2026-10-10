@@ -24,6 +24,7 @@ class SecurityHeaders
             "font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com;",
             "img-src 'self' data: blob: https:;",
             "frame-src 'self' blob: https://www.google.com https://www.gstatic.com;",
+            "worker-src 'self' blob:;",
         ]);
 
         $response->headers->set('Content-Security-Policy', $csp);

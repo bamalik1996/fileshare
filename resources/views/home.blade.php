@@ -400,21 +400,38 @@
                 </button>
 
                 <div class="preview-container" id="previewContainer">
+                    <!-- Loading spinner (images / video) -->
+                    <div class="pv-loader hidden" id="pvLoader" aria-live="polite">
+                        <span class="pv-spinner" aria-hidden="true"></span>
+                        <span class="pv-loader-text">Loading preview…</span>
+                    </div>
+
                     <!-- Image Preview -->
                     <img class="preview-image hidden" id="previewImage" src="" alt="Preview">
 
                     <!-- Video Preview -->
-                    <video class="preview-video hidden" id="previewVideo" controls>
+                    <video class="preview-video hidden" id="previewVideo" controls playsinline preload="metadata">
                         Your browser does not support the video tag.
                     </video>
 
                     <!-- Audio Preview -->
-                    <audio class="preview-audio hidden" id="previewAudio" controls>
-                        Your browser does not support the audio tag.
-                    </audio>
+                    <div class="pv-audio hidden" id="previewAudioWrap">
+                        <div class="pv-audio-art" aria-hidden="true">
+                            <i class="fa-solid fa-music"></i>
+                            <span class="pv-eq"><i></i><i></i><i></i><i></i></span>
+                        </div>
+                        <div class="pv-audio-name" id="pvAudioName"></div>
+                        <div class="pv-audio-meta" id="pvAudioMeta"></div>
+                        <audio class="preview-audio" id="previewAudio" controls preload="metadata">
+                            Your browser does not support the audio tag.
+                        </audio>
+                    </div>
 
                     <!-- PDF Preview -->
-                    <iframe class="preview-pdf hidden" id="previewPdf"></iframe>
+                    <div class="pv-pdf hidden" id="previewPdf">
+                        <div class="pv-pdf-pages" id="pvPdfPages"></div>
+                        <div class="pv-pdf-more hidden" id="pvPdfMore"></div>
+                    </div>
 
                     <!-- Text/Code Preview -->
                     <div class="preview-text hidden" id="previewText">
@@ -428,12 +445,17 @@
                     </div>
 
                     <!-- Document/Other Files Preview -->
-                    <div class="preview-document hidden" id="previewDocument">
-                        <i class="fas fa-file-alt preview-doc-icon"></i>
-                        <p>Preview not available for this file type</p>
-                        <button class="modern-btn" id="previewDocDownloadBtn">
-                            <i class="fas fa-download"></i>
-                            Download to View
+                    <div class="preview-document pv-download hidden" id="previewDocument">
+                        <div class="pv-dl-tile fc-card fc-t-other" id="pvDlTile" aria-hidden="true">
+                            <i class="fa-solid fa-file" id="pvDlIcon"></i>
+                            <span class="pv-dl-ext" id="pvDlExt">FILE</span>
+                        </div>
+                        <h4 class="pv-dl-name" id="pvDlName"></h4>
+                        <p class="pv-dl-meta" id="pvDlMeta"></p>
+                        <p class="pv-dl-note" id="pvDlNote">Preview isn't available for this file type. Download it to open it on your device.</p>
+                        <button class="modern-btn pv-dl-btn" id="previewDocDownloadBtn">
+                            <i class="fa-solid fa-download"></i>
+                            Download
                         </button>
                     </div>
                 </div>
@@ -2890,33 +2912,76 @@
         let allFiles = [];
         let currentPreviewIndex = 0;
 
+        // File-type info for the card tile (icon, colour class, badge label).
+        function fileTypeInfo(name, mime) {
+            const ext = (String(name || '').split('.').pop() || '').toLowerCase();
+            const m = String(mime || '').toLowerCase();
+            const map = [
+                ['pdf',     'fa-solid fa-file-pdf',        ['pdf'], m === 'application/pdf'],
+                ['word',    'fa-solid fa-file-word',       ['doc', 'docx', 'odt', 'rtf', 'pages'], m.includes('wordprocessing') || m === 'application/msword'],
+                ['excel',   'fa-solid fa-file-excel',      ['xls', 'xlsx', 'ods', 'numbers'], m.includes('spreadsheet') || m === 'application/vnd.ms-excel'],
+                ['excel',   'fa-solid fa-file-csv',        ['csv', 'tsv'], m === 'text/csv'],
+                ['slides',  'fa-solid fa-file-powerpoint', ['ppt', 'pptx', 'odp', 'key'], m.includes('presentation') || m.includes('powerpoint')],
+                ['archive', 'fa-solid fa-file-zipper',     ['zip', 'rar', '7z', 'tar', 'gz', 'bz2', 'xz'], m.includes('zip') || m.includes('compressed') || m.includes('x-tar')],
+                ['android', 'fa-brands fa-android',        ['apk', 'aab'], m === 'application/vnd.android.package-archive'],
+                ['image',   'fa-solid fa-file-image',      [], m.startsWith('image/')],
+                ['video',   'fa-solid fa-file-video',      [], m.startsWith('video/')],
+                ['audio',   'fa-solid fa-file-audio',      [], m.startsWith('audio/')],
+                ['code',    'fa-solid fa-file-code',       ['js', 'ts', 'jsx', 'tsx', 'php', 'py', 'rb', 'java', 'kt', 'c', 'h', 'cpp', 'cs', 'go', 'rs', 'swift', 'sh', 'sql', 'html', 'css', 'scss', 'json', 'xml', 'yml', 'yaml', 'md'], false],
+                ['text',    'fa-solid fa-file-lines',      ['txt', 'log', 'ini', 'cfg'], m.startsWith('text/')]
+            ];
+            for (const [type, icon, exts, mimeHit] of map) {
+                if (mimeHit || exts.includes(ext)) {
+                    return { type, icon, label: (ext && ext.length <= 5 ? ext : type).toUpperCase() };
+                }
+            }
+            return { type: 'other', icon: 'fa-solid fa-file', label: (ext && ext.length <= 5 ? ext : 'FILE').toUpperCase() };
+        }
+
+        function escapeHtml(s) {
+            return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+        }
+
         function createFileItem(file) {
             const isImage = file.mime_type.startsWith('image/');
             const isVideo = file.mime_type.startsWith('video/');
-            const isPreviewable = isImage || isVideo;
+            const t = fileTypeInfo(file.name, file.mime_type);
+            const safeName = escapeHtml(file.name);
+            const tile = `<div class="preview-frame"><div class="fc-tile"><i class="${t.icon}" aria-hidden="true"></i></div></div>`;
 
             const item = $(`
-        <div class="column is-12 preview-row file-item" data-uuid="${file.uuid}"
-             data-preview-uuid="${file.uuid}"
-             data-preview-mime="${file.mime_type}"
-             data-preview-size="${file.size}"
-             data-preview-url="${file.original_url}"
-             data-preview-name="${file.name.replace(/"/g, '&quot;')}">
-            <input type="checkbox" class="file-checkbox">
-            <div class="file-preview preview-trigger" data-uuid="${file.uuid}">
-                ${isPreviewable ? '' : '<i class="fas fa-file file-icon"></i>'}
+        <div class="column is-12 preview-row file-item fc-card fc-t-${t.type}" data-uuid="${escapeHtml(file.uuid)}"
+             data-preview-uuid="${escapeHtml(file.uuid)}"
+             data-preview-mime="${escapeHtml(file.mime_type)}"
+             data-preview-size="${escapeHtml(file.size)}"
+             data-preview-url="${escapeHtml(file.original_url)}"
+             data-preview-name="${safeName}"
+             data-fc-icon="${t.icon}">
+            <div class="fc-media">
+                <div class="file-preview preview-trigger" data-uuid="${escapeHtml(file.uuid)}" role="button" tabindex="0" aria-label="Preview ${safeName}">
+                    ${tile}
+                </div>
+                <label class="fc-check" title="Select">
+                    <input type="checkbox" class="file-checkbox" aria-label="Select ${safeName}">
+                    <span class="fc-check-box" aria-hidden="true"><i class="fa-solid fa-check"></i></span>
+                </label>
+                <span class="fc-badge">${escapeHtml(t.label)}</span>
+                ${isVideo ? '<span class="fc-play" aria-hidden="true"><i class="fa-solid fa-play"></i></span>' : ''}
+                <span class="fc-zoom" aria-hidden="true"><i class="fa-solid fa-${isImage || isVideo ? 'expand' : 'eye'}"></i></span>
             </div>
             <div class="file-info">
-                <div class="file-name" title="${file.name}">${file.name}</div>
-                <div class="file-size">${file.size}</div>
-            </div>
-            <div class="file-actions">
-                <a class="action-btn download preview-download" href="${file.original_url}" download title="Download">
-                    <span class="icon"><i class="fas fa-download"></i></span>
-                </a>
-                <button class="action-btn delete" title="Delete">
-                    <span class="icon"><i class="fas fa-trash"></i></span>
-                </button>
+                <div class="file-name" title="${safeName}">${safeName}</div>
+                <div class="fc-meta">
+                    <span class="file-size">${escapeHtml(file.size)}</span>
+                    <div class="file-actions">
+                        <a class="action-btn download preview-download" href="${escapeHtml(file.original_url)}" download title="Download" aria-label="Download ${safeName}">
+                            <i class="fa-solid fa-download"></i>
+                        </a>
+                        <button type="button" class="action-btn fc-del" title="Delete" aria-label="Delete ${safeName}">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     `);
@@ -2939,6 +3004,12 @@
                 const uuid = $(this).data('uuid');
                 openPreviewModal(uuid);
             });
+            item.find('.preview-trigger').on('keydown', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    openPreviewModal($(this).data('uuid'));
+                }
+            });
 
             // Download button (anchor — preview-renderer also exposes .preview-download)
             item.find('.download').off('click').on('click', function(e) {
@@ -2946,7 +3017,7 @@
             });
 
             // Delete button
-            item.find('.delete').off('click').on('click', function(e) {
+            item.find('.fc-del').off('click').on('click', function(e) {
                 e.stopPropagation();
                 deleteFile(file.uuid);
             });
@@ -2965,12 +3036,134 @@
         }
 
         function hideAllPreviewElements() {
-            $('#previewImage, #previewVideo, #previewAudio, #previewPdf, #previewText, #previewDocument')
+            $('#previewImage, #previewVideo, #previewAudioWrap, #previewPdf, #previewText, #previewDocument, #pvLoader')
                 .addClass('hidden');
         }
 
         function showPreviewElement($el) {
             $el.removeClass('hidden');
+        }
+
+        // What the modal can show for a file. Images, video and audio play
+        // in the browser; PDFs only on desktop (mobile browsers can't embed
+        // them); small text/code files as text. Everything else: download.
+        const TEXT_PREVIEW_MAX_BYTES = 512 * 1024;
+        function previewKind(file) {
+            const m = (file.mime_type || '').toLowerCase();
+            const n = (file.name || '').toLowerCase();
+            const bytes = Number(file.size_bytes) || 0;
+            if (m.startsWith('image/')) {
+                // formats browsers can't decode
+                return /heic|heif|tiff|photoshop|x-icon-raw|raw/.test(m) ? 'download' : 'image';
+            }
+            if (m.startsWith('video/')) {
+                const v = document.getElementById('previewVideo');
+                return v && v.canPlayType && v.canPlayType(m) === '' ? 'download' : 'video';
+            }
+            if (m.startsWith('audio/')) {
+                const a = document.getElementById('previewAudio');
+                return a && a.canPlayType && a.canPlayType(m) === '' ? 'download' : 'audio';
+            }
+            if (m === 'application/pdf') return (!bytes || bytes <= PDF_PREVIEW_MAX_BYTES) ? 'pdf' : 'download';
+            if (isTextFile(m, n) && (!bytes || bytes <= TEXT_PREVIEW_MAX_BYTES)) return 'text';
+            return 'download';
+        }
+
+        // PDF preview with PDF.js (rendered to canvases, so it works on phones
+        // and doesn't depend on the browser's built-in PDF viewer).
+        const PDFJS_URL = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js';
+        const PDFJS_WORKER_URL = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
+        const PDF_PREVIEW_MAX_PAGES = 20;
+        const PDF_PREVIEW_MAX_BYTES = 25 * 1024 * 1024;
+        let pdfJsPromise = null;
+        let pdfRenderToken = 0;
+
+        function loadPdfJs() {
+            if (window.pdfjsLib) return Promise.resolve(window.pdfjsLib);
+            if (!pdfJsPromise) {
+                pdfJsPromise = new Promise(function (resolve, reject) {
+                    const s = document.createElement('script');
+                    s.src = PDFJS_URL;
+                    s.async = true;
+                    s.onload = function () {
+                        if (window.pdfjsLib) {
+                            window.pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJS_WORKER_URL;
+                            resolve(window.pdfjsLib);
+                        } else {
+                            pdfJsPromise = null;
+                            reject(new Error('pdf.js missing'));
+                        }
+                    };
+                    s.onerror = function () { pdfJsPromise = null; reject(new Error('pdf.js failed to load')); };
+                    document.head.appendChild(s);
+                });
+            }
+            return pdfJsPromise;
+        }
+
+        async function renderPdfPreview(file) {
+            const token = ++pdfRenderToken;
+            const pagesEl = document.getElementById('pvPdfPages');
+            pagesEl.innerHTML = '';
+            $('#pvPdfMore').addClass('hidden').text('');
+            showPreviewElement($('#pvLoader'));
+            let doc = null;
+            try {
+                const pdfjsLib = await loadPdfJs();
+                doc = await pdfjsLib.getDocument({ url: file.preview_url || file.original_url }).promise;
+                if (token !== pdfRenderToken) { doc.destroy(); return; }
+                $('#pvLoader').addClass('hidden');
+                showPreviewElement($('#previewPdf'));
+                const box = document.getElementById('previewPdf');
+                const targetWidth = Math.max(240, Math.min(box.clientWidth - 24, 900));
+                const dpr = Math.min(window.devicePixelRatio || 1, 2);
+                const count = Math.min(doc.numPages, PDF_PREVIEW_MAX_PAGES);
+                for (let i = 1; i <= count; i++) {
+                    if (token !== pdfRenderToken) break;
+                    const page = await doc.getPage(i);
+                    const base = page.getViewport({ scale: 1 });
+                    const viewport = page.getViewport({ scale: (targetWidth / base.width) * dpr });
+                    const canvas = document.createElement('canvas');
+                    canvas.className = 'pv-pdf-page';
+                    canvas.width = Math.floor(viewport.width);
+                    canvas.height = Math.floor(viewport.height);
+                    canvas.style.width = Math.floor(viewport.width / dpr) + 'px';
+                    canvas.setAttribute('aria-label', `Page ${i}`);
+                    pagesEl.appendChild(canvas);
+                    await page.render({ canvasContext: canvas.getContext('2d'), viewport: viewport }).promise;
+                }
+                if (token === pdfRenderToken && doc.numPages > count) {
+                    $('#pvPdfMore').text(`Showing the first ${count} of ${doc.numPages} pages. Download the PDF to see the rest.`).removeClass('hidden');
+                }
+            } catch (e) {
+                if (token !== pdfRenderToken) return;
+                $('#previewPdf').addClass('hidden');
+                showDownloadPanel(file, "This PDF couldn't be previewed. Download it to open it.");
+            } finally {
+                if (doc) { try { doc.destroy(); } catch (e) { /* ignore */ } }
+            }
+        }
+
+        function showDownloadPanel(file, note) {
+            const t = fileTypeInfo(file.name, file.mime_type);
+            $('#pvDlTile').attr('class', `pv-dl-tile fc-card fc-t-${t.type}`);
+            $('#pvDlIcon').attr('class', t.icon);
+            $('#pvDlExt').text(t.label);
+            $('#pvDlName').text(file.name || 'File');
+            $('#pvDlMeta').text([file.size, t.label + ' file'].filter(Boolean).join(' · '));
+            $('#pvDlNote').text(note || "Preview isn't available for this file type. Download it to open it on your device.");
+            $('#pvLoader').addClass('hidden');
+            showPreviewElement($('#previewDocument'));
+        }
+
+        function stopPreviewMedia() {
+            const video = $('#previewVideo')[0];
+            const audio = $('#previewAudio')[0];
+            if (video) { video.pause(); video.removeAttribute('src'); video.load(); }
+            if (audio) { audio.pause(); audio.removeAttribute('src'); audio.load(); }
+            $('#previewImage').off('.preview').attr('src', '');
+            pdfRenderToken++;
+            $('#pvPdfPages').empty();
         }
 
         function showPreview(index) {
@@ -2985,43 +3178,63 @@
             $('#previewCounter').text(`${index + 1} / ${allFiles.length}`);
 
             hideAllPreviewElements();
-
-            // Stop any playing media
-            const video = $('#previewVideo')[0];
-            const audio = $('#previewAudio')[0];
-            if (video) video.pause();
-            if (audio) audio.pause();
+            stopPreviewMedia();
 
             const mediaUrl = file.preview_url || file.original_url;
-            const mimeType = (file.mime_type || '').toLowerCase();
-            const fileName = (file.name || '').toLowerCase();
+            const kind = previewKind(file);
 
-            if (mimeType.startsWith('image/')) {
+            if (kind === 'image') {
                 const img = $('#previewImage');
-                img.off('error.preview').on('error.preview', function () {
+                showPreviewElement($('#pvLoader'));
+                img.on('load.preview', function () {
+                    $('#pvLoader').addClass('hidden');
+                    showPreviewElement(img);
+                }).on('error.preview', function () {
                     if (file.original_url && img.attr('src') !== file.original_url) {
                         img.attr('src', file.original_url);
+                        return;
                     }
+                    img.addClass('hidden');
+                    showDownloadPanel(file, "This image couldn't be shown in the browser. Download it to view it.");
                 });
-                img.attr('src', mediaUrl);
-                showPreviewElement(img);
-            } else if (mimeType.startsWith('video/')) {
+                img.attr('alt', file.name || 'Preview').attr('src', mediaUrl);
+            } else if (kind === 'video') {
+                const video = $('#previewVideo')[0];
+                showPreviewElement($('#pvLoader'));
+                video.onloadeddata = function () {
+                    $('#pvLoader').addClass('hidden');
+                    showPreviewElement($('#previewVideo'));
+                };
+                video.onerror = function () {
+                    $('#previewVideo').addClass('hidden');
+                    showDownloadPanel(file, "This video format can't be played in the browser. Download it to watch it.");
+                };
                 video.src = mediaUrl;
                 video.load();
-                showPreviewElement($('#previewVideo'));
-            } else if (mimeType.startsWith('audio/')) {
+            } else if (kind === 'audio') {
+                const audio = $('#previewAudio')[0];
+                $('#pvAudioName').text(file.name || 'Audio');
+                $('#pvAudioMeta').text(file.size || '');
+                audio.onerror = function () {
+                    $('#previewAudioWrap').addClass('hidden');
+                    showDownloadPanel(file, "This audio format can't be played in the browser. Download it to listen.");
+                };
+                audio.onplay = function () { $('#previewAudioWrap').addClass('is-playing'); };
+                audio.onpause = audio.onended = function () { $('#previewAudioWrap').removeClass('is-playing'); };
                 audio.src = mediaUrl;
                 audio.load();
-                showPreviewElement($('#previewAudio'));
-            } else if (mimeType === 'application/pdf') {
-                showPreviewElement($('#previewPdf').attr('src', mediaUrl));
-            } else if (isTextFile(mimeType, fileName)) {
+                showPreviewElement($('#previewAudioWrap'));
+            } else if (kind === 'pdf') {
+                renderPdfPreview(file);
+            } else if (kind === 'text') {
                 loadTextPreview(file);
             } else {
-                const icon = getFileIcon(mimeType);
-                showPreviewElement(
-                    $('#previewDocument').find('i').attr('class', `fas ${icon} preview-doc-icon`).end()
-                );
+                const why = (file.mime_type || '') === 'application/pdf'
+                    ? 'This PDF is too large to preview. Download it to open it.'
+                    : (isTextFile((file.mime_type || '').toLowerCase(), (file.name || '').toLowerCase())
+                        ? 'This file is too large to preview. Download it to open it.'
+                        : null);
+                showDownloadPanel(file, why);
             }
 
             // Update navigation buttons
@@ -3125,18 +3338,7 @@
         function closePreviewModal() {
             $('#previewModal').removeClass('show');
             hideAllPreviewElements();
-
-            // Stop any playing media
-            const video = $('#previewVideo')[0];
-            const audio = $('#previewAudio')[0];
-            if (video) {
-                video.pause();
-                video.src = '';
-            }
-            if (audio) {
-                audio.pause();
-                audio.src = '';
-            }
+            stopPreviewMedia();
         }
 
         function showNextPreview() {
@@ -3360,6 +3562,26 @@
             $('#previewDownloadBtn, #previewDocDownloadBtn').click(downloadCurrentPreview);
 
             // Keyboard navigation
+            // Swipe left/right on touch screens to move between files
+            (function () {
+                const area = document.getElementById('previewContainer');
+                if (!area) return;
+                let sx = null, sy = null;
+                area.addEventListener('touchstart', function (e) {
+                    if (e.touches.length !== 1) return;
+                    sx = e.touches[0].clientX; sy = e.touches[0].clientY;
+                }, { passive: true });
+                area.addEventListener('touchend', function (e) {
+                    if (sx === null) return;
+                    const dx = e.changedTouches[0].clientX - sx;
+                    const dy = e.changedTouches[0].clientY - sy;
+                    sx = null;
+                    if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+                        if (dx < 0) showNextPreview(); else showPrevPreview();
+                    }
+                }, { passive: true });
+            })();
+
             $(document).keydown(function(e) {
                 if ($('#previewModal').hasClass('show')) {
                     if (e.key === 'Escape') {
