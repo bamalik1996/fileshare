@@ -118,4 +118,9 @@ class HomeController extends Controller
     {
         return view('landing.snapdrop-alternative');
     }
+
+    public function airforshareAlternative()
+    {
+        return view('landing.airforshare-alternative');
+    }
 }

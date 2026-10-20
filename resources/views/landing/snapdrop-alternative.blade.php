@@ -129,6 +129,7 @@
         <div class="hiw-card" style="padding:1.35rem 1.5rem;"><ul class="hiw-step-text">
             <li><a href="{{ url('/airdrop-for-pc') }}">AirDrop for Windows: 5 ways</a></li>
             <li><a href="{{ url('/wetransfer-alternative') }}">Best free WeTransfer alternatives</a></li>
+            <li><a href="{{ url('/airforshare-alternative') }}">Best AirForShare alternatives</a></li>
             <li><a href="{{ url('/send-files-between-devices') }}">Send files between devices</a></li>
         </ul></div>
     </section>

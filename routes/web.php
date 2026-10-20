@@ -20,6 +20,7 @@ Route::controller(HomeController::class)->group(function () {
     Route::get('/transfer-files-android-to-iphone', 'transferAndroidToIphone');
     Route::get('/wetransfer-alternative', 'wetransferAlternative');
     Route::get('/snapdrop-alternative', 'snapdropAlternative');
+    Route::get('/airforshare-alternative', 'airforshareAlternative');
     // Route::get('/smart-file-organization', 'smartFileOrganization');
     Route::get('/sitemap.xml', [\App\Http\Controllers\SitemapController::class, 'index']);
 });
