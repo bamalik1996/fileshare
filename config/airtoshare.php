@@ -17,6 +17,11 @@ return [
     'legacy_upload_max_bytes'  => (int) env('AIRTOSHARE_LEGACY_UPLOAD_MAX_BYTES', 25 * 1024 * 1024),
     'chunked_upload_max_bytes' => (int) env('AIRTOSHARE_CHUNKED_UPLOAD_MAX_BYTES', 500 * 1024 * 1024),
 
+    // Byline shown on guide/landing pages and used as the Article author in
+    // their structured data. A named person beats "AirToShare Team" for
+    // E-E-A-T, so set this to whoever stands behind the content.
+    'content_author' => env('AIRTOSHARE_CONTENT_AUTHOR', 'Bilal Malik'),
+
     // Assemble chunked uploads in a queued job (true) or inline in the final
     // request (false, default). Only enable with a running queue worker.
     'chunked_assembly_queue' => (bool) env('AIRTOSHARE_CHUNKED_ASSEMBLY_QUEUE', false),

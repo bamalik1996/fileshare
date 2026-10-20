@@ -1,6 +1,9 @@
 @extends('layouts.app')
 
-@section('title', 'AirToShare – Send Files Between Devices Instantly, No App')
+{{-- Brand-led title: the generic "send files between devices" keyword belongs
+     to the /send-files-between-devices pillar page, so the two stop competing
+     for the same query (GSC showed near-identical titles cannibalising). --}}
+@section('title', 'AirToShare – Share Files & Text Instantly, No App')
 @section('description', 'Send files and text between any devices, phone to PC or Android to iPhone, instantly in your browser. A free AirDrop alternative. No app, no signup.')
 
 @section('keywords', 'airdrop for pc, airdrop for windows, airdrop for android, send files between devices, transfer files from phone to pc, share files between devices, wetransfer alternative, online clipboard, share text between devices, file sharing no signup')
@@ -3637,6 +3640,25 @@
             }
 
             img.addEventListener('error', revealFallback);
+        })();
+
+        // Landing pages link here with ?share=files so the visitor lands on
+        // the uploader itself, not the top of the page. Browsers block a
+        // programmatic file-picker open without a user gesture, so we scroll
+        // and pulse the dropzone instead.
+        (function () {
+            if (new URLSearchParams(window.location.search).get('share') !== 'files') {
+                return;
+            }
+            var input = document.getElementById('fileInput');
+            var target = input ? (input.closest('section, .card, .box, form') || input.parentElement) : null;
+            if (!target) {
+                return;
+            }
+            target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            target.style.transition = 'box-shadow .4s ease';
+            target.style.boxShadow = '0 0 0 4px rgba(59,130,246,.45)';
+            setTimeout(function () { target.style.boxShadow = ''; }, 2200);
         })();
     </script>
 @endsection
