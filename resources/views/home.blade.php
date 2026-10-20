@@ -3638,5 +3638,24 @@
 
             img.addEventListener('error', revealFallback);
         })();
+
+        // Landing pages link here with ?share=files so the visitor lands on
+        // the uploader itself, not the top of the page. Browsers block a
+        // programmatic file-picker open without a user gesture, so we scroll
+        // and pulse the dropzone instead.
+        (function () {
+            if (new URLSearchParams(window.location.search).get('share') !== 'files') {
+                return;
+            }
+            var input = document.getElementById('fileInput');
+            var target = input ? (input.closest('section, .card, .box, form') || input.parentElement) : null;
+            if (!target) {
+                return;
+            }
+            target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            target.style.transition = 'box-shadow .4s ease';
+            target.style.boxShadow = '0 0 0 4px rgba(59,130,246,.45)';
+            setTimeout(function () { target.style.boxShadow = ''; }, 2200);
+        })();
     </script>
 @endsection
