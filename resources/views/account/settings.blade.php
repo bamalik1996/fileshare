@@ -85,7 +85,7 @@
                         <input type="file"
                             name="logo"
                             id="brandingLogoInput"
-                            accept="image/png,image/jpeg,image/svg+xml,image/webp"
+                            accept="image/png,image/jpeg,image/webp"
                             hidden>
 
                         <div class="branding-logo-preview" id="brandingLogoPreview">
@@ -100,7 +100,7 @@
                         </div>
                     </div>
 
-                    <p class="form-hint">PNG, JPG, SVG, or WebP · Max 2 MB</p>
+                    <p class="form-hint">PNG, JPG, or WebP · Max 2 MB</p>
 
                     @if ($logoUrl)
                         <label class="branding-remove-logo">

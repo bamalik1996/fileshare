@@ -138,7 +138,9 @@ class AccountController extends Controller
         $validated = $request->validate([
             'brand_color'   => ['nullable', 'regex:/^#[0-9a-fA-F]{6}$/'],
             'brand_message' => ['nullable', 'string', 'max:160'],
-            'logo'          => ['nullable', 'image', 'mimes:png,jpg,jpeg,svg,webp', 'max:2048'],
+            // No SVG: logos are served from our own origin, and an SVG can
+            // carry script that runs if someone opens the file directly.
+            'logo'          => ['nullable', 'image', 'mimes:png,jpg,jpeg,webp', 'max:2048'],
             'remove_logo'   => ['nullable', 'boolean'],
         ]);
 

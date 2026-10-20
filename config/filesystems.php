@@ -44,6 +44,16 @@ return [
             'throw' => false,
         ],
 
+        // Not web-reachable (no /storage symlink, no url). Media stored here
+        // is only served through MediaController::download, which checks
+        // that the requester owns the share. Used for file-request uploads.
+        'private' => [
+            'driver' => 'local',
+            'root' => storage_path('app/private'),
+            'visibility' => 'private',
+            'throw' => false,
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),
