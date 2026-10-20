@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Domain\Principal\IpPrincipal;
 use App\Domain\Principal\Principal;
 use App\Events\MediaAdded;
+use App\Support\MediaUrlGenerator;
 use App\Support\SafeBroadcast;
 use App\Models\MediaFile;
 use App\Models\MediaScan;
@@ -594,7 +595,23 @@ class MediaController extends Controller
         // link whose download ceiling is spent (incl. burn-after-read) is
         // blocked with 410 Gone before any scan/disk work is performed.
         $ownerShare = $media->model instanceof Share ? $media->model : null;
-        if ($ownerShare !== null) {
+
+        // Private media (file-request uploads) has no public URL; only the
+        // share's owner may fetch it, unless the owner published the share
+        // as a public gallery. Anyone else gets a 404, not a 403, so the
+        // uuid's existence isn't confirmed.
+        $isOwnerAccess = false;
+        if ($media->disk === MediaUrlGenerator::PRIVATE_DISK) {
+            $isOwnerAccess = $ownerShare !== null
+                && $ownerShare->ownedByPrincipal($request->principal());
+            $isPublished = $ownerShare !== null && ! empty($ownerShare->public_slug);
+
+            if (! $isOwnerAccess && ! $isPublished) {
+                return response()->view('errors.404', [], 404);
+            }
+        }
+
+        if ($ownerShare !== null && ! $isOwnerAccess) {
             if ($ownerShare->isRevoked()) {
                 return response()->json([
                     'status'  => 'error',
@@ -640,11 +657,15 @@ class MediaController extends Controller
         // Record the download for Share analytics before any one-time
         // deletion removes the media/owner link. Guarded internally so a
         // logging failure can never block the actual file download.
-        $this->analytics->recordDownloadForMedia($media, $request);
+        // The owner opening their own private uploads is not a share download,
+        // so it neither shows up in analytics nor counts against the limit.
+        if (! $isOwnerAccess) {
+            $this->analytics->recordDownloadForMedia($media, $request);
+        }
 
         // Count the download against the Share's ceiling (atomic). This is
         // what enforces burn-after-read / max-downloads on the next request.
-        if ($ownerShare !== null) {
+        if ($ownerShare !== null && ! $isOwnerAccess) {
             $ownerShare->increment('download_count');
         }
 

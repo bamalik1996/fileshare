@@ -11,6 +11,7 @@ use App\Models\Account;
 use App\Models\Share;
 use App\Services\CollectService;
 use App\Services\ShareService;
+use App\Support\MediaUrlGenerator;
 use App\Support\UploadTypePolicy;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -139,16 +140,16 @@ class CollectController extends Controller
         $safeName = Str::slug(pathinfo($originalName, PATHINFO_FILENAME)) . '_' . time() . '.' . $extension;
 
         try {
+            // Client documents go to the non-public disk; the owner fetches
+            // them through MediaController::download, which checks ownership.
             $media = $share->addMedia($file)
                 ->usingName($originalName)
                 ->usingFileName($safeName)
-                ->toMediaCollection('shared_files', 'public');
+                ->toMediaCollection('shared_files', MediaUrlGenerator::PRIVATE_DISK);
 
             if (! $media || ! file_exists($media->getPath())) {
                 throw new \RuntimeException('File was not properly saved to storage');
             }
-
-            @chmod($media->getPath(), 0644);
 
             \App\Services\VirusScanner::make()->queueForMedia($media);
             \App\Jobs\ScanMediaForViruses::dispatch($media->uuid);
