@@ -191,12 +191,14 @@
  * (#38bdf8 on #0f172a -> 8.6:1) so any link in body content is readable in
  * dark mode without relying on author-supplied classes.
  */
-[data-theme="dark"] a:not(.button):not(.navbar-item):not(.navbar-link):not(.modern-btn):not(.qr-slot-link) {
+/* Scoped to class-less links (plain content links) so component links such
+   as buttons, cards and nav items keep their own colours in dark mode. */
+[data-theme="dark"] a:not([class]) {
     color: #7dd3fc;
 }
 
-[data-theme="dark"] a:not(.button):not(.navbar-item):not(.navbar-link):not(.modern-btn):not(.qr-slot-link):hover,
-[data-theme="dark"] a:not(.button):not(.navbar-item):not(.navbar-link):not(.modern-btn):not(.qr-slot-link):focus {
+[data-theme="dark"] a:not([class]):hover,
+[data-theme="dark"] a:not([class]):focus {
     color: #bae6fd;
 }
 

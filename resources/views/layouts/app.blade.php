@@ -11,7 +11,7 @@
     @if (isset($share) && $share)
         <meta name="airtoshare-share-id" content="{{ $share->id }}">
     @endif
-    <meta name="theme-color" content="#1A73E8">
+    <meta name="theme-color" content="#0B6FCC">
 
     {{--
         PDF.js viewer URL (Requirement 6.2). Pinned via config so the
@@ -88,10 +88,10 @@
 
     <!-- Favicon and Icons -->
 
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=2">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico?v=2">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png?v=2">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png?v=2">
     <link rel="manifest" href="{{ route('manifest.show') }}">
     <!-- Sitemap Reference -->
     <link rel="sitemap" type="application/xml" title="Sitemap" href="{{ url('/sitemap.xml') }}">
@@ -121,7 +121,7 @@
     <meta name="twitter:site" content="@AirToShare">
     <meta name="twitter:creator" content="@AirToShare">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="{{ asset('assets/css/custom.css') }}?v=23" rel="stylesheet" />
+    <link href="{{ asset('assets/css/custom.css') }}?v=24" rel="stylesheet" />
 
     <!-- Schema.org JSON-LD -->
     @yield('schema')
@@ -189,8 +189,9 @@
 
 
 
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Google Fonts: Bricolage Grotesque (display), Manrope (UI), JetBrains Mono (data) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600..800&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
     <!-- Font Awesome -->
     <!-- Font Awesome (Deferred) -->
     <link rel="preload" href="{{ asset('assets/font-awesome/css/all.min.css') }}" as="style"
@@ -200,6 +201,8 @@
     </noscript>
     <!-- Bulma CSS -->
     <link rel="stylesheet" href="{{ asset('assets/css/bulma.min.css') }}">
+    <!-- 2026 redesign layer: must load after custom.css and Bulma -->
+    <link rel="stylesheet" href="{{ asset('assets/css/redesign.css') }}?v=3">
     <script src="{{ asset('assets/js/jquery.min.js') }}" defer></script>
     <script defer>
         document.addEventListener('DOMContentLoaded', function () {
@@ -226,7 +229,7 @@
     {{-- Rich text editor removed — plain textarea for quick text sharing --}}
     <script src="{{ asset('assets/js/upload-manager.js') }}?v=3" defer></script>
     <script src="{{ asset('assets/js/encryption-module.js') }}?v=2" defer></script>
-    <script src="{{ asset('assets/js/pwa-manager.js') }}?v=1" defer></script>
+    <script src="{{ asset('assets/js/pwa-manager.js') }}?v=2" defer></script>
     {{-- Realtime + clipboard sync (Requirements 10, 14) --}}
     <script src="https://cdn.jsdelivr.net/npm/pusher-js@8.4.0/dist/web/pusher.min.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/laravel-echo@1.19.0/dist/echo.iife.js" defer></script>
@@ -365,8 +368,8 @@
     <nav class="navbar modern-navbar site-header" role="navigation" aria-label="Main navigation">
         <div class="container navbar-inner">
             <div class="navbar-brand">
-                <a class="navbar-logo-link" href="{{ url('/') }}" aria-label="AirToShare home">
-                    <img src="/logo.svg" alt="AirToShare" width="125" height="50" />
+                <a class="navbar-logo-link rd-brand" href="{{ url('/') }}" aria-label="AirToShare home">
+                    <img class="rd-logo" src="/logo.svg?v=2" alt="AirToShare" width="135" height="36" />
                 </a>
 
                 <button type="button" class="navbar-burger" aria-label="Open menu" aria-controls="siteNavMenu" aria-expanded="false">
@@ -379,25 +382,17 @@
             <div class="navbar-menu" id="siteNavMenu">
                 <div class="navbar-start">
                     <div class="navbar-pills" role="list">
-                        <a class="navbar-pill @if(request()->is('/')) is-current @endif" href="{{ url('/') }}" role="listitem">
-                            <i class="fas fa-home" aria-hidden="true"></i>
-                            <span>Home</span>
-                        </a>
                         <a class="navbar-pill @if(request()->is('how-it-works')) is-current @endif" href="{{ url('/how-it-works') }}" role="listitem">
-                            <i class="fas fa-info-circle" aria-hidden="true"></i>
-                            <span>How It Works</span>
+                            <span>How it works</span>
+                        </a>
+                        <a class="navbar-pill @if(request()->is('send-files-between-devices') || request()->is('airdrop-*') || request()->is('transfer-files-*') || request()->is('online-clipboard') || request()->is('*-alternative')) is-current @endif" href="{{ url('/send-files-between-devices') }}" role="listitem">
+                            <span>Guides</span>
                         </a>
                         <a class="navbar-pill @if(request()->is('faq')) is-current @endif" href="{{ url('/faq') }}" role="listitem">
-                            <i class="fas fa-question-circle" aria-hidden="true"></i>
                             <span>FAQ</span>
                         </a>
                         <a class="navbar-pill @if(request()->is('blog') || request()->is('blog/*')) is-current @endif" href="{{ route('blog.index') }}" role="listitem">
-                            <i class="fas fa-newspaper" aria-hidden="true"></i>
                             <span>Blog</span>
-                        </a>
-                        <a class="navbar-pill @if(request()->is('feedback')) is-current @endif" href="{{ url('/feedback') }}" role="listitem">
-                            <i class="fas fa-comment" aria-hidden="true"></i>
-                            <span>Feedback</span>
                         </a>
                         @if(Route::has('docs.api'))
                             <a class="navbar-pill @if(request()->is('docs*')) is-current @endif" href="{{ route('docs.api') }}" role="listitem">
@@ -461,105 +456,65 @@
         @yield('content')
     </main>
 
-    <!-- Modern Footer -->
-    <footer class="modern-footer">
-        <div class="container">
-            <div class="columns">
-                <div class="column">
-                    <p>
-                        <strong class="gradient-text">AirToShare</strong> &copy; {{ date('Y') }} -
-                        Instant file sharing made simple and secure
-                    </p>
-                </div>
-                <div class="column is-narrow">
-                    <div class="footer-links">
-                        <a href="{{ url('/') }}">Home</a>
-                        <a href="{{ url('/how-it-works') }}">How It Works</a>
-                        <a href="{{ url('/airdrop-for-pc') }}">AirDrop for PC</a>
-                        <a href="{{ url('/airdrop-for-android') }}">AirDrop for Android</a>
-                        <a href="{{ url('/send-files-between-devices') }}">Send Files Between Devices</a>
-                        <a href="{{ url('/online-clipboard') }}">Online Clipboard</a>
-                        <a href="{{ url('/faq') }}">FAQ</a>
-                        <a href="{{ route('blog.index') }}">Blog</a>
-                        <a href="{{ url('/feedback') }}">Contact</a>
-                        <a href="{{ url('/coming-soon') }}">Coming Soon</a>
-                        <a href="{{ url('/sitemap.xml') }}">Sitemap</a>
-                    </div>
-                    <div class="social-links">
-                        <a href="https://web.facebook.com/airtoshare/" target="_blank" rel="noopener noreferrer"
-                            title="Follow us on Facebook">
-                            <i class="fab fa-facebook-f"></i>
-                        </a>
-                        <a href="https://twitter.com/airtoshare" target="_blank" rel="noopener noreferrer"
-                            title="Follow us on Twitter">
-                            <i class="fab fa-twitter"></i>
-                        </a>
-                        <a href="https://www.linkedin.com/company/airtoshare" target="_blank"
-                            rel="noopener noreferrer" title="Connect on LinkedIn">
-                            <i class="fab fa-linkedin-in"></i>
-                        </a>
-                    </div>
+    <!-- Footer -->
+    <footer class="modern-footer rd-footer">
+        <div class="rd-footer-grid">
+            <div class="rd-footer-brand">
+                <a class="rd-brand" href="{{ url('/') }}" aria-label="AirToShare home">
+                    <img class="rd-logo rd-logo--sm" src="/logo.svg?v=2" alt="AirToShare" width="112" height="30" loading="lazy" />
+                </a>
+                <p>Free file and text sharing between any devices, right in your browser. No app, no signup.</p>
+                <div class="rd-footer-social">
+                    <a href="https://web.facebook.com/airtoshare/" target="_blank" rel="noopener noreferrer" aria-label="AirToShare on Facebook">
+                        <i class="fab fa-facebook-f" aria-hidden="true"></i>
+                    </a>
+                    <a href="https://twitter.com/airtoshare" target="_blank" rel="noopener noreferrer" aria-label="AirToShare on X">
+                        <i class="fab fa-twitter" aria-hidden="true"></i>
+                    </a>
+                    <a href="https://www.linkedin.com/company/airtoshare" target="_blank" rel="noopener noreferrer" aria-label="AirToShare on LinkedIn">
+                        <i class="fab fa-linkedin-in" aria-hidden="true"></i>
+                    </a>
                 </div>
             </div>
+            <nav class="rd-footer-col" aria-label="Product">
+                <h2>Product</h2>
+                <a href="{{ url('/') }}">Share files</a>
+                <a href="{{ url('/how-it-works') }}">How it works</a>
+                <a href="{{ url('/online-clipboard') }}">Online clipboard</a>
+                <a href="{{ url('/faq') }}">FAQ</a>
+                <a href="{{ route('blog.index') }}">Blog &amp; changelog</a>
+            </nav>
+            <nav class="rd-footer-col" aria-label="Guides">
+                <h2>Guides</h2>
+                <a href="{{ url('/send-files-between-devices') }}">Send files between devices</a>
+                <a href="{{ url('/airdrop-for-pc') }}">AirDrop for Windows</a>
+                <a href="{{ url('/airdrop-for-android') }}">AirDrop for Android</a>
+                <a href="{{ url('/transfer-files-android-to-pc') }}">Android to PC</a>
+                <a href="{{ url('/transfer-files-android-to-iphone') }}">Android to iPhone</a>
+            </nav>
+            <nav class="rd-footer-col" aria-label="Compare">
+                <h2>Compare</h2>
+                <a href="{{ url('/wetransfer-alternative') }}">WeTransfer alternatives</a>
+                <a href="{{ url('/snapdrop-alternative') }}">Snapdrop alternatives</a>
+                <a href="{{ url('/airforshare-alternative') }}">AirForShare alternatives</a>
+            </nav>
+            <nav class="rd-footer-col" aria-label="Support">
+                <h2>Support</h2>
+                <a href="{{ url('/feedback') }}">Contact &amp; feedback</a>
+                @guest('account')
+                    <a href="{{ route('auth.register') }}">Create free account</a>
+                    <a href="{{ route('auth.login') }}">Log in</a>
+                @else
+                    <a href="{{ route('account.shares') }}">My shares</a>
+                @endguest
+                <a href="{{ url('/sitemap.xml') }}">Sitemap</a>
+            </nav>
+        </div>
+        <div class="rd-footer-bottom">
+            <span>&copy; {{ date('Y') }} AirToShare</span>
+            <span class="rd-mono">Made for every device</span>
         </div>
     </footer>
-
-    <style>
-        .footer-links {
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
-
-        .footer-links a {
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-size: 0.875rem;
-            transition: var(--transition);
-        }
-
-        .footer-links a:hover {
-            color: var(--primary-color);
-        }
-
-        .social-links {
-            display: flex;
-            gap: 1rem;
-            margin-top: 1rem;
-            justify-content: center;
-        }
-
-        .social-links a {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: var(--bg-gradient);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none;
-            transition: var(--transition);
-            font-size: 1.1rem;
-        }
-
-        .social-links a:hover {
-            transform: translateY(-3px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        @media (max-width: 768px) {
-            .footer-links {
-                justify-content: center;
-                margin-top: 1rem;
-            }
-
-            .social-links {
-                justify-content: center;
-                margin-top: 1.5rem;
-            }
-        }
-    </style>
 
     <!-- PWA Install Banner -->
     <div class="pwa-install-banner" id="pwaInstallBanner">

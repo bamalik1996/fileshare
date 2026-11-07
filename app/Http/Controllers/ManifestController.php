@@ -16,7 +16,7 @@ class ManifestController extends Controller
             'description'      => 'Instant file and text sharing across devices',
             'start_url'        => '/',
             'display'          => 'standalone',
-            'theme_color'      => '#1A73E8',
+            'theme_color'      => '#0B6FCC',
             'background_color' => '#ffffff',
             'icons'            => [
                 [

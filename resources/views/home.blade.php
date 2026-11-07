@@ -74,15 +74,22 @@
         </div>
     @endif
 
-    <!-- Hero -->
+    <!-- Hero + tool (split stage on wide screens, stacked on mobile) -->
+    <div class="home-stage-band">
+    <div class="home-stage">
     <header class="home-hero">
-        <span class="home-hero-badge"><i class="fas fa-bolt" aria-hidden="true"></i> Free · No install · Any browser</span>
+        <span class="home-hero-badge">Free · No install · Any browser</span>
         <h1 class="home-hero-title">
-            <img src="/icon.svg" class="home-hero-logo" alt="" width="40" height="40" />
-            Share text &amp; files instantly
+            Share text &amp; files
+            <span class="rd-underline">instantly<svg viewBox="0 0 220 14" preserveAspectRatio="none" aria-hidden="true"><path d="M4 10 C 60 2, 160 2, 216 8" fill="none" stroke="#0891B2" stroke-width="5" stroke-linecap="round"></path></svg></span>
         </h1>
-        <p class="home-hero-lead">AirToShare is a free, no-install AirDrop alternative for Windows, Mac, Android and iPhone — share files and text between any devices right in your browser.</p>
-        <p class="home-hero-lead">Save or upload on this device, then copy your link — or scan QR — to open it anywhere.</p>
+        <p class="home-hero-lead">A free, no-install AirDrop alternative for Windows, Mac, Android and iPhone. Save on this device, then open it on any other — over Wi‑Fi, a share link or a QR code.</p>
+        <ul class="rd-checks">
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="#0E9F6E" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"></path></svg>No app</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="#0E9F6E" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"></path></svg>No signup</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="#0E9F6E" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"></path></svg><span class="rd-mono">500 MB</span>&nbsp;per file</li>
+        </ul>
+        <p class="rd-platforms"><span class="rd-dot-live" aria-hidden="true"></span>Works on Windows · Mac · Android · iPhone · Linux</p>
     </header>
 
     <div class="home-workspace">
@@ -375,6 +382,8 @@
     </div>
     </div>{{-- .home-editor --}}
     </div>{{-- .home-workspace --}}
+    </div>{{-- .home-stage --}}
+    </div>{{-- .home-stage-band --}}
 
     <!-- Fullscreen Preview -->
     <div class="preview-modal-overlay" id="previewModal">
@@ -795,6 +804,139 @@
             </div>
         </div>
     </div>
+
+    <!-- Why AirToShare (bento) -->
+    <section class="rd-section" aria-labelledby="rdWhyTitle">
+        <div class="rd-section-head">
+            <div>
+                <span class="rd-eyebrow">01 · Why AirToShare</span>
+                <h2 class="rd-section-title" id="rdWhyTitle">Built for every device you own</h2>
+            </div>
+        </div>
+        <div class="rd-bento">
+            <div class="rd-tile rd-tile--wide rd-tile--row">
+                <div>
+                    <h3>Devices find each other</h3>
+                    <p>On the same Wi‑Fi, your open AirToShare tabs sync automatically — save on one device, it's there on the other. Like AirDrop, without the Apple-only wall.</p>
+                </div>
+                <svg class="rd-radar" viewBox="0 0 104 104" fill="none" aria-hidden="true">
+                    <circle class="ring-1" cx="52" cy="52" r="20" stroke-width="2"></circle>
+                    <circle class="ring-2" cx="52" cy="52" r="34" stroke-width="2"></circle>
+                    <circle class="ring-3" cx="52" cy="52" r="48" stroke-width="2"></circle>
+                    <circle cx="52" cy="52" r="6" fill="#0B6FCC"></circle>
+                    <circle cx="78" cy="34" r="5" fill="#0891B2"></circle>
+                    <circle cx="26" cy="68" r="5" fill="#0E9F6E"></circle>
+                </svg>
+            </div>
+            <div class="rd-tile rd-tile--navy">
+                <h3>Big files, no email walls</h3>
+                <div>
+                    <div class="rd-stat">500 MB</div>
+                    <div class="rd-stat-sub">per file · resumable upload</div>
+                </div>
+            </div>
+            <div class="rd-tile">
+                <svg class="rd-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"></path></svg>
+                <h3>No account needed</h3>
+                <p>Guests share instantly. Sign up only for higher limits and a history of your shares.</p>
+            </div>
+            <div class="rd-tile">
+                <svg class="rd-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>
+                <h3>Auto-delete</h3>
+                <p>Guest shares expire after <span class="rd-mono">24 h</span> by default — up to 30 days with a free account.</p>
+            </div>
+            <div class="rd-tile rd-tile--wide">
+                <svg class="rd-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V6z"></path><path d="M9 12l2 2 4-4"></path></svg>
+                <h3>Private by design — and works across networks</h3>
+                <p>Not on the same Wi‑Fi? Share by link, QR code or a 6-character Room. Lock it with a password, a one-time download or end-to-end encryption for text.</p>
+                <div class="rd-tags">
+                    <span class="rd-tag">LINK</span>
+                    <span class="rd-tag">QR</span>
+                    <span class="rd-tag">ROOMS</span>
+                    <span class="rd-tag rd-tag--green">E2EE</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How it works -->
+    <section class="rd-section" aria-labelledby="rdHowTitle">
+        <div class="rd-section-head">
+            <div>
+                <span class="rd-eyebrow">02 · How it works</span>
+                <h2 class="rd-section-title" id="rdHowTitle">Three steps, whichever devices you hold</h2>
+            </div>
+            <a href="{{ url('/how-it-works') }}">Full walkthrough →</a>
+        </div>
+        <ol class="rd-steps">
+            <li class="rd-step">
+                <span class="rd-step-num" data-n="01" aria-hidden="true"></span>
+                <div>
+                    <h3>Open it on both devices</h3>
+                    <p>airtoshare.app in any browser — phone, laptop or tablet. Nothing to install.</p>
+                </div>
+            </li>
+            <li class="rd-step">
+                <span class="rd-step-num" data-n="02" aria-hidden="true"></span>
+                <div>
+                    <h3>Drop files or paste text</h3>
+                    <p>Add a password, expiry or one-time download when it matters.</p>
+                </div>
+            </li>
+            <li class="rd-step">
+                <span class="rd-step-num" data-n="03" aria-hidden="true"></span>
+                <div>
+                    <h3>Receive anywhere</h3>
+                    <p>Open it on the same Wi‑Fi, scan the QR code, or use the share link on any network.</p>
+                </div>
+            </li>
+        </ol>
+    </section>
+
+    <!-- Guides -->
+    <section class="rd-section" aria-labelledby="rdGuidesTitle">
+        <div class="rd-section-head">
+            <div>
+                <span class="rd-eyebrow">03 · Guides</span>
+                <h2 class="rd-section-title" id="rdGuidesTitle">Guides for your devices</h2>
+            </div>
+            <a href="{{ url('/send-files-between-devices') }}">All guides →</a>
+        </div>
+        @php($rdGuides = [
+            '/airdrop-for-pc' => 'AirDrop for Windows PC',
+            '/airdrop-for-android' => 'AirDrop for Android',
+            '/transfer-files-android-to-pc' => 'Transfer Android to PC',
+            '/transfer-files-android-to-iphone' => 'Android to iPhone',
+            '/online-clipboard' => 'Online clipboard',
+            '/wetransfer-alternative' => 'Free WeTransfer alternatives',
+        ])
+        <div class="rd-guides">
+            @foreach ($rdGuides as $rdPath => $rdLabel)
+                <a class="rd-guide" href="{{ url($rdPath) }}">
+                    {{ $rdLabel }}
+                    <span class="rd-guide-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7"></path><path d="M9 7h8v8"></path></svg></span>
+                </a>
+            @endforeach
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="rd-cta" aria-labelledby="rdCtaTitle">
+        <svg class="rd-cta-rings" viewBox="0 0 320 320" fill="none" aria-hidden="true">
+            <circle cx="160" cy="160" r="70" stroke="#24405E" stroke-width="2"></circle>
+            <circle cx="160" cy="160" r="110" stroke="#1C3350" stroke-width="2"></circle>
+            <circle cx="160" cy="160" r="150" stroke="#152941" stroke-width="2"></circle>
+            <circle cx="208" cy="124" r="6" fill="#4DD6EE"></circle>
+            <circle cx="118" cy="204" r="5" fill="#0B6FCC"></circle>
+        </svg>
+        <div class="rd-cta-inner">
+            <div>
+                <h2 id="rdCtaTitle">Open it on your other device — that's the whole setup</h2>
+                <p>Type <span class="rd-cta-url">airtoshare.app</span> in any browser. Free, no app, no signup.</p>
+            </div>
+            <a class="rd-cta-btn" href="#airtoshare-app">Start sharing free</a>
+        </div>
+    </section>
 
     <!-- SEO Content (collapsed by default — expand for details) -->
     <details class="home-learn-more">

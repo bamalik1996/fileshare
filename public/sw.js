@@ -1,5 +1,5 @@
-/* AirToShare service worker — shell cache v3 (Requirement 19) */
-const CACHE_VERSION = 3;
+/* AirToShare service worker — shell cache v4 (Requirement 19) */
+const CACHE_VERSION = 4;
 const CACHE_NAME = 'airtoshare-shell-v' + CACHE_VERSION;
 
 const PRECACHE = [
