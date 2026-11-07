@@ -202,7 +202,7 @@
     <!-- Bulma CSS -->
     <link rel="stylesheet" href="{{ asset('assets/css/bulma.min.css') }}">
     <!-- 2026 redesign layer: must load after custom.css and Bulma -->
-    <link rel="stylesheet" href="{{ asset('assets/css/redesign.css') }}?v=1">
+    <link rel="stylesheet" href="{{ asset('assets/css/redesign.css') }}?v=2">
     <script src="{{ asset('assets/js/jquery.min.js') }}" defer></script>
     <script defer>
         document.addEventListener('DOMContentLoaded', function () {
