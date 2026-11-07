@@ -11,7 +11,7 @@
     @if (isset($share) && $share)
         <meta name="airtoshare-share-id" content="{{ $share->id }}">
     @endif
-    <meta name="theme-color" content="#1A73E8">
+    <meta name="theme-color" content="#0B6FCC">
 
     {{--
         PDF.js viewer URL (Requirement 6.2). Pinned via config so the
@@ -88,10 +88,10 @@
 
     <!-- Favicon and Icons -->
 
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=2">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico?v=2">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png?v=2">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png?v=2">
     <link rel="manifest" href="{{ route('manifest.show') }}">
     <!-- Sitemap Reference -->
     <link rel="sitemap" type="application/xml" title="Sitemap" href="{{ url('/sitemap.xml') }}">
@@ -202,7 +202,7 @@
     <!-- Bulma CSS -->
     <link rel="stylesheet" href="{{ asset('assets/css/bulma.min.css') }}">
     <!-- 2026 redesign layer: must load after custom.css and Bulma -->
-    <link rel="stylesheet" href="{{ asset('assets/css/redesign.css') }}?v=2">
+    <link rel="stylesheet" href="{{ asset('assets/css/redesign.css') }}?v=3">
     <script src="{{ asset('assets/js/jquery.min.js') }}" defer></script>
     <script defer>
         document.addEventListener('DOMContentLoaded', function () {
@@ -369,8 +369,7 @@
         <div class="container navbar-inner">
             <div class="navbar-brand">
                 <a class="navbar-logo-link rd-brand" href="{{ url('/') }}" aria-label="AirToShare home">
-                    @include('partials.brand-mark')
-                    <span class="rd-wordmark">AirToShare</span>
+                    <img class="rd-logo" src="/logo.svg?v=2" alt="AirToShare" width="135" height="36" />
                 </a>
 
                 <button type="button" class="navbar-burger" aria-label="Open menu" aria-controls="siteNavMenu" aria-expanded="false">
@@ -462,8 +461,7 @@
         <div class="rd-footer-grid">
             <div class="rd-footer-brand">
                 <a class="rd-brand" href="{{ url('/') }}" aria-label="AirToShare home">
-                    @include('partials.brand-mark', ['size' => 'sm'])
-                    <span class="rd-wordmark">AirToShare</span>
+                    <img class="rd-logo rd-logo--sm" src="/logo.svg?v=2" alt="AirToShare" width="112" height="30" loading="lazy" />
                 </a>
                 <p>Free file and text sharing between any devices, right in your browser. No app, no signup.</p>
                 <div class="rd-footer-social">

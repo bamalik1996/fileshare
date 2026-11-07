@@ -276,42 +276,21 @@ li b {
     font-family: var(--rd-font-mono);
 }
 
-/* Brand mark: the one place a gradient is allowed. */
-.rd-mark {
-    width: 34px;
-    height: 34px;
-    border-radius: 10px;
-    background: linear-gradient(135deg, #0B6FCC, #0891B2);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    flex: none;
-    box-shadow: 0 4px 10px rgba(11, 111, 204, .28);
+/* The original AirToShare logo (share icon + "AiR TO SHARE"), in solid azure.
+   Brightened in dark mode so it reads on the navy header. */
+.rd-logo {
+    display: block;
+    height: 36px;
+    width: auto;
+    max-width: none;
 }
 
-.rd-mark svg {
-    width: 18px;
-    height: 18px;
+.rd-logo--sm {
+    height: 30px;
 }
 
-.rd-mark--sm {
-    width: 28px;
-    height: 28px;
-    border-radius: 8px;
-    box-shadow: none;
-}
-
-.rd-mark--sm svg {
-    width: 15px;
-    height: 15px;
-}
-
-.rd-wordmark {
-    font-family: var(--rd-font-display);
-    font-weight: 800;
-    font-size: 20px;
-    letter-spacing: -0.02em;
-    color: var(--rd-ink);
+[data-theme="dark"] .rd-logo {
+    filter: brightness(1.45) saturate(1.1);
 }
 
 /* ---------------------------------------------------------------------
@@ -545,9 +524,6 @@ textarea {
     padding: 0;
 }
 
-.rd-brand:hover .rd-wordmark {
-    color: var(--rd-ink);
-}
 
 .site-header .navbar-pills {
     display: flex;
@@ -2200,9 +2176,6 @@ textarea {
     gap: 12px;
 }
 
-.rd-footer-brand .rd-brand .rd-wordmark {
-    font-size: 17px;
-}
 
 .rd-footer-brand p {
     margin: 0;
@@ -2675,8 +2648,8 @@ textarea {
         grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     }
 
-    .site-header .rd-wordmark {
-        font-size: 18px;
+    .site-header .rd-logo {
+        height: 32px;
     }
 }
 
