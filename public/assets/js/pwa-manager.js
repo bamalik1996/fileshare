@@ -28,8 +28,15 @@
     function setupUpdatePrompt() {
         if (!('serviceWorker' in navigator)) return;
         var refreshing = false;
+        // A first-ever install also fires controllerchange; that isn't an
+        // update, so only prompt when a previous worker was in control.
+        var hadController = !!navigator.serviceWorker.controller;
         navigator.serviceWorker.addEventListener('controllerchange', function () {
             if (refreshing) return;
+            if (!hadController) {
+                hadController = true;
+                return;
+            }
             var banner = ensureBanner(bannerId, 'Update available.', 'notification is-warning');
             banner.innerHTML = 'Update available. <button type="button" class="modern-btn is-small" id="airtoshare-pwa-reload">Reload</button>';
             banner.style.display = 'block';
