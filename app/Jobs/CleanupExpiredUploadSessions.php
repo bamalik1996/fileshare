@@ -20,6 +20,10 @@ use Illuminate\Support\Facades\Storage;
  * Runs hourly via the scheduler (task 14.3). A session is stale when
  * `first_chunk_at` is more than 24 hours in the past and `completed_at`
  * is still null.
+ *
+ * It also clears chunk directories left behind by completed uploads (the
+ * assembled file already lives in the media library) and directories with
+ * no session row at all.
  */
 class CleanupExpiredUploadSessions implements ShouldQueue
 {
@@ -50,6 +54,48 @@ class CleanupExpiredUploadSessions implements ShouldQueue
                 'count' => $deleted,
             ]);
         }
+
+        $cleared = $this->clearLeftoverChunkDirectories();
+
+        if ($cleared > 0) {
+            Log::info('CleanupExpiredUploadSessions: cleared leftover chunk directories', [
+                'count' => $cleared,
+            ]);
+        }
+    }
+
+    /**
+     * Remove chunk directories that no longer serve an in-flight upload:
+     *
+     *  - the session completed more than an hour ago (the grace period
+     *    covers queued assembly, which marks the session completed before
+     *    the job concatenates the chunks);
+     *  - no session row exists and the directory is older than 24 hours.
+     */
+    private function clearLeftoverChunkDirectories(): int
+    {
+        $disk = Storage::disk('local');
+        $completedBefore = now()->subHour();
+        $orphanBefore = now()->subHours(24)->getTimestamp();
+        $cleared = 0;
+
+        foreach ($disk->directories('chunks') as $directory) {
+            $uuid = basename($directory);
+            $session = UploadSession::query()->where('uuid', $uuid)->first();
+
+            if ($session !== null) {
+                if ($session->completed_at === null || $session->completed_at->gte($completedBefore)) {
+                    continue;
+                }
+            } elseif (@filemtime($disk->path($directory)) > $orphanBefore) {
+                continue;
+            }
+
+            $disk->deleteDirectory($directory);
+            $cleared++;
+        }
+
+        return $cleared;
     }
 
     private function purgeSession(UploadSession $session): void
