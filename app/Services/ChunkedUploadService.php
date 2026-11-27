@@ -363,8 +363,10 @@ class ChunkedUploadService
             ->orderBy('chunk_index')
             ->get();
 
-        // Build a temporary output file.
-        $tmpDir  = storage_path('app/chunks/' . $session->uuid);
+        // Build a temporary output file. Paths come from the same `local` disk
+        // the chunks were written to (storeChunkFile), not a hard-coded root.
+        $disk    = Storage::disk('local');
+        $tmpDir  = $disk->path('chunks/' . $session->uuid);
         $tmpPath = $tmpDir . '/assembled.tmp';
 
         if (! is_dir($tmpDir)) {
@@ -378,7 +380,7 @@ class ChunkedUploadService
         }
 
         foreach ($chunks as $chunk) {
-            $chunkPath = storage_path('app/' . $chunk->stored_path);
+            $chunkPath = $disk->path($chunk->stored_path);
 
             if (! file_exists($chunkPath)) {
                 fclose($out);
@@ -422,6 +424,11 @@ class ChunkedUploadService
 
         @chmod($media->getPath(), 0644);
 
+        // The file now lives in the media library; the chunks are a second
+        // full copy of it. Without this, every chunked upload left its whole
+        // size behind in storage/app/chunks (production had ~9.4 GB of it).
+        $this->discardChunks($session);
+
         Log::info('ChunkedUploadService: assembly complete', [
             'session_uuid' => $session->uuid,
             'media_uuid'   => $media->uuid,
@@ -437,5 +444,23 @@ class ChunkedUploadService
         ));
 
         return $media;
+    }
+
+    /**
+     * Delete a session's chunk directory after a successful assembly.
+     *
+     * Failures are logged, never thrown: the upload itself has succeeded, and
+     * the hourly CleanupExpiredUploadSessions job removes any leftover.
+     */
+    private function discardChunks(UploadSession $session): void
+    {
+        try {
+            Storage::disk('local')->deleteDirectory('chunks/' . $session->uuid);
+        } catch (\Throwable $e) {
+            Log::warning('ChunkedUploadService: could not delete chunk directory', [
+                'session_uuid' => $session->uuid,
+                'error'        => $e->getMessage(),
+            ]);
+        }
     }
 }
